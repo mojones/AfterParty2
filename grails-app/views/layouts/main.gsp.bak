@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><g:layoutTitle default="Grails"/></title>
+
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}"/>
+
+    %{--main jquery js file--}%
+    <g:javascript library="jquery" plugin="jquery"/>
+    %{--application-specific scripts--}%
+    <g:javascript library="application"/>
+    %{--jquery plugin for the dropdown menu--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.dropdown.js')}"></script>
+    %{--hoverintent plugin for delay on dropdown menu--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'hoverIntent.js')}"></script>
+    %{--expander to show/hide text--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.expander.js')}"></script>
+    %{--jquery edit in place plugin--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.editinplace.js')}"></script>
+
+
+    <link rel="shortcut icon" href="${resource(dir: 'images', file: 'favicon.ico')}" type="image/x-icon"/>
+    <g:layoutHead/>
+</head>
+
+<body>
+
+<div id="studyNav">
+    <g:include controller="nav" action="show"/>
+    <g:include controller="nav" action="showStudies"/>
+    <g:link controller="contig" action="search"> Search contigs </g:link>
+</div>
+<hr/><br/><br/><br/>
+<g:layoutBody/>
+</body>
+</html>
