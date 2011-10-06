@@ -693,7 +693,7 @@ a:hover {
 /* Custom form select element */
 
 .block form select.styled {
-	width: 245px;
+	width: 345px;
 	height: 18px;
 	margin-right: 20px;
 	cursor: pointer;
