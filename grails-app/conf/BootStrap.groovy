@@ -148,6 +148,12 @@ class BootStrap {
                         litoStudy
                 )
 
+                println "adding blast annotation"
+
+                File blastFile = new File('/home/martin/Downloads/blastout.xml')
+                InputStream blastInput = new FileInputStream(blastFile)
+                blastService.addBlastHitsFromInput(blastInput)
+
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',
                 //                        status: BackgroundJobStatus.RUNNING,

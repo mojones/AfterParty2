@@ -100,12 +100,21 @@
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-      <p>
-                <g:form controller="assembly" action="runBlast">
-                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                    <input type="submit" class="submit long" value="BLAST contigs"/>
-                </g:form>
-            </p>
+        <p>
+            <g:form controller="assembly" action="runBlast">
+                <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                <input type="submit" class="submit long" value="BLAST contigs"/>
+            </g:form>
+        </p>
+
+        <p>
+            <g:form controller="assembly" action="download" method="get">
+                <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                <input type="submit" class="submit long" value="Download contigs"/>
+            </g:form>
+        </p>
+
+
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -218,12 +227,6 @@
     <div class="bendr"></div>
 
 </div>
-
-
-
-
-
-
 
 
 <div class="block">

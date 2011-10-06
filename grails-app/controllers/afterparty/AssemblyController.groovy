@@ -9,6 +9,22 @@ class AssemblyController {
     def statisticsService
     def chartService
 
+    def download = {
+        response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
+        response.flushBuffer()
+
+        def criteria = Assembly.createCriteria()
+        def a = criteria.get({
+            eq('id', params.id.toLong())
+            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+        })
+
+        a.contigs.each {
+            response.outputStream << ">${it.id}\n${it.sequence}\n"
+        }
+    }
+
+
     def runBlast = {
         def assemblyId = params.id
         println "id is $assemblyId"
