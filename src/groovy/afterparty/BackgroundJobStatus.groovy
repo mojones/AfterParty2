@@ -13,7 +13,7 @@ enum BackgroundJobStatus {
 }
 
 enum BackgroundJobType {
-    TRIM, ASSEMBLE, BLAST, UPLOAD_READS, UPLOAD_ADAPTERS
+    TRIM, ASSEMBLE, BLAST, UPLOAD_READS, UPLOAD_ADAPTERS, UPLOAD_BLAST_ANNOTATION
 }
 
 enum ReadsFileStatus {

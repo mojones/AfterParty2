@@ -54,10 +54,6 @@
 
         <h2>Runs</h2>
 
-        <ul>
-            <li><a href="#">Add new</a></li>
-            <li><a href="#">Add page</a></li>
-        </ul>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">

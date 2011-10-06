@@ -41,6 +41,7 @@ class BlastService {
 
             }
         }
+        println "returning from service"
     }
 
     def runBlast(def assemblyId, def backgroundJobId) {

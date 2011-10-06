@@ -9,6 +9,43 @@ class AssemblyController {
     def statisticsService
     def chartService
 
+    def uploadBlastAnnotation = {
+        def f = request.getFile('myFile')
+        if (!f.empty) {
+            def assemblyId = params.id
+
+            BackgroundJob job = new BackgroundJob(
+                    name: 'uploading BLAST annotation',
+                    progress: 'running',
+                    study: Assembly.get(assemblyId).study,
+                    status: BackgroundJobStatus.QUEUED,
+                    type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
+            job.save(flush: true)
+
+
+            runAsync {
+                job.status = BackgroundJobStatus.RUNNING
+                job.save(flush: true)
+                blastService.addBlastHitsFromInput(f.inputStream)
+                println "back in controller, indexing"
+                job.progress = 'indexing BLAST hits for search'
+                job.save(flush: true)
+                Contig.index(Assembly.get(assemblyId).contigs)
+                println "done indexing"
+                job.progress = 'finished'
+                job.status = BackgroundJobStatus.FINISHED
+                job.save(flush: true)
+            }
+
+            redirect(controller: 'backgroundJob', action: list)
+        }
+        else {
+            flash.message = 'file cannot be empty'
+            render(view: 'uploadForm')
+        }
+
+    }
+
     def download = {
         response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
         response.flushBuffer()

@@ -114,6 +114,24 @@
             </g:form>
         </p>
 
+    <h3>Upload BLAST results</h3>
+    <p>
+        <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
+
+            <p class="fileupload">
+                <label>Select BLAST file:</label><br/>
+                <input type="file" name="myFile"/>
+
+                <span id="uploadmsg">BLAST XML output only</span>
+            </p>
+
+            <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+
+            <p>
+                <input type="submit" class="submit mid" value="Upload"/>
+            </p>
+        </g:form>
+    </p>
 
     </div>        <!-- .block_content ends -->
 
