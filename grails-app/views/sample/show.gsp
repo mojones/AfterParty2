@@ -88,7 +88,7 @@
             </table>
         </g:if>
         <g:else>
-            <h3>Click "ADD NEW" to add a sample for this study.</h3>
+            <h3>Click "ADD NEW" to add an experiment for this sample.</h3>
         </g:else>
     </div>        <!-- .block_content ends -->
 

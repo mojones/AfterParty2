@@ -73,9 +73,11 @@ class ExperimentController {
     }
 
     def create = {
-        def experimentInstance = new Experiment()
-        experimentInstance.properties = params
-        return [experimentInstance: experimentInstance, sampleId: params.sampleId]
+        def experimentInstance = new Experiment(name: 'Experiment name', description: 'Experiment description')
+        Sample.get(params.sampleId.toLong()).addToExperiments(experimentInstance)
+        experimentInstance.save()
+        redirect(action: show, id: experimentInstance.id)
+
     }
 
     def save = {
