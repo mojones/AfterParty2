@@ -30,15 +30,24 @@
 
     <div class="block_head">
         <div class="bheadl"></div>
+
         <div class="bheadr"></div>
-        <h2>${studyInstance.name}<span style="font-size: 10px;">edit</span></h2>
+
+        <h2>Study details</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <p>${studyInstance.description}</p>
+        <h3>Name</h3>
+
+        <p class="edit_in_place" name="name">${studyInstance.name}</p>
+
+        <h3>Description</h3>
+
+        <p class="edit_in_place" name="description">${studyInstance.description}</p>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
+
     <div class="bendr"></div>
 </div>
 
@@ -47,6 +56,7 @@
 
     <div class="block_head">
         <div class="bheadl"></div>
+
         <div class="bheadr"></div>
 
         <h2>Samples</h2>
@@ -79,15 +89,17 @@
         </table>
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
+
     <div class="bendr"></div>
 </div>
-
 
 
 <div class="block">
     <div class="block_head">
         <div class="bheadl"></div>
+
         <div class="bheadr"></div>
+
         <h2>Dataset overviews</h2>
         <ul class="tabs">
             <li><a href="#tab1">Structure</a></li>
