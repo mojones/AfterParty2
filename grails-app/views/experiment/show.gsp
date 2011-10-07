@@ -78,11 +78,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${experimentInstance.runs}" var="s">
+                <g:each in="${experimentInstance.runs}" var="run">
                     <tr>
-                        <td><g:link controller="run" action="show" id="${s.id}">${s.name}</g:link></td>
-                        <td>${s.getRawReadsFile().readCount}</td>
-                        <td>1234567</td>
+                        <td><g:link controller="run" action="show" id="${run.id}">${run.name}</g:link></td>
+                        <td>${run.getRawReadsCount()}</td>
+                        <td>${run.getTrimmedReadsCount()}</td>
                     </tr>
                 </g:each>
                 </tbody>
