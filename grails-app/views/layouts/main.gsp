@@ -82,7 +82,6 @@
                     </g:else>
                 </li>
 
-                <li><a href="#">Users</a></li>
             </ul>
 
             <p class="user">Hello, <a href="#">John</a> | <a href="index.html">Logout</a></p>
