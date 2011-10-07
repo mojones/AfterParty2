@@ -62,7 +62,9 @@
 
 <body>
 
-<div class="block">
+
+
+<div class="block withsidebar">
 
     <div class="block_head">
         <div class="bheadl"></div>
@@ -72,75 +74,79 @@
         <h2>Assembly details</h2>
     </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
-        <h3>Name <span style="font-size: small;">(click to edit)</span></h3>
 
-        <p class="edit_in_place" name="name">${assemblyInstance.name}</p>
-
-        <h3>Statistics</h3>
-
-        <p>
-            Contig count : ${assemblyInstance.contigCount}<br/>
-            Base count : ${assemblyInstance.baseCount}<br/>
-            Min contig length : ${assemblyInstance.minContigLength}<br/>
-            Mean contig length : ${assemblyInstance.meanContigLength}<br/>
-            Max contig length : ${assemblyInstance.maxContigLength}<br/>
-            N50 : ${assemblyInstance.n50}
-        </p>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Annotation actions</h2>
-    </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <p>
-            <g:form controller="assembly" action="runBlast">
-                <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                <input type="submit" class="submit long" value="BLAST contigs"/>
-            </g:form>
-        </p>
 
-        <p>
-            <g:form controller="assembly" action="download" method="get">
-                <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                <input type="submit" class="submit long" value="Download contigs"/>
-            </g:form>
-        </p>
+        <div class="sidebar">
+            <ul class="sidemenu">
+                <li><a href="#sb1_raw">Description</a></li>
+                <li><a href="#sb2_raw">Contigs</a></li>
+                <li><a href="#sb3_raw">Annotations</a></li>
+            </ul>
 
-        <h3>Upload BLAST results</h3>
-    <p>
-        <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
-
-            <p class="fileupload">
-                <label>Select BLAST file:</label><br/>
-                <input type="file" name="myFile"/>
-
-                <span id="uploadmsg">BLAST XML output only</span>
+            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
             </p>
+        </div>        <!-- .sidebar ends -->
 
-            <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+        <div class="sidebar_content" id="sb1_raw">
+            <h3>Name <span style="font-size: small;">(click to edit)</span></h3>
+
+            <p class="edit_in_place" name="name">${assemblyInstance.name}</p>
+
+            <h3>Statistics</h3>
 
             <p>
-                <input type="submit" class="submit mid" value="Upload"/>
+                Contig count : ${assemblyInstance.contigCount}<br/>
+                Base count : ${assemblyInstance.baseCount}<br/>
+                Min contig length : ${assemblyInstance.minContigLength}<br/>
+                Mean contig length : ${assemblyInstance.meanContigLength}<br/>
+                Max contig length : ${assemblyInstance.maxContigLength}<br/>
+                N50 : ${assemblyInstance.n50}
             </p>
-        </g:form>
-    </p>
+        </div>        <!-- .sidebar_content ends -->
+
+
+        <div class="sidebar_content" id="sb2_raw">
+            <p>
+                <g:form controller="assembly" action="download" method="get">
+                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                    <input type="submit" class="submit long" value="Download contigs"/>
+                </g:form>
+            </p>
+        </div>        <!-- .sidebar_content ends -->
+
+
+        <div class="sidebar_content" id="sb3_raw">
+            <p>
+                <g:form controller="assembly" action="runBlast">
+                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                    <input type="submit" class="submit long" value="BLAST contigs"/>
+                </g:form>
+            </p>
+            <br/>
+
+
+
+            <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
+
+                <p class="fileupload"  style="clear:none;">
+                    <label>Select BLAST results file to upload:</label><br/>
+                    <input type="file" name="myFile"/>
+
+                    <span id="uploadmsg">BLAST XML output only</span>
+                </p>
+
+                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+
+                <p  style="clear:none;">
+                    <input type="submit" class="submit mid" value="Upload"/>
+                </p>
+            </g:form>
+
+        </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
-
     <div class="bendl"></div>
 
     <div class="bendr"></div>
