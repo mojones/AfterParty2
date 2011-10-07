@@ -69,10 +69,16 @@
 
         <div class="bheadr"></div>
 
-        <h2>${assemblyInstance.name}<span style="font-size: 10px;">edit</span></h2>
+        <h2>Assembly details</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
+        <h3>Name <span style="font-size: small;">(click to edit)</span></h3>
+
+        <p class="edit_in_place" name="name">${assemblyInstance.name}</p>
+
+        <h3>Statistics</h3>
+
         <p>
             Contig count : ${assemblyInstance.contigCount}<br/>
             Base count : ${assemblyInstance.baseCount}<br/>
@@ -114,7 +120,7 @@
             </g:form>
         </p>
 
-    <h3>Upload BLAST results</h3>
+        <h3>Upload BLAST results</h3>
     <p>
         <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
 
