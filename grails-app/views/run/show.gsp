@@ -74,7 +74,7 @@
                 <li><a href="#sb3_raw">Actions</a></li>
             </ul>
 
-            <p><strong>Some notification text.</strong> Donec hendrerit porttitor felis, id semper eros lobortis sed. Class aptent taciti sociosqu ad litora.
+            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
             </p>
         </div>        <!-- .sidebar ends -->
 
@@ -92,6 +92,9 @@
                     <b>Max length</b> : ${runInstance.rawReadsFile.maxReadLength}
                 </p>
             </g:if>
+            <g:else>
+                <h3>No raw reads file uploaded yet</h3>
+            </g:else>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -133,6 +136,9 @@
                     </g:form>
                 </p>
             </g:if>
+            <g:else>
+                <h3>No raw reads file uploaded yet</h3>
+            </g:else>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
@@ -162,7 +168,7 @@
                 <li><a href="#sb3_trimmed">Actions</a></li>
             </ul>
 
-            <p><strong>Some notification text.</strong> Donec hendrerit porttitor felis, id semper eros lobortis sed. Class aptent taciti sociosqu ad litora.
+            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
             </p>
         </div>        <!-- .sidebar ends -->
 
@@ -181,6 +187,9 @@
                     <b>Max length</b> : ${runInstance.trimmedReadsFile.maxReadLength}
                 </p>
             </g:if>
+            <g:else>
+                <h3>No trimmed reads file uploaded yet</h3>
+            </g:else>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -215,6 +224,9 @@
                     </g:form>
                 </p>
             </g:if>
+            <g:else>
+                <h3>No trimmed reads file uploaded yet</h3>
+            </g:else>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
