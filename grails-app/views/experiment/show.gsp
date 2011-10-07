@@ -33,11 +33,19 @@
 
         <div class="bheadr"></div>
 
-        <h2>${experimentInstance.name}<span style="font-size: 10px;">edit</span></h2>
+        <h2>Experiment details</h2>
+
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <p>${experimentInstance.description}</p>
+        <h3>Name</h3>
+
+        <p class="edit_in_place" name="name">${experimentInstance.name}</p>
+
+        <h3>Description</h3>
+
+        <p class="edit_in_place" name="description">${experimentInstance.description}</p>
+
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -53,29 +61,36 @@
         <div class="bheadr"></div>
 
         <h2>Runs</h2>
-
+        <ul>
+            <g:link controller="run" action="create" params="${[experimentId : experimentInstance.id]}">Add new</g:link>
+        </ul>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
+        <g:if test="${experimentInstance.runs}">
 
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-            <thead>
-            <tr>
-                <th>Run name</th>
-                <th>Raw reads</th>
-                <td>Trimmed reads</td>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${experimentInstance.runs}" var="s">
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
                 <tr>
-                    <td><g:link controller="run" action="show" id="${s.id}">${s.name}</g:link></td>
-                    <td>${s.getRawReadsFile().readCount}</td>
-                    <td>1234567</td>
+                    <th>Run name</th>
+                    <th>Raw reads</th>
+                    <td>Trimmed reads</td>
                 </tr>
-            </g:each>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <g:each in="${experimentInstance.runs}" var="s">
+                    <tr>
+                        <td><g:link controller="run" action="show" id="${s.id}">${s.name}</g:link></td>
+                        <td>${s.getRawReadsFile().readCount}</td>
+                        <td>1234567</td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </g:if>
+        <g:else>
+            <h3>Click "ADD NEW" to add an run for this experiment.</h3>
+        </g:else>
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
 
@@ -120,7 +135,6 @@
     <div class="bendr"></div>
 
 </div>
-
 
 
 <h3><g:link controller="experiment" action="trimAllReadFiles" id="${experimentInstance.id}">Trim all reads</g:link></h3>
