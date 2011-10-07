@@ -85,7 +85,7 @@
                 <li><a href="#sb3_raw">Annotations</a></li>
             </ul>
 
-            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
+            <p>Use the <strong>Contigs</strong> tab to download/upload contigs. Use the <strong>Annotations</strong> tab to run BLAST or upload a BLAST result.
             </p>
         </div>        <!-- .sidebar ends -->
 
