@@ -14,9 +14,10 @@ class RunController {
     }
 
     def create = {
-        def runInstance = new Run()
-        runInstance.properties = params
-        return [runInstance: runInstance, experimentId : params.experimentId]
+        def runInstance = new Run(name : 'Run name', description: 'Run description')
+        Experiment.get(params.experimentId.toLong()).addToRuns(runInstance)
+        runInstance.save()
+        redirect(action: show, id : runInstance.id)
     }
 
     def save = {
