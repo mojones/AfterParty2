@@ -17,7 +17,7 @@ class Sample {
     def getRawReadsCount(){
         int result = 0
         experiments.each{
-            result += it.rawReadsCount
+            result += it?.rawReadsCount
         }
         return result
     }

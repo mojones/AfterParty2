@@ -20,7 +20,7 @@ class Experiment {
     def getRawReadsCount() {
         int result = 0
         runs.each {
-            result += it.rawReadsFile.readCount
+            result += it.rawReadsFile ? it.rawReadsFile.readCount : 0
         }
         return result
     }
@@ -28,7 +28,7 @@ class Experiment {
     def getBaseCount() {
         int result = 0
         runs.each {
-            result += it.rawReadsFile.baseCount
+            result += it.rawReadsFile ? it.rawReadsFile.baseCount : 0
         }
         return result
     }

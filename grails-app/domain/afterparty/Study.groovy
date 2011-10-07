@@ -18,7 +18,7 @@ class Study {
     def getRawReadsCount(){
         int result = 0
         samples.each{
-            result += it.rawReadsCount
+            result += it?.rawReadsCount
         }
         return result
     }

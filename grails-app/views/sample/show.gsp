@@ -33,7 +33,7 @@
 
         <div class="bheadr"></div>
 
-        <h2>Sample details</h2>
+        <h2>Sample details <span style="font-size: small;">(click to edit)</span></h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
