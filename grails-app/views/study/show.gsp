@@ -51,7 +51,6 @@
     <div class="bendr"></div>
 </div>
 
-
 <div class="block">
 
     <div class="block_head">
@@ -62,75 +61,85 @@
         <h2>Samples</h2>
 
         <ul>
-            <li><a href="#">Add new</a></li>
-            <li><a href="#">Add page</a></li>
+            <li>
+                <g:link controller="sample" action="create" params="${[studyId : studyInstance.id]}">Add new</g:link>
+            </li>
         </ul>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
+        <g:if test="${studyInstance.samples}">
 
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-            <thead>
-            <tr>
-                <th>Sample name</th>
-                <th>Raw reads</th>
-                <td>Experiment count</td>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${studyInstance.samples}" var="s">
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
                 <tr>
-                    <td><g:link controller="sample" action="show" id="${s.id}">${s.name}</g:link></td>
-                    <td>${s.rawReadsCount}</td>
-                    <td>${s.experiments.size()}</td>
+                    <th>Sample name</th>
+                    <th>Raw reads</th>
+                    <td>Experiment count</td>
                 </tr>
-            </g:each>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <g:each in="${studyInstance.samples}" var="s">
+                    <tr>
+                        <td><g:link controller="sample" action="show" id="${s.id}">${s.name}</g:link></td>
+                        <td>${s.rawReadsCount}</td>
+                        <td>${s.experiments.size()}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </g:if>
+        <g:else>
+            <h3>Click "ADD NEW" to add a sample for this study.</h3>
+        </g:else>
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
 
     <div class="bendr"></div>
 </div>
 
+%{--only show workflow and structure if we have at least one sample--}%
+<g:if test="${studyInstance.samples}">
 
-<div class="block">
-    <div class="block_head">
-        <div class="bheadl"></div>
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
 
-        <div class="bheadr"></div>
+            <div class="bheadr"></div>
 
-        <h2>Dataset overviews</h2>
-        <ul class="tabs">
-            <li><a href="#tab1">Structure</a></li>
-            <li><a href="#tab2">Workflow</a></li>
-        </ul>
-    </div>        <!-- .block_head ends -->
+            <h2>Dataset overviews</h2>
+            <ul class="tabs">
+                <li><a href="#tab1">Structure</a></li>
+                <li><a href="#tab2">Workflow</a></li>
+            </ul>
+        </div>        <!-- .block_head ends -->
 
-    <div class="block_content tab_content" id="tab1">
+        <div class="block_content tab_content" id="tab1">
 
-        <h3>Structure</h3>
-        <object data=" <g:createLink controller="study" action="overview" params="['id' : studyInstance.id]"/> "
-                type="image/svg+xml" id="overviewSVG"></object>
+            <h3>Structure</h3>
+            <object data=" <g:createLink controller="study" action="overview" params="['id' : studyInstance.id]"/> "
+                    type="image/svg+xml" id="overviewSVG"></object>
 
-    </div>        <!-- .block_content ends -->
+        </div>        <!-- .block_content ends -->
 
 
 
-    <div class="block_content tab_content" id="tab2">
+        <div class="block_content tab_content" id="tab2">
 
-        <h3>Workflow</h3>
+            <h3>Workflow</h3>
 
-        <object data=" <g:createLink controller="backgroundJob" action="overview" params="['id' : studyInstance.id]"/> "
-                type="image/svg+xml" id="workflowSVG"></object>
+            <object data=" <g:createLink controller="backgroundJob" action="overview"
+                                         params="['id' : studyInstance.id]"/> "
+                    type="image/svg+xml" id="workflowSVG"></object>
 
-    </div>        <!-- .block_content ends -->
+        </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
+        <div class="bendl"></div>
 
-    <div class="bendr"></div>
+        <div class="bendr"></div>
 
-</div>
+    </div>
+</g:if>
 
 </body>
 </html>

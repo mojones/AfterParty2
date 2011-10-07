@@ -14,9 +14,10 @@ class SampleController {
     }
 
     def create = {
-        def sampleInstance = new Sample()
-        sampleInstance.properties = params
-        return [sampleInstance: sampleInstance, studyId : params.studyId]
+        def sampleInstance = new Sample(name: 'Sample name', description: 'Sample description')
+        Study.get(params.studyId.toLong()).addToSamples(sampleInstance)
+        sampleInstance.save()
+        redirect(action: show, id:sampleInstance.id)
     }
 
     def save = {
