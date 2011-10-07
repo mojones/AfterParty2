@@ -14,12 +14,6 @@ class Assembly {
     static constraints = {
     }
 
-// mark this class as NOT a searchable root, so that it doesn't get returned in searches - instead, we want to always return the contig
-    static searchable = {
-        root false
-    }
-
-
 
     static mapping = {
         description type: 'text'
@@ -30,27 +24,27 @@ class Assembly {
     static belongsTo = [study: Study]
 
     def getContigCount() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).readCount
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).readCount : 0
     }
 
     def getMeanContigLength() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).meanLength
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).meanLength : 0
     }
 
     def getMaxContigLength() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).maxLength
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).maxLength : 0
     }
 
     def getMinContigLength() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).minLength
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).minLength : 0
     }
 
     def getBaseCount() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).baseCount
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).baseCount : 0
     }
 
     def getN50() {
-        return statisticsService.getAssemblyStats(this.id.toLong()).n50
+        return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).n50 : 0
     }
 
 }
