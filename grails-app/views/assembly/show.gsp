@@ -62,8 +62,6 @@
 
 <body>
 
-
-
 <div class="block withsidebar">
 
     <div class="block_head">
@@ -114,6 +112,35 @@
                     <input type="submit" class="submit long" value="Download contigs"/>
                 </g:form>
             </p>
+
+        <br/><br/>
+            <h2>Upload contigs</h2>
+            <g:form action="uploadContigs" method="post" enctype="multipart/form-data">
+
+                <p class="fileupload" style="clear:none;">
+                    <label>Contigs file to upload:</label><br/>
+                    <input type="file" name="contigsFile"/>
+                    <span id="uploadmsg">FASTA format only</span>
+                </p>
+
+                <p class="fileupload" style="clear:none;">
+                    <label>Contigs quality file (optional):</label><br/>
+                    <input type="file" name="contigsQualityFile"/>
+                    <span id="uploadmsg">FASTA quality format only</span>
+                </p>
+
+                <p class="fileupload" style="clear:none;">
+                    <label>Contigs statistics file (optional):</label><br/>
+                    <input type="file" name="contigsStatsFile"/>
+                    <span id="uploadmsg">MIRA output  format only</span>
+                </p>
+
+                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+
+                <p style="clear:none;">
+                    <input type="submit" class="submit short" value="Upload"/>
+                </p>
+            </g:form>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -130,7 +157,7 @@
 
             <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
 
-                <p class="fileupload"  style="clear:none;">
+                <p class="fileupload" style="clear:none;">
                     <label>Select BLAST results file to upload:</label><br/>
                     <input type="file" name="myFile"/>
 
@@ -139,7 +166,7 @@
 
                 <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
 
-                <p  style="clear:none;">
+                <p style="clear:none;">
                     <input type="submit" class="submit mid" value="Upload"/>
                 </p>
             </g:form>
