@@ -33,11 +33,18 @@
 
         <div class="bheadr"></div>
 
-        <h2>${runInstance.name}<span style="font-size: 10px;">edit</span></h2>
+        <h2>Run details</h2>
+
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <p>${runInstance.description}</p>
+        <h3>Name</h3>
+
+        <p class="edit_in_place" name="name">${runInstance.name}</p>
+
+        <h3>Description</h3>
+
+        <p class="edit_in_place" name="description">${runInstance.description}</p>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -72,18 +79,19 @@
         </div>        <!-- .sidebar ends -->
 
         <div class="sidebar_content" id="sb1_raw">
-            <h3>${runInstance.rawReadsFile.name}</h3>
+            <g:if test="${runInstance.rawReadsFile}">
+                <h3>${runInstance.rawReadsFile.name}</h3>
 
-            <p>${runInstance.rawReadsFile.description}</p>
+                <p>${runInstance.rawReadsFile.description}</p>
 
-        <p>
-                <b>Base count</b> : ${runInstance.rawReadsFile.baseCount} <br/>
-                <b>Read count</b> : ${runInstance.rawReadsFile.readCount} <br/>
-                <b>Min length</b> : ${runInstance.rawReadsFile.minReadLength} <br/>
-                <b>Mean length</b> : ${runInstance.rawReadsFile.meanReadLength} <br/>
-                <b>Max length</b> : ${runInstance.rawReadsFile.maxReadLength}
-            </p>
-
+                <p>
+                    <b>Base count</b> : ${runInstance.rawReadsFile.baseCount} <br/>
+                    <b>Read count</b> : ${runInstance.rawReadsFile.readCount} <br/>
+                    <b>Min length</b> : ${runInstance.rawReadsFile.minReadLength} <br/>
+                    <b>Mean length</b> : ${runInstance.rawReadsFile.meanReadLength} <br/>
+                    <b>Max length</b> : ${runInstance.rawReadsFile.maxReadLength}
+                </p>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -102,27 +110,29 @@
 
 
         <div class="sidebar_content" id="sb3_raw">
-            <p>
-                <g:form controller="readsFile" action="download">
-                    <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
-                    <input type="submit" class="submit long" value="Download reads"/>
-                </g:form>
-            </p>
+            <g:if test="${runInstance.rawReadsFile}">
 
-            <p>
-                <g:form controller="readsFile" action="trim">
-                    <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
-                    <input type="submit" class="submit long" value="Trim reads"/>
-                </g:form>
-            </p>
+                <p>
+                    <g:form controller="readsFile" action="download">
+                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                        <input type="submit" class="submit long" value="Download reads"/>
+                    </g:form>
+                </p>
 
-            <p>
-                <g:form controller="readsFile" action="runMira">
-                    <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
-                    <input type="submit" class="submit long" value="Assemble reads"/>
-                </g:form>
-            </p>
+                <p>
+                    <g:form controller="readsFile" action="trim">
+                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                        <input type="submit" class="submit long" value="Trim reads"/>
+                    </g:form>
+                </p>
 
+                <p>
+                    <g:form controller="readsFile" action="runMira">
+                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                        <input type="submit" class="submit long" value="Assemble reads"/>
+                    </g:form>
+                </p>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
@@ -157,17 +167,20 @@
         </div>        <!-- .sidebar ends -->
 
         <div class="sidebar_content" id="sb1_trimmed">
-            <h3>${runInstance.trimmedReadsFile.name}</h3>
+            <g:if test="${runInstance.trimmedReadsFile}">
 
-            <p><g:truncate maxlength="100">${runInstance.trimmedReadsFile.description}</g:truncate></p>
+                <h3>${runInstance.trimmedReadsFile.name}</h3>
 
-            <p>
-                <b>Base count</b> : ${runInstance.trimmedReadsFile.baseCount} <br/>
-                <b>Read count</b> : ${runInstance.trimmedReadsFile.readCount} <br/>
-                <b>Min length</b> : ${runInstance.trimmedReadsFile.minReadLength} <br/>
-                <b>Mean length</b> : ${runInstance.trimmedReadsFile.meanReadLength} <br/>
-                <b>Max length</b> : ${runInstance.trimmedReadsFile.maxReadLength}
-            </p>
+                <p><g:truncate maxlength="100">${runInstance.trimmedReadsFile.description}</g:truncate></p>
+
+                <p>
+                    <b>Base count</b> : ${runInstance.trimmedReadsFile.baseCount} <br/>
+                    <b>Read count</b> : ${runInstance.trimmedReadsFile.readCount} <br/>
+                    <b>Min length</b> : ${runInstance.trimmedReadsFile.minReadLength} <br/>
+                    <b>Mean length</b> : ${runInstance.trimmedReadsFile.meanReadLength} <br/>
+                    <b>Max length</b> : ${runInstance.trimmedReadsFile.maxReadLength}
+                </p>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -186,19 +199,22 @@
 
 
         <div class="sidebar_content" id="sb3_trimmed">
-            <p>
-                <g:form controller="readsFile" action="download">
-                    <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
-                    <input type="submit" class="submit long" value="Download reads"/>
-                </g:form>
-            </p>
+            <g:if test="${runInstance.trimmedReadsFile}">
 
-            <p>
-                <g:form controller="readsFile" action="runMira">
-                    <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
-                    <input type="submit" class="submit long" value="Assemble reads"/>
-                </g:form>
-            </p>
+                <p>
+                    <g:form controller="readsFile" action="download">
+                        <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
+                        <input type="submit" class="submit long" value="Download reads"/>
+                    </g:form>
+                </p>
+
+                <p>
+                    <g:form controller="readsFile" action="runMira">
+                        <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
+                        <input type="submit" class="submit long" value="Assemble reads"/>
+                    </g:form>
+                </p>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
