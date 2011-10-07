@@ -19,17 +19,15 @@ class StudyController {
 
     }
 
-
-
-
     def listPublished = {
         [studyInstanceList: Study.findAllByPublished(true)]
     }
 
     def create = {
-        def studyInstance = new Study()
-        studyInstance.properties = params
-        return [studyInstance: studyInstance]
+        def studyInstance = new Study(name: 'Study name', description: 'Study description', published: true)
+        AfterpartyUser.findByUsername('martin').addToStudies(studyInstance)
+        studyInstance.save()
+        redirect(action: show, id : studyInstance.id)
     }
 
     def save = {
