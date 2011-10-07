@@ -25,28 +25,15 @@
                                             </g:link>
                                         </li>
                                     </g:each>
-                                    <li>
-                                        <g:link controller="run" action="create"
-                                                params="[experimentId : experiment.id]"
-                                                elementId="newRunLink">Add New ...</g:link>
-                                    </li>
 
                                 </ul>
 
                             </li>
                         </g:each>
-                        <li>
-                            <g:link controller="experiment" action="create" params="[sampleId : sample.id]"
-                                    elementId="newExperimentLink">Add New ...</g:link>
-                        </li>
 
                     </ul>
                 </li>
             </g:each>
-            <li>
-                <g:link controller="sample" action="create" elementId="newSampleLink"
-                        params="[studyId : study.id]">Add New ...</g:link>
-            </li>
             <li><a href="#"><b>Assemblies</b></a></li>
             <g:each in="${study.assemblies}" var="assembly">
 
