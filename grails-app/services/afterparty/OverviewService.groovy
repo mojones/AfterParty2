@@ -71,16 +71,16 @@ class OverviewService {
         def label = buildDotfileLabel(
                 run.name,
                 [
-                        'no raw reads': run.rawReadsFile.readCount,
-                        'min read length': run.rawReadsFile.minReadLength,
-                        'mean read length': run.rawReadsFile.meanReadLength,
-                        'max read length': run.rawReadsFile.maxReadLength,
-                        'span': formatBaseCount(run.rawReadsFile.baseCount)
+                        'no raw reads': run.rawReadsCount,
+                        'min read length': run.rawReadsMinLength,
+                        'mean read length': run.rawReadsMeanLength,
+                        'max read length': run.rawReadsMaxLength,
+                        'span': formatBaseCount(run.rawReadsBaseCount)
                 ],
                 'palegreen',
                 g.createLink(controller: 'run', action: 'show', id: run.id)
         )
-        return ("${run.rawReadsFile.id} [shape=plaintext, label=<$label>]; ")
+        return ("${run.id} [shape=plaintext, label=<$label>]; ")
     }
 
     def buildReadsFileLine(ReadsFile readsFile) {
@@ -251,7 +251,7 @@ class OverviewService {
         study.samples.each { sample ->
             sample.experiments.each { experiment ->
                 experiment.runs.each { run ->
-                    if (run.trimmedReadsFile){
+                    if (run.trimmedReadsFile) {
                         gv.addln(buildReadsFileLine(run.trimmedReadsFile))
                     }
                 }
@@ -367,7 +367,7 @@ class OverviewService {
             sample.experiments.each { experiment ->
                 experiment.runs.each {
                     gv.addln(buildRunLine(it))
-                    gv.addln("$experiment.id->$it.rawReadsFile.id [arrowhead=none];")
+                    gv.addln("$experiment.id->$it.id [arrowhead=none];")
                 }
             }
         }
