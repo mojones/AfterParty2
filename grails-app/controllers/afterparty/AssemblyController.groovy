@@ -106,31 +106,10 @@ class AssemblyController {
         response.outputStream.flush()
     }
 
-
-    def index = {
-        redirect(action: "list", params: params)
-    }
-
-    def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [assemblyInstanceList: Assembly.list(params), assemblyInstanceTotal: Assembly.count()]
-    }
-
     def create = {
         def assemblyInstance = new Assembly()
         assemblyInstance.properties = params
         return [assemblyInstance: assemblyInstance]
-    }
-
-    def save = {
-        def assemblyInstance = new Assembly(params)
-        if (assemblyInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'assembly.label', default: 'Assembly'), assemblyInstance.id])}"
-            redirect(action: "show", id: assemblyInstance.id)
-        }
-        else {
-            render(view: "create", model: [assemblyInstance: assemblyInstance])
-        }
     }
 
     def show = {
@@ -143,45 +122,6 @@ class AssemblyController {
             [
                     assemblyInstance: assemblyInstance,
             ]
-        }
-    }
-
-
-    def edit = {
-        def assemblyInstance = Assembly.get(params.id)
-        if (!assemblyInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            return [assemblyInstance: assemblyInstance]
-        }
-    }
-
-    def update = {
-        def assemblyInstance = Assembly.get(params.id)
-        if (assemblyInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (assemblyInstance.version > version) {
-
-                    assemblyInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'assembly.label', default: 'Assembly')] as Object[], "Another user has updated this Assembly while you were editing")
-                    render(view: "edit", model: [assemblyInstance: assemblyInstance])
-                    return
-                }
-            }
-            assemblyInstance.properties = params
-            if (!assemblyInstance.hasErrors() && assemblyInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'assembly.label', default: 'Assembly'), assemblyInstance.id])}"
-                redirect(action: "show", id: assemblyInstance.id)
-            }
-            else {
-                render(view: "edit", model: [assemblyInstance: assemblyInstance])
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-            redirect(action: "list")
         }
     }
 
