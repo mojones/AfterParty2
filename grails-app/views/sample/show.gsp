@@ -33,11 +33,17 @@
 
         <div class="bheadr"></div>
 
-        <h2>${sampleInstance.name}<span style="font-size: 10px;">edit</span></h2>
+        <h2>Sample details</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <p>${sampleInstance.description}</p>
+        <h3>Name</h3>
+
+        <p class="edit_in_place" name="name">${sampleInstance.name}</p>
+
+        <h3>Description</h3>
+
+        <p class="edit_in_place" name="description">${sampleInstance.description}</p>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -56,32 +62,38 @@
         <h2>Experiments</h2>
 
         <ul>
-            <li><a href="#">Add new</a></li>
-            <li><a href="#">Add page</a></li>
+            <g:link controller="experiment" action="create" params="${[sampleId : sampleInstance.id]}">Add new</g:link>
         </ul>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-            <thead>
-            <tr>
-                <th>Experiment name</th>
-                <th>Raw reads</th>
-                <td>Run count</td>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${sampleInstance.experiments}" var="s">
+        <g:if test="${sampleInstance.experiments}">
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
                 <tr>
-                    <td><g:link controller="experiment" action="show" id="${s.id}">${s.name}</g:link></td>
-                    <td>${s.rawReadsCount}</td>
-                    <td>${s.runs.size()}</td>
+                    <th>Experiment name</th>
+                    <th>Raw reads</th>
+                    <td>Run count</td>
                 </tr>
-            </g:each>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <g:each in="${sampleInstance.experiments}" var="s">
+                    <tr>
+                        <td><g:link controller="experiment" action="show" id="${s.id}">${s.name}</g:link></td>
+                        <td>${s.rawReadsCount}</td>
+                        <td>${s.runs.size()}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </g:if>
+        <g:else>
+            <h3>Click "ADD NEW" to add a sample for this study.</h3>
+        </g:else>
     </div>        <!-- .block_content ends -->
+
+
+
     <div class="bendl"></div>
 
     <div class="bendr"></div>
