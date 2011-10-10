@@ -12,10 +12,10 @@ class BlastService {
 
     static transactional = true
 
-    def addBlastHitsFromInput(InputStream input) {
+    def addBlastHitsFromInput(InputStream input, def backgroundJobId) {
 
 
-        def handler = new RecordsHandler()
+        def handler = new RecordsHandler(jobId : backgroundJobId)
         def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
