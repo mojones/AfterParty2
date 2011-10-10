@@ -20,24 +20,25 @@ class AssemblyController {
                     study: Assembly.get(assemblyId).study,
                     status: BackgroundJobStatus.QUEUED,
                     type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
-            job.save(flush: true)
+            job.save(flush:true)
 
 
             runAsync {
-                job.status = BackgroundJobStatus.RUNNING
-                job.save(flush: true)
+                BackgroundJob job2 = BackgroundJob.get(job.id)
+                job2.status = BackgroundJobStatus.RUNNING
+                job2.save(flush: true)
                 blastService.addBlastHitsFromInput(f.inputStream)
                 println "back in controller, indexing"
-                job.progress = 'indexing BLAST hits for search'
-                job.save(flush: true)
+                job2.progress = 'indexing BLAST hits for search'
+                job2.save(flush: true)
                 Contig.index(Assembly.get(assemblyId).contigs)
                 println "done indexing"
-                job.progress = 'finished'
-                job.status = BackgroundJobStatus.FINISHED
-                job.save(flush: true)
+                job2.progress = 'finished'
+                job2.status = BackgroundJobStatus.FINISHED
+                job2.save(flush: true)
             }
 
-            redirect(controller: 'backgroundJob', action: list)
+            redirect(controller: 'backgroundJob', action: 'list')
         }
         else {
             flash.message = 'file cannot be empty'
@@ -107,10 +108,10 @@ class AssemblyController {
     }
 
     def create = {
-        def assemblyInstance = new Assembly(name : 'Assembly name', description: 'Assembly description')
+        def assemblyInstance = new Assembly(name: 'Assembly name', description: 'Assembly description')
         Study.get(params.studyId.toLong()).addToAssemblies(assemblyInstance)
         assemblyInstance.save()
-        redirect(action: show, id : assemblyInstance.id)
+        redirect(action: show, id: assemblyInstance.id)
 
     }
 

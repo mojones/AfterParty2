@@ -1,46 +1,27 @@
 package afterparty
 
+import javax.xml.parsers.SAXParserFactory
+import org.xml.sax.Attributes
+import org.xml.sax.InputSource
+import org.xml.sax.helpers.DefaultHandler
+
+
+
+
 class BlastService {
 
-    static transactional = false
+    static transactional = true
 
     def addBlastHitsFromInput(InputStream input) {
-        def spf = javax.xml.parsers.SAXParserFactory.newInstance()
-        spf.validating = false
-        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        def nodes = new XmlSlurper(spf.newSAXParser()).parse(input)
-
-        int count = 0
 
 
-        nodes.BlastOutput_iterations.Iteration.each { iteration ->
+        def handler = new RecordsHandler()
+        def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
+        reader.setContentHandler(handler)
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-            Long contigId = iteration.'Iteration_query-def'.toLong()
-            println "query id is $contigId"
-            Contig contig = Contig.get(contigId)
+        reader.parse(new InputSource(input))
 
-
-            iteration.Iteration_hits.children().each {
-
-
-                count++
-
-                BlastHit b = new BlastHit(
-                        description: it.Hit_def.toString(),
-                        accession: it.Hit_accession.toString(),
-                        bitscore: it.Hit_hsps.Hsp[0].'Hsp_bit-score'.toFloat(),
-                        start: it.Hit_hsps.Hsp[0].'Hsp_query-from'.toInteger(),
-                        stop: it.Hit_hsps.Hsp[0].'Hsp_query-to'.toInteger()
-                )
-
-                contig.addToBlastHits(b)
-
-                contig.addTags(b.description.tokenize().unique().findAll({it.size() > 5}))
-                contig.save(flush: true)
-
-
-            }
-        }
         println "returning from service"
     }
 
