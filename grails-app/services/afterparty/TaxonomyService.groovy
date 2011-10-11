@@ -43,7 +43,7 @@ class TaxonomyService {
         println ""
         def count = 0
         // open the NCBI taxonomy for structure
-        new File("/home/martin/Downloads/nodes.dmp").eachLine {
+        new File("/home/martin/Dropbox/downloads/nodes.dmp").eachLine {
             line ->
             count++
 
@@ -69,7 +69,7 @@ class TaxonomyService {
 
         // now process names file to add scientific names to nodes
         Pattern namePattern = ~/^(\d+)\t\|\t(.+)\t\|\t(.*)\t\|\t(.+)\t\|/
-        new File("/home/martin/Downloads/names.dmp").eachLine {
+        new File("/home/martin/Dropbox/downloads/names.dmp").eachLine {
             line ->
             def nameMatcher = (line =~ namePattern)
 
