@@ -10,7 +10,7 @@ import org.xml.sax.helpers.DefaultHandler
 
 class BlastService {
 
-    static transactional = true
+    static transactional = false
 
     def addBlastHitsFromInput(InputStream input, def backgroundJobId) {
 

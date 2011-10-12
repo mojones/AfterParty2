@@ -42,13 +42,13 @@ class RecordsHandler extends DefaultHandler {
             )
             currentContig.addToBlastHits(b)
             currentContig.addTags(b.description.tokenize().unique().findAll({it.size() > 5}))
-
+            currentContig.save(flush: true)
 
         }
 
         if (qName == 'Iteration') {
             count++
-            currentContig.save(flush: true)
+
             println "added hits for $currentContig.name"
 
             currentContig.index()
