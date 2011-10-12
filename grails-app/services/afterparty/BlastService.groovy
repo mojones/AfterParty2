@@ -14,18 +14,18 @@ class BlastService {
 
     def addBlastHitsFromInput(InputStream input, def backgroundJobId) {
 
-        input.eachLine {
-            println "BLAST: $it"
-        }
+//        input.eachLine {
+//            println "BLAST: $it"
+//        }
+//
+        def handler = new RecordsHandler(jobId : backgroundJobId)
+        def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
+        reader.setContentqHandler(handler)
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-//        def handler = new RecordsHandler(jobId : backgroundJobId)
-//        def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
-//        reader.setContentqHandler(handler)
-//        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-//
-//        reader.parse(new InputSource(input))
-//
-//        println "returning from service"
+        reader.parse(new InputSource(input))
+
+        println "returning from service"
     }
 
     def runBlast(def assemblyId, def backgroundJobId) {
