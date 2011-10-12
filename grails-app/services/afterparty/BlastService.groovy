@@ -55,7 +55,7 @@ class BlastService {
                 writer.close()
 
 //                        println "saw $count hits"
-                addBlastHitsFromInput(p.in)
+                addBlastHitsFromInput(p.in, job.id)
 
             }
             n++
