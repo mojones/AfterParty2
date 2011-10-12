@@ -74,6 +74,7 @@ class TaxonomyService {
             def nameMatcher = (line =~ namePattern)
 
 
+
             if (
                 nameMatcher.matches() && (
                 nameMatcher[0][4].equals("scientific name") || nameMatcher[0][4].equals("synonym") || nameMatcher[0][4].equals("misspelling"))

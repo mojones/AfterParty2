@@ -78,7 +78,7 @@ class AssemblyController {
             blastService.runBlast(assemblyId, job.id)
         }
 
-        redirect(controller: 'backgroundJob', action: list)
+        redirect(controller: 'backgroundJob', action: 'list')
 
     }
 
