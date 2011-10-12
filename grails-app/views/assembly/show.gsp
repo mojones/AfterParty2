@@ -293,7 +293,7 @@
 
         <div class="bheadr"></div>
 
-        <h2>${assemblyInstance.name}<span style="font-size: 10px;">edit</span></h2>
+        <h2>${assemblyInstance.name}</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">

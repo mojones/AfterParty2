@@ -29,11 +29,11 @@
             <div class="sidebar">
                 <ul class="sidemenu">
                     <li><a href="#sb1_${studyInstance.id}">Description</a></li>
-                    <li><a href="#sb2_${studyInstance.id}">Details</a></li>
+                    <li><a href="#sb2_${studyInstance.id}">Statistics</a></li>
                     <li><a href="#sb3_${studyInstance.id}">Annotation</a></li>
                 </ul>
 
-                <p><strong>Some notification text.</strong> Donec hendrerit porttitor felis, id semper eros lobortis sed. Class aptent taciti sociosqu ad litora.
+                <p>Click the study name to see details. Use the <strong>Statistics</strong> tab to view statistics.
                 </p>
             </div>        <!-- .sidebar ends -->
 

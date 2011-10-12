@@ -45,6 +45,7 @@ class ReadsFileController {
     def runMira = {
 
         def id = params.id
+        def studyId = session.studyId
         println "id is $id"
 
         BackgroundJob job = new BackgroundJob(
@@ -52,12 +53,12 @@ class ReadsFileController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.ASSEMBLE,
-                study: ReadsFile.get(id).run.experiment.sample.study
+                study: Study.get(session.studyId)
         )
         job.save(flush: true)
 
         runAsync {
-            miraService.runMira([id], job.id)
+            miraService.runMira([id], job.id, studyId)
         }
 
         redirect(controller: 'backgroundJob', action: list)

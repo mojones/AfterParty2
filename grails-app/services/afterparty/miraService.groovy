@@ -67,7 +67,7 @@ class miraService {
 
 
 
-    def runMira(def readsFileIds, def jobId) {
+    def runMira(def readsFileIds, def jobId, def studyId) {
 
         println " ${new Date()} running mira on reads file with id $readsFileIds"
 
@@ -112,7 +112,7 @@ class miraService {
         File contigsQualityFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.padded.fasta.qual")
         File contigsStatsFile = new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_contigstats.txt")
 
-        Study s = ReadsFile.get(readsFileIds[0]).run.experiment.sample.study
+        Study s = Study.get(studyId)
 
         Assembly a = createAssemblyAndContigsFromMiraInfo(assemblyInfoFile, contigsFile, contigsQualityFile, contigsStatsFile, s)
 

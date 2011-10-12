@@ -87,8 +87,7 @@
             <p class="user">Hello, <a href="#">John</a> | <a href="index.html">Logout</a></p>
         </div>        <!-- #header ends -->
 
-
-    <g:layoutBody/>
+        <g:layoutBody/>
 
 </body>
 </html>
