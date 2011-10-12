@@ -36,8 +36,9 @@ class Contig implements Taggable{
 
     static hasMany = [blastHits: BlastHit]
 
+    // TODO change this
     def topBlastHitMatching(String query){
-        return this?.blastHits.sort({-it.bitscore}).find({it.description.toLowerCase().contains(query.toLowerCase())}) ?: new BlastHit(description: 'none', bitscore : 0)
+        return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore : 0)
     }
 
     static belongsTo = [assembly: Assembly]
