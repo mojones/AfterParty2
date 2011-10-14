@@ -10,6 +10,7 @@ class RecordsHandler extends DefaultHandler {
     String currentElement
     Contig currentContig
     def currentProperties = [:]
+    Set currentTags = []
     def count = 0
 
     void startElement(String ns, String localName, String qName, Attributes atts) {
@@ -41,8 +42,9 @@ class RecordsHandler extends DefaultHandler {
                     stop: currentProperties.get('Hsp_query-to').toInteger()
             )
             currentContig.addToBlastHits(b)
-            currentContig.addTags(b.description.tokenize().unique().findAll({it.size() > 5}))
-            currentContig.save(flush: true)
+           b.description.tokenize().unique().findAll({it.size() > 5}).each {
+               currentTags.add(it.toString())
+           }
 
         }
 
@@ -50,9 +52,11 @@ class RecordsHandler extends DefaultHandler {
             count++
 
             println "added hits for $currentContig.name"
-
+            currentContig.save(flush: true)
+            currentContig.addTags(currentTags)
             currentContig.index()
             currentContig = null
+            currentTags.clear()
 
             if ((count % 1) == 0) {
                 println "updating job to $count"
