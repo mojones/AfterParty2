@@ -150,9 +150,18 @@ class BootStrap {
 
                 println "adding blast annotation"
 
-                File blastFile = new File('/home/martin/Downloads/blastout.xml')
+                File blastFile = new File('/home/martin/Downloads/contigs.xml')
                 InputStream blastInput = new FileInputStream(blastFile)
-                blastService.addBlastHitsFromInput(blastInput)
+                def job = new BackgroundJob(
+                        name: "bootstrapping blast data",
+                        progress: 'queued',
+                        status: afterparty.BackgroundJobStatus.QUEUED,
+                        type: afterparty.BackgroundJobType.UPLOAD_BLAST_ANNOTATION,
+                        study: litoStudy
+                )
+                job.save(flush: true)
+                sessionFactory.getCurrentSession().flush()
+                blastService.addBlastHitsFromInput(blastInput, job.id)
 
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',
@@ -170,9 +179,9 @@ class BootStrap {
                 //                                                ReadsFile.findByName('trimmed version of microfilaria run 2').id,
                 //                        ReadsFile.findByName('trimmed version of microfilaria run 3').id
                 //                ]
-//                def assemblyId = miraService.runMira(severalReadsFiles, j.id)
+                //                def assemblyId = miraService.runMira(severalReadsFiles, j.id)
 
-//                BackgroundJob b = new BackgroundJob(
+                //                BackgroundJob b = new BackgroundJob(
                 //                        progress: '',
                 //                        status: BackgroundJobStatus.RUNNING,
                 //                        type: BackgroundJobType.BLAST,

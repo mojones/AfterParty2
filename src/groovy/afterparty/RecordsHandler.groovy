@@ -42,9 +42,9 @@ class RecordsHandler extends DefaultHandler {
                     stop: currentProperties.get('Hsp_query-to').toInteger()
             )
             currentContig.addToBlastHits(b)
-           b.description.tokenize().unique().findAll({it.size() > 5}).each {
-               currentTags.add(it.toString())
-           }
+            b.description.tokenize().unique().findAll({it.size() > 5}).each {
+                currentTags.add(it.toString())
+            }
 
         }
 
@@ -52,8 +52,8 @@ class RecordsHandler extends DefaultHandler {
             count++
 
             println "added hits for $currentContig.name"
+//            currentContig.addTags(currentTags)
             currentContig.save(flush: true)
-            currentContig.addTags(currentTags)
             currentContig.index()
             currentContig = null
             currentTags.clear()
