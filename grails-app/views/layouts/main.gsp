@@ -83,11 +83,16 @@
                 </li>
 
             </ul>
+            <sec:ifLoggedIn>
+                <p class="user">Hello, <strong><sec:username/></strong> | <g:link controller="logout" action="index">Logout</g:link></p>
+            </sec:ifLoggedIn>
+            <sec:ifNotLoggedIn>
+                <p class="user"><g:link controller="login" action="index">Click here to log in</g:link></p>
+            </sec:ifNotLoggedIn>
 
-            <p class="user">Hello, <a href="#">John</a> | <a href="index.html">Logout</a></p>
         </div>        <!-- #header ends -->
 
-        <g:layoutBody/>
+    <g:layoutBody/>
 
 </body>
 </html>
