@@ -61,9 +61,12 @@
         <div class="bheadr"></div>
 
         <h2>Runs</h2>
-        <ul>
-            <g:link controller="run" action="create" params="${[experimentId : experimentInstance.id]}">Add new</g:link>
-        </ul>
+        <sec:ifLoggedIn>
+            <ul>
+                <g:link controller="run" action="create"
+                        params="${[experimentId : experimentInstance.id]}">Add new</g:link>
+            </ul>
+        </sec:ifLoggedIn>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -97,44 +100,47 @@
     <div class="bendr"></div>
 </div>
 
-<div class="block">
+<sec:ifLoggedIn>
+    <div class="block">
 
-    <div class="block_head">
-        <div class="bheadl"></div>
+        <div class="block_head">
+            <div class="bheadl"></div>
 
-        <div class="bheadr"></div>
+            <div class="bheadr"></div>
 
-        <h2>Upload / Replace adapter sequences</h2>
+            <h2>Upload / Replace adapter sequences</h2>
 
-    </div>        <!-- .block_head ends -->
+        </div>        <!-- .block_head ends -->
 
 
 
-    <div class="block_content">
+        <div class="block_content">
 
-        <g:form action="attachAdapterSequences" method="post" enctype="multipart/form-data">
+            <g:form action="attachAdapterSequences" method="post" enctype="multipart/form-data">
 
-            <p class="fileupload">
-                <label>Select new file:</label><br/>
-                <input type="file" name="myFile"/>
+                <p class="fileupload">
+                    <label>Select new file:</label><br/>
+                    <input type="file" name="myFile"/>
 
-                <span id="uploadmsg">FASTA format only</span>
-            </p>
+                    <span id="uploadmsg">FASTA format only</span>
+                </p>
 
-            <g:hiddenField name="experimentId" value="${experimentInstance?.id}"/>
+                <g:hiddenField name="experimentId" value="${experimentInstance?.id}"/>
 
-            <p>
-                <input type="submit" class="submit mid" value="Upload"/>
-            </p>
-        </g:form>
+                <p>
+                    <input type="submit" class="submit mid" value="Upload"/>
+                </p>
+            </g:form>
 
-    </div>        <!-- .block_content ends -->
+        </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
+        <div class="bendl"></div>
 
-    <div class="bendr"></div>
+        <div class="bendr"></div>
 
-</div>
+    </div>
+
+</sec:ifLoggedIn>
 
 
 <h3><g:link controller="experiment" action="trimAllReadFiles" id="${experimentInstance.id}">Trim all reads</g:link></h3>
