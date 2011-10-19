@@ -34,17 +34,6 @@ class StudyController {
         redirect(action: show, id : studyInstance.id)
     }
 
-    def save = {
-        def studyInstance = new Study(params)
-        if (studyInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'study.label', default: 'Study'), studyInstance.id])}"
-            redirect(action: "show", id: studyInstance.id)
-        }
-        else {
-            render(view: "create", model: [studyInstance: studyInstance])
-        }
-    }
-
     def show = {
         def studyInstance = Study.get(params.id)
 

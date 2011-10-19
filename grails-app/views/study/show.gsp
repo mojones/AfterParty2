@@ -60,11 +60,14 @@
 
         <h2>Samples</h2>
 
-        <ul>
-            <li>
-                <g:link controller="sample" action="create" params="${[studyId : studyInstance.id]}">Add new</g:link>
-            </li>
-        </ul>
+        <sec:ifLoggedIn>
+            <ul>
+                <li>
+                    <g:link controller="sample" action="create"
+                            params="${[studyId : studyInstance.id]}">Add new</g:link>
+                </li>
+            </ul>
+        </sec:ifLoggedIn>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -89,6 +92,7 @@
                 </tbody>
             </table>
         </g:if>
+
         <g:else>
             <h3>Click "ADD NEW" to add a sample for this study.</h3>
         </g:else>
@@ -106,12 +110,14 @@
         <div class="bheadr"></div>
 
         <h2>Assemblies</h2>
-
-        <ul>
-            <li>
-                <g:link controller="assembly" action="create" params="${[studyId : studyInstance.id]}">Add new</g:link>
-            </li>
-        </ul>
+        <sec:ifLoggedIn>
+            <ul>
+                <li>
+                    <g:link controller="assembly" action="create"
+                            params="${[studyId : studyInstance.id]}">Add new</g:link>
+                </li>
+            </ul>
+        </sec:ifLoggedIn>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -128,7 +134,8 @@
                 <tbody>
                 <g:each in="${studyInstance.assemblies}" var="assembly">
                     <tr>
-                        <td><g:link controller="assembly" action="show" id="${assembly.id}">${assembly.name}</g:link></td>
+                        <td><g:link controller="assembly" action="show"
+                                    id="${assembly.id}">${assembly.name}</g:link></td>
                         <td>${assembly.contigs.size()}</td>
                         <td>${assembly.baseCount}</td>
                     </tr>
