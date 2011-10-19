@@ -1,5 +1,7 @@
 package afterparty
 
+import grails.plugins.springsecurity.Secured
+
 class StudyController {
 
     def overviewService
@@ -23,7 +25,9 @@ class StudyController {
         [studyInstanceList: Study.findAllByPublished(true)]
     }
 
+    @Secured(['ROLE_USER'])
     def create = {
+
         def studyInstance = new Study(name: 'Study name', description: 'Study description', published: true)
         AfterpartyUser.findByUsername('martin').addToStudies(studyInstance)
         studyInstance.save()
