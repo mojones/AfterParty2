@@ -5,6 +5,7 @@ import grails.plugins.springsecurity.Secured
 class StudyController {
 
     def overviewService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -28,11 +29,14 @@ class StudyController {
     @Secured(['ROLE_USER'])
     def create = {
 
-        def studyInstance = new Study(name: 'Study name', description: 'Study description', published: true)
-        AfterpartyUser.findByUsername('martin').addToStudies(studyInstance)
+        def studyInstance = new Study(name: 'Study name', description: 'Study description', published: false)
+//        AfterpartyUser.findByUsername('martin').addToStudies(studyInstance)
+        def user = AfterpartyUser.get(springSecurityService.principal.id)
+        user.addToStudies(studyInstance)
         studyInstance.save()
-        redirect(action: show, id : studyInstance.id)
+        redirect(action: show, id: studyInstance.id)
     }
+
 
     def show = {
         def studyInstance = Study.get(params.id)
