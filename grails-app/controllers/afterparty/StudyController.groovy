@@ -37,6 +37,17 @@ class StudyController {
         redirect(action: show, id: studyInstance.id)
     }
 
+    @Secured(['ROLE_USER'])
+    def makePublished = {
+        def study = Study.get(params.id)
+        def user = AfterpartyUser.get(springSecurityService.principal.id)
+        if (study.user == user){
+            study.published = true
+            flash.success = "published study ${study.name}"
+        }
+        redirect(action: 'listPublished')
+    }
+
 
     def show = {
         def studyInstance = Study.get(params.id)

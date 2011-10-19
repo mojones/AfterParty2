@@ -93,7 +93,12 @@
 
         </div>        <!-- #header ends -->
 
-    <g:layoutBody/>
+        <g:if test="${flash.success}">
+            <div class="message success"><p>${flash.success}</p></div>
+        </g:if>
+
+
+        <g:layoutBody/>
 
 </body>
 </html>

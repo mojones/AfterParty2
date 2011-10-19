@@ -567,8 +567,8 @@ a:hover {
 	
 	
 /* Messages */
-	
-.block .message {
+
+.message {
 	padding: 10px 15px 10px 40px;
 	margin: 10px 0;
 	font-weight: bold;
@@ -578,37 +578,37 @@ a:hover {
 	border-radius: 3px;
 	}
 
-.block .message p {
+.message p {
 	padding: 0;
 	width: 93%;
 	float: left;
 	}
 	
-.block .message.errormsg {
+.message.errormsg {
 	border: 1px solid #e9c59b;
 	background: #ffecce url(../images/error.gif) 12px 12px no-repeat;
 	color: #e3302c;
 	}
 	
-.block .message.success {
+.message.success {
 	border: 1px solid #bfde84;
 	background: #edfbd8 url(../images/success.gif) 12px 12px no-repeat;
 	color: #508600;
 	}
 		
-.block .message.info {
+.message.info {
 	border: 1px solid #bbdbe0;
 	background: #ecf9ff url(../images/info.gif) 12px 12px no-repeat;
 	color: #0888c3;
 	}
 	
-.block .message.warning {
+.message.warning {
 	border: 1px solid #e5e181;
 	background: #fefde2 url(../images/warning.gif) 12px 12px no-repeat;
 	color: #666;
 	}
 	
-.block .message .close {
+.message .close {
 	display: block;
 	float: right;
 	width: 16px;
@@ -620,7 +620,7 @@ a:hover {
 	opacity: 0.7;
 	}
 	
-.block .message .close.hover {
+.message .close.hover {
 	-moz-opacity: 1;
 	opacity: 1;
 	}

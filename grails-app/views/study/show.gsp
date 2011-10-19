@@ -44,6 +44,13 @@
         <h3>Description</h3>
 
         <p class="edit_in_place" name="description">${studyInstance.description}</p>
+
+        <p>
+            <g:form action="makePublished" method="get">
+                <g:hiddenField name="id" value="${studyInstance.id}"/>
+                <input type="submit" class="submit long" value="Publish study"/>
+            </g:form>
+        </p>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
