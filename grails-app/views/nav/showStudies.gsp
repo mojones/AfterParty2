@@ -1,5 +1,5 @@
 <li>
-    <b>Studies</b>
+    <b>My Studies</b>
     <ul>
         <g:each in="${studies}" var="study">
             <li>

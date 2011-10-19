@@ -63,9 +63,9 @@
 
                 <g:include controller="nav" action="show"/>
 
-
-                <g:include controller="nav" action="showStudies"/>
-
+                <sec:ifLoggedIn>
+                    <g:include controller="nav" action="showStudies"/>
+                </sec:ifLoggedIn>
 
                 <li><a href="#"><b>Search</b></a>
                     <g:if test="${session.studyId}">
@@ -84,7 +84,8 @@
 
             </ul>
             <sec:ifLoggedIn>
-                <p class="user">Hello, <strong><sec:username/></strong> | <g:link controller="logout" action="index">Logout</g:link></p>
+                <p class="user">Hello, <strong><sec:username/></strong> | <g:link controller="logout"
+                                                                                  action="index">Logout</g:link></p>
             </sec:ifLoggedIn>
             <sec:ifNotLoggedIn>
                 <p class="user"><g:link controller="login" action="index">Click here to log in</g:link></p>
