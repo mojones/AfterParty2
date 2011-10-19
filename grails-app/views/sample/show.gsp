@@ -60,10 +60,12 @@
         <div class="bheadr"></div>
 
         <h2>Experiments</h2>
-
-        <ul>
-            <g:link controller="experiment" action="create" params="${[sampleId : sampleInstance.id]}">Add new</g:link>
-        </ul>
+        <sec:ifLoggedIn>
+            <ul>
+                <g:link controller="experiment" action="create"
+                        params="${[sampleId : sampleInstance.id]}">Add new</g:link>
+            </ul>
+        </sec:ifLoggedIn>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
