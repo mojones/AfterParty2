@@ -129,7 +129,7 @@ class miraService {
 
     }
 
-    private Map parseFasta(File contigsFile) {
+    Map parseFasta(InputStream contigsFile) {
         Map name2seq = [:]
         StringBuffer seq = new StringBuffer('')
         String name = ""

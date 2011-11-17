@@ -8,6 +8,7 @@ class AssemblyController {
     def blastService
     def statisticsService
     def chartService
+    def miraService
 
     def uploadBlastAnnotation = {
         def f = request.getFile('myFile')
@@ -50,29 +51,29 @@ class AssemblyController {
 
         if (!f.empty) {
             println "uploading file of contigs called ${f.name}"
-//            def assemblyId = params.id
-            //
-            //            BackgroundJob job = new BackgroundJob(
-            //                    name: 'uploading BLAST annotation',
-            //                    progress: 'running',
-            //                    study: Assembly.get(assemblyId).study,
-            //                    status: BackgroundJobStatus.QUEUED,
-            //                    type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
-            //            job.save(flush: true)
-            //
-            //
-            //            runAsync {
-            //                BackgroundJob job2 = BackgroundJob.get(job.id)
-            //                job2.status = BackgroundJobStatus.RUNNING
-            //                job2.save(flush: true)
-            //                blastService.addBlastHitsFromInput(f.inputStream, job.id)
-            //                println "back in controller, indexing"
-            //
-            //
-            //                job2.progress = 'finished'
-            //                job2.status = BackgroundJobStatus.FINISHED
-            //                job2.save(flush: true)
-            //            }
+            def assemblyId = params.id
+
+            BackgroundJob job = new BackgroundJob(
+                    name: 'uploading contigs',
+                    progress: 'queued',
+                    study: Assembly.get(assemblyId).study,
+                    status: BackgroundJobStatus.QUEUED,
+                    type: BackgroundJobType.UPLOAD_CONTIGS)
+            job.save(flush: true)
+
+
+            runAsync {
+                BackgroundJob job2 = BackgroundJob.get(job.id)
+                job2.status = BackgroundJobStatus.RUNNING
+                job2.save(flush: true)
+
+                def contigs = miraService.parseFasta(f.inputStream)
+                println "got some contigs: ${contigs.size()}"
+
+                job2.progress = 'finished'
+                job2.status = BackgroundJobStatus.FINISHED
+                job2.save(flush: true)
+            }
 
             redirect(controller: 'backgroundJob', action: 'list')
         }
