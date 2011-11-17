@@ -41,7 +41,7 @@ class StudyController {
     def makePublished = {
         def study = Study.get(params.id)
         def user = AfterpartyUser.get(springSecurityService.principal.id)
-        if (study.user == user){
+        if (study.user == user) {
             study.published = true
             flash.success = "published study ${study.name}"
         }
@@ -57,9 +57,10 @@ class StudyController {
             redirect(action: "list")
         }
         else {
-
             session.studyId = params.id
-            [studyInstance: studyInstance]
+            def user = springSecurityService.isLoggedIn() ? AfterpartyUser.get(springSecurityService?.principal?.id) : 'none'
+
+            [studyInstance : studyInstance, isOwner : studyInstance.user == user]
         }
     }
 

@@ -18,6 +18,7 @@ class ContigController {
     }
 
 
+
     def search = {
         println "searching with assembly $params.assemblyId"
 

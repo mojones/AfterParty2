@@ -132,6 +132,10 @@
                 </p>
             </g:form>
 
+
+            <h3><g:link controller="experiment" action="trimAllReadFiles"
+                        id="${experimentInstance.id}">Trim all reads</g:link></h3>
+
         </div>        <!-- .block_content ends -->
 
         <div class="bendl"></div>
@@ -141,9 +145,6 @@
     </div>
 
 </sec:ifLoggedIn>
-
-
-<h3><g:link controller="experiment" action="trimAllReadFiles" id="${experimentInstance.id}">Trim all reads</g:link></h3>
 
 </body>
 </html>

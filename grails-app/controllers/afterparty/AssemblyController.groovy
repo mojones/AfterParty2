@@ -45,6 +45,44 @@ class AssemblyController {
 
     }
 
+    def uploadContigs = {
+        def f = request.getFile('contigsFile')
+
+        if (!f.empty) {
+            println "uploading file of contigs called ${f.name}"
+//            def assemblyId = params.id
+            //
+            //            BackgroundJob job = new BackgroundJob(
+            //                    name: 'uploading BLAST annotation',
+            //                    progress: 'running',
+            //                    study: Assembly.get(assemblyId).study,
+            //                    status: BackgroundJobStatus.QUEUED,
+            //                    type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
+            //            job.save(flush: true)
+            //
+            //
+            //            runAsync {
+            //                BackgroundJob job2 = BackgroundJob.get(job.id)
+            //                job2.status = BackgroundJobStatus.RUNNING
+            //                job2.save(flush: true)
+            //                blastService.addBlastHitsFromInput(f.inputStream, job.id)
+            //                println "back in controller, indexing"
+            //
+            //
+            //                job2.progress = 'finished'
+            //                job2.status = BackgroundJobStatus.FINISHED
+            //                job2.save(flush: true)
+            //            }
+
+            redirect(controller: 'backgroundJob', action: 'list')
+        }
+        else {
+            flash.message = 'file cannot be empty'
+            render(view: 'uploadForm')
+        }
+    }
+
+
     def download = {
         response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
         response.flushBuffer()

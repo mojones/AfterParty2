@@ -6,21 +6,23 @@
     <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
 
-    %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
-    To make a bit of text editable we need to
-    1. add the edit_in_place tag to it
-    2. set the name attribute to be the name of the property that the text refers to --}%
-    <script type="text/javascript">
+%{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
+To make a bit of text editable we need to
+1. add the edit_in_place tag to it
+2. set the name attribute to be the name of the property that the text refers to --}%
+    <g:if test="${isOwner}">
+        <script type="text/javascript">
 
-        //         set up edit-in-place
-        $(document).ready(function() {
-            setUpEditInPlace(
-                    ${studyInstance.id},
-                    "<g:createLink controller="update" action="updateField"/>",
-                    'Study'
-            );
-        });
-    </script>
+            //         set up edit-in-place
+            $(document).ready(function() {
+                setUpEditInPlace(
+                        ${studyInstance.id},
+                        "<g:createLink controller="update" action="updateField"/>",
+                        'Study'
+                );
+            });
+        </script>
+    </g:if>
 
 </head>
 
@@ -44,13 +46,14 @@
         <h3>Description</h3>
 
         <p class="edit_in_place" name="description">${studyInstance.description}</p>
-
-        <p>
-            <g:form action="makePublished" method="get">
-                <g:hiddenField name="id" value="${studyInstance.id}"/>
-                <input type="submit" class="submit long" value="Publish study"/>
-            </g:form>
-        </p>
+        <g:if test="${isOwner && !studyInstance.published}">
+            <p>
+                <g:form action="makePublished" method="get">
+                    <g:hiddenField name="id" value="${studyInstance.id}"/>
+                    <input type="submit" class="submit long" value="Publish study"/>
+                </g:form>
+            </p>
+        </g:if>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -67,14 +70,15 @@
 
         <h2>Samples</h2>
 
-        <sec:ifLoggedIn>
+        <g:if test="${isOwner}">
             <ul>
                 <li>
                     <g:link controller="sample" action="create"
                             params="${[studyId : studyInstance.id]}">Add new</g:link>
                 </li>
             </ul>
-        </sec:ifLoggedIn>
+        </g:if>
+
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -117,14 +121,15 @@
         <div class="bheadr"></div>
 
         <h2>Assemblies</h2>
-        <sec:ifLoggedIn>
+        <g:if test="${isOwner}">
+
             <ul>
                 <li>
                     <g:link controller="assembly" action="create"
                             params="${[studyId : studyInstance.id]}">Add new</g:link>
                 </li>
             </ul>
-        </sec:ifLoggedIn>
+        </g:if>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
