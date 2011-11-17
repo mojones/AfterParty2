@@ -51,7 +51,9 @@ class AssemblyController {
 
         if (!f.empty) {
             println "uploading file of contigs called ${f.name}"
-            def assemblyId = params.id
+            def assemblyId = params.id.toInteger()
+
+
 
             BackgroundJob job = new BackgroundJob(
                     name: 'uploading contigs',
@@ -67,8 +69,51 @@ class AssemblyController {
                 job2.status = BackgroundJobStatus.RUNNING
                 job2.save(flush: true)
 
+                job2.progress = "deleting old contigs"
+                job2.save(flush: true)
+
+
+                def assembly = Assembly.get(assemblyId)
+                assembly.contigs.clear()
+                assembly.save(flush:true)
+//                def currentContigs = []
+//                currentContigs += assembly.contigs
+//                currentContigs.each{
+//                    assembly.removeFromContigs(it)
+//                    it.delete()
+//                }
+
                 def contigs = miraService.parseFasta(f.inputStream)
                 println "got some contigs: ${contigs.size()}"
+
+                def created = 0
+                contigs.each { name, seq ->
+
+                    def contig = new Contig(name: name, sequence: seq)
+                    contig.quality = '0' * seq.length()
+                    contig.readCount = 1
+                    contig.length = seq.length()
+                    contig.averageQuality = 0
+                    contig.averageCoverage = 0
+                    contig.maximumCoverage = 0
+                    def gcCount = 0
+                    seq.toLowerCase().each { base ->
+                        if (base == 'c' || base == 'g') {
+                            gcCount++
+                        }
+                    }
+                    contig.gc = gcCount / seq.length()
+                    contig.searchAssemblyId = assemblyId
+                    assembly.addToContigs(contig)
+                    created++
+                    if (created % 1000 == 0) {
+                        job2.progress = "uploaded $created of ${contigs.size()}"
+                        job2.save(flush: true)
+
+                    }
+
+
+                }
 
                 job2.progress = 'finished'
                 job2.status = BackgroundJobStatus.FINISHED

@@ -20,7 +20,7 @@ class miraService {
         // open up the contigs FASTA file and parse it, creating contigs as we go
         // keep a map of name->contig so that we can add stats to the contig later
         Map name2contig = [:]
-        def contigs = parseFasta(contigsFile.inputStream)
+        def contigs = parseFasta(new FileInputStream(contigsFile))
         contigs.each { name, seq ->
             Matcher m = (name =~ /.+_(c\d+$)/)
             def contigId = m[0][1]
@@ -29,7 +29,7 @@ class miraService {
         }
 
         // open up the contigs quality FASTA file and parse it
-        def contigsQuality = parseFasta(contigsQualityFile.inputStream)
+        def contigsQuality = parseFasta(new FileInputStream(contigsQualityFile))
         contigsQuality.each { name, seq ->
             Matcher m = (name =~ /.+_(c\d+$)/)
             name2contig.get(name).quality = seq

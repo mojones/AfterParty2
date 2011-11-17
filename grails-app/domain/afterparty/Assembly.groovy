@@ -18,6 +18,7 @@ class Assembly {
     static mapping = {
         description type: 'text'
         name type: 'text'
+        contigs cascade: "all-delete-orphan"
 
     }
 
