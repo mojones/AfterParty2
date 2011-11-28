@@ -75,13 +75,13 @@ class AssemblyController {
 
                 def assembly = Assembly.get(assemblyId)
                 assembly.contigs.clear()
-                assembly.save(flush:true)
+                assembly.save(flush: true)
 //                def currentContigs = []
-//                currentContigs += assembly.contigs
-//                currentContigs.each{
-//                    assembly.removeFromContigs(it)
-//                    it.delete()
-//                }
+                //                currentContigs += assembly.contigs
+                //                currentContigs.each{
+                //                    assembly.removeFromContigs(it)
+                //                    it.delete()
+                //                }
 
                 def contigs = miraService.parseFasta(f.inputStream)
                 println "got some contigs: ${contigs.size()}"
@@ -94,8 +94,8 @@ class AssemblyController {
                     contig.readCount = 1
                     contig.length = seq.length()
                     contig.averageQuality = 0
-                    contig.averageCoverage = 0
-                    contig.maximumCoverage = 0
+                    contig.averageCoverage = 1
+                    contig.maximumCoverage = 1
                     def gcCount = 0
                     seq.toLowerCase().each { base ->
                         if (base == 'c' || base == 'g') {
@@ -114,6 +114,12 @@ class AssemblyController {
 
 
                 }
+                job2.progress = "indexing contigs for search"
+                job2.save(flush: true)
+
+                Contig.index(assembly.contigs)
+
+
 
                 job2.progress = 'finished'
                 job2.status = BackgroundJobStatus.FINISHED
@@ -138,6 +144,8 @@ class AssemblyController {
             eq('id', params.id.toLong())
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
         })
+
+        println "got ${a.contigs.size()} contigs for download";
 
         a.contigs.each {
             response.outputStream << ">${it.id}\n${it.sequence}\n"
