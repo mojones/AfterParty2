@@ -39,6 +39,7 @@
     <div class="block_content">
 
         <script type="text/coffeescript">
+
             #paperWidth = 1000
             paperWidth = $('#coffeescript_annotation').width() - 20
             padding = 10
@@ -76,23 +77,25 @@
 
                 #draw BLAST hits
                 for hit in data.blastHits
-                    hitColour = 'none'
-                    start = hit.start * pixelsPerBase
-                    width = (hit.stop - hit.start) * pixelsPerBase
-                    for score,colour of bitScoreToColour when score > hit.bitscore
-                        hitColour = colour
-                    blastRect = paper.rect(start+padding, yPos, width, 8).attr({fill: hitColour, 'stroke-width' : '0', 'title' : hit.description, 'cursor' : 'pointer'})
-                    blastRect.hover(
-                        (event) ->
-                            this.attr({stroke: 'black', 'stroke-width' : '5'})
-                            $("##{hit.accession}").css("background-color","bisque")
-                            null
-                        ,
-                        (event) ->
-                            this.attr({stroke: 'black', 'stroke-width' : '0'})
-                            $("##{hit.accession}").css("background-color","white")
-                            null
-                    )
+                    do (hit) ->
+                        hitColour = 'none'
+                        start = hit.start * pixelsPerBase
+                        myAcc = hit.accession
+                        width = (hit.stop - hit.start) * pixelsPerBase
+                        for score,colour of bitScoreToColour when score > hit.bitscore
+                            hitColour = colour
+                        blastRect = paper.rect(start+padding, yPos, width, 8).attr({fill: hitColour, 'stroke-width' : '0', 'title' : hit.description, 'cursor' : 'pointer'})
+                        blastRect.hover(
+                            (event) ->
+                                this.attr({stroke: 'black', 'stroke-width' : '5'})
+                                $("##{myAcc}").css("background-color","bisque")
+                                null
+                            ,
+                            (event) ->
+                                this.attr({stroke: 'black', 'stroke-width' : '0'})
+                                $("##{myAcc}").css("background-color","white")
+                                null
+                        )
 
                     yPos = yPos + 20
 
