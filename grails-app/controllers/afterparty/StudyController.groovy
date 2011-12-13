@@ -15,14 +15,20 @@ class StudyController {
         redirect(action: "listPublished", params: params)
     }
 
+
     def overview = {
+        def studyInstance = Study.get(params.id)
 
-        def image = overviewService.getDatasetOverview(params.id)
-        response.setHeader('Content-length', image.length.toString())
-        response.contentType = 'image/svg+xml' // or the appropriate image content type
-        response.outputStream << image
-        response.outputStream.flush()
-
+        if (studyInstance && (studyInstance.published || studyInstance.user.id == springSecurityService.principal.id)) {
+            def image = overviewService.getDatasetOverview(params.id)
+            response.setHeader('Content-length', image.length.toString())
+            response.contentType = 'image/svg+xml' // or the appropriate image content type
+            response.outputStream << image
+            response.outputStream.flush()
+        }
+        else{
+            render "no such study"
+        }
     }
 
     def listPublished = {
