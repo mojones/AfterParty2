@@ -7,6 +7,9 @@ class RecordsHandler extends DefaultHandler {
 
     def jobId
 
+    // to make sure we only add annotation to the right contigs
+    def assembly
+
     String currentElement
     Contig currentContig
     def currentProperties = [:]
@@ -24,7 +27,7 @@ class RecordsHandler extends DefaultHandler {
             currentProperties.put(currentElement, new String(chars, offset, length))
 
             if (currentElement == 'Iteration_query-def') {
-                currentContig = Contig.get(currentProperties.get('Iteration_query-def').toLong())
+                currentContig = Contig.findByAssemblyAndName(this.assembly, currentProperties.get('Iteration_query-def'))
             }
         }
     }
@@ -58,7 +61,7 @@ class RecordsHandler extends DefaultHandler {
             currentContig = null
             currentTags.clear()
 
-            if ((count % 1) == 0) {
+            if ((count % 10) == 0) {
                 println "updating job to $count"
                 BackgroundJob job = BackgroundJob.get(jobId)
                 job.progress = "added $count contigs"

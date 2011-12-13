@@ -58,7 +58,7 @@ class StudyController {
         }
         else {
             session.studyId = params.id
-            def user = springSecurityService.isLoggedIn() ? AfterpartyUser.get(springSecurityService?.principal?.id) : 'none'
+            def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : 'none'
 
             [studyInstance : studyInstance, isOwner : studyInstance.user == user]
         }

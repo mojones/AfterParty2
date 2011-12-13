@@ -37,80 +37,45 @@
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-
+        <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
         <script type="text/coffeescript">
 
-            #paperWidth = 1000
-            paperWidth = $('#coffeescript_annotation').width() - 20
-            padding = 10
-            yPos = 0
+            drawContig = (data) ->
+                paperWidth = $('#coffeescript_annotation').width() - 20
+                drawing = new BioDrawing
+                drawing.start(paperWidth, 'coffeescript_annotation')
+                drawing.drawSpacer(50)
+                drawing.drawTitle('Contig annotation')
+                drawing.drawScale(data.length)
+                drawing.drawSpacer(50)
 
-            bitScoreToColour = new Array()
-            bitScoreToColour[1000000000] = 'red'
-            bitScoreToColour[200] = 'magenta'
-            bitScoreToColour[80] = 'lime'
-            bitScoreToColour[50] = 'blue'
-            bitScoreToColour[40] = 'black'
+                drawing.drawTitle('Quality')
+                drawing.drawChart(data.quality, 100)
 
-
-            printme = (data) ->
-                drawingWidth = paperWidth - (padding * 2)
-                paper = Raphael('coffeescript_annotation', paperWidth, 2000)
-                pixelsPerBase = drawingWidth / data.length
-                interval = 100
-
-                #draw sequence line
-                paper.rect(padding, yPos, drawingWidth, 2).attr({fill: 'black', 'stroke-width' : '0'})
-
-                #draw tick marks and labels
-                for base in [0..data.length] by interval
-                    xPos = base * pixelsPerBase
-                    paper.rect(xPos+padding, yPos, 1, 10).attr({fill: 'black', 'stroke-width' : '0'})
-                    paper.text(xPos+padding, yPos+12, base)
-                yPos = yPos + 20
-
-                #draw quality chart
-                chartHeight = 100
-                xValues = (x * pixelsPerBase for x in [0 .. data.quality.length])
-                paper.g.linechart(padding, yPos, drawingWidth, chartHeight, xValues, data.quality, {axis: '0 1 0 1'})
-                yPos = yPos + chartHeight + 20
-
-                #draw BLAST hits
+                drawing.drawTitle('BLAST hits vs uniprot')
                 for hit in data.blastHits
                     do (hit) ->
-                        hitColour = 'none'
-                        start = hit.start * pixelsPerBase
-                        myAcc = hit.accession
-                        width = (hit.stop - hit.start) * pixelsPerBase
-                        for score,colour of bitScoreToColour when score > hit.bitscore
-                            hitColour = colour
-                        blastRect = paper.rect(start+padding, yPos, width, 8).attr({fill: hitColour, 'stroke-width' : '0', 'title' : hit.description, 'cursor' : 'pointer'})
+                        hitColour = drawing.getBLASTColour(hit.bitscore)
+                        blastRect = drawing.drawBar(hit.start, hit.stop, hitColour, hit.description)
                         blastRect.hover(
                             (event) ->
                                 this.attr({stroke: 'black', 'stroke-width' : '5'})
-                                $("##{myAcc}").css("background-color","bisque")
+                                $("##{hit.accession}").css("background-color","bisque")
                                 null
                             ,
                             (event) ->
                                 this.attr({stroke: 'black', 'stroke-width' : '0'})
-                                $("##{myAcc}").css("background-color","white")
+                                $("##{hit.accession}").css("background-color","white")
                                 null
                         )
+                drawing.end()
 
-                    yPos = yPos + 20
+            null
 
-                paper.setSize(paperWidth, yPos)
-
-                null
+            $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig)
 
 
-            drawContig = (contigId) ->
-                $.get('/contig/showJSON/' + contigId, printme)
-
-            drawContig(${contigInstance.id})
         </script>
-
-
 
 
         <div id="coffeescript_annotation"></div>

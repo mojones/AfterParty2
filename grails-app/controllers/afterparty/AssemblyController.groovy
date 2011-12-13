@@ -28,7 +28,7 @@ class AssemblyController {
                 BackgroundJob job2 = BackgroundJob.get(job.id)
                 job2.status = BackgroundJobStatus.RUNNING
                 job2.save(flush: true)
-                blastService.addBlastHitsFromInput(f.inputStream, job.id)
+                blastService.addBlastHitsFromInput(f.inputStream, job.id, assemblyId)
                 println "back in controller, indexing"
 
 
@@ -73,16 +73,8 @@ class AssemblyController {
                 job2.save(flush: true)
 
 
-                def assembly = Assembly.get(assemblyId)
-                assembly.contigs.clear()
-                assembly.save(flush: true)
-//                def currentContigs = []
-                //                currentContigs += assembly.contigs
-                //                currentContigs.each{
-                //                    assembly.removeFromContigs(it)
-                //                    it.delete()
-                //                }
-
+                Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
+                Assembly assembly = Assembly.get(assemblyId)
                 def contigs = miraService.parseFasta(f.inputStream)
                 println "got some contigs: ${contigs.size()}"
 
@@ -90,7 +82,7 @@ class AssemblyController {
                 contigs.each { name, seq ->
 
                     def contig = new Contig(name: name, sequence: seq)
-                    contig.quality = '0' * seq.length()
+                    contig.quality = '0 ' * seq.length()
                     contig.readCount = 1
                     contig.length = seq.length()
                     contig.averageQuality = 0
