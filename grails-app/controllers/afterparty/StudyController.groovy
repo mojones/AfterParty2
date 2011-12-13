@@ -9,11 +9,14 @@ class StudyController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+
+
     def index = {
         redirect(action: "listPublished", params: params)
     }
 
     def overview = {
+
         def image = overviewService.getDatasetOverview(params.id)
         response.setHeader('Content-length', image.length.toString())
         response.contentType = 'image/svg+xml' // or the appropriate image content type
@@ -53,14 +56,21 @@ class StudyController {
         def studyInstance = Study.get(params.id)
 
         if (!studyInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'study.label', default: 'Study'), params.id])}"
-            redirect(action: "list")
+            flash.error = "Couldn't find a dataset with that ID"
+            redirect(action: "listPublished")
         }
+
+        if (!studyInstance.published) {
+            flash.error = "That dataset is not public, you must log in to view it"
+            redirect(action: "listPublished")
+        }
+
+
         else {
             session.studyId = params.id
             def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : 'none'
 
-            [studyInstance : studyInstance, isOwner : studyInstance.user == user]
+            [studyInstance: studyInstance, isOwner: studyInstance.user == user]
         }
     }
 

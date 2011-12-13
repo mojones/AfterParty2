@@ -96,6 +96,9 @@
         <g:if test="${flash.success}">
             <div class="message success"><p>${flash.success}</p></div>
         </g:if>
+        <g:if test="${flash.error}">
+            <div class="message errormsg"><p>${flash.error}</p></div>
+        </g:if>
 
 
         <g:layoutBody/>
