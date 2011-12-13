@@ -60,17 +60,17 @@ class StudyController {
             redirect(action: "listPublished")
         }
 
-        if (!studyInstance.published) {
-            flash.error = "That dataset is not public, you must log in to view it"
-            redirect(action: "listPublished")
+        if (studyInstance.published || studyInstance.user.id == springSecurityService?.principal?.id) {
+            session.studyId = params.id
+            def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : 'none'
+            [studyInstance: studyInstance, isOwner: studyInstance.user == user]
         }
 
 
         else {
-            session.studyId = params.id
-            def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : 'none'
+            flash.error = "That dataset is not public, you must log in to view it"
+            redirect(action: "listPublished")
 
-            [studyInstance: studyInstance, isOwner: studyInstance.user == user]
         }
     }
 
