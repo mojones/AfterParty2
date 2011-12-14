@@ -16,13 +16,6 @@ class AssemblyController {
     @Secured(['ROLE_USER'])
     def uploadBlastAnnotation = {
         def f = request.getFile('myFile')
-
-        if (f.empty) {
-            flash.error = "File cannot be empty"
-            redirect(action: 'show', id: params.id)
-            return
-        }
-
         Assembly a = Assembly.get(params.id)
         if (!a) {
             flash.error = "Assembly doesn't exist"
@@ -65,9 +58,14 @@ class AssemblyController {
 
 
 
-
+    @Secured(['ROLE_USER'])
     def uploadContigs = {
-        def f = request.getFile('contigsFile')
+        def f = request.getFile('myFile')
+        if (f.empty) {
+            flash.error = "File cannot be empty"
+            redirect(action: 'show', id: params.id)
+            return
+        }
 
         if (!f.empty) {
             println "uploading file of contigs called ${f.name}"
@@ -148,6 +146,7 @@ class AssemblyController {
 
 
     def download = {
+
         response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
         response.flushBuffer()
 

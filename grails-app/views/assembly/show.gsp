@@ -119,7 +119,7 @@
 
                 <p class="fileupload" style="clear:none;">
                     <label>Contigs file to upload:</label><br/>
-                    <input type="file" name="contigsFile"/>
+                    <input type="file" name="myFile"/>
                     <span id="uploadmsg">FASTA format only</span>
                 </p>
 
