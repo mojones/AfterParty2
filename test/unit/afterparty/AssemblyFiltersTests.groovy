@@ -2,7 +2,7 @@ package afterparty
 
 import grails.test.*
 
-class UserFiltersTests extends GrailsUnitTestCase {
+class AssemblyFiltersTests extends GrailsUnitTestCase {
     protected void setUp() {
         super.setUp()
     }

@@ -1,6 +1,6 @@
 package afterparty
 
-class UserFilters {
+class AssemblyFilters {
 
     def springSecurityService
 
@@ -58,6 +58,8 @@ class UserFilters {
                 }
             }
         }
+
+
 
 
     }
