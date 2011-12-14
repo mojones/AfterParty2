@@ -139,7 +139,7 @@ class AssemblyController {
         }
     }
 
-
+    @Secured(['ROLE_USER'])
     def runBlast = {
         def assemblyId = params.id
         println "id is $assemblyId"
