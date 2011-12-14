@@ -198,23 +198,4 @@ class AssemblyController {
         [assemblyInstance: assemblyInstance]
     }
 
-
-    def delete = {
-        def assemblyInstance = Assembly.get(params.id)
-        if (assemblyInstance) {
-            try {
-                assemblyInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-                redirect(action: "show", id: params.id)
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-            redirect(action: "list")
-        }
-    }
 }
