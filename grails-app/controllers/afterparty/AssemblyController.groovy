@@ -1,5 +1,7 @@
 package afterparty
 
+import grails.plugins.springsecurity.Secured
+
 class AssemblyController {
 
 
@@ -9,42 +11,60 @@ class AssemblyController {
     def statisticsService
     def chartService
     def miraService
+    def springSecurityService
 
+    @Secured(['ROLE_USER'])
     def uploadBlastAnnotation = {
         def f = request.getFile('myFile')
-        if (!f.empty) {
-            def assemblyId = params.id
 
-            BackgroundJob job = new BackgroundJob(
-                    name: 'uploading BLAST annotation',
-                    progress: 'running',
-                    study: Assembly.get(assemblyId).study,
-                    status: BackgroundJobStatus.QUEUED,
-                    type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
-            job.save(flush: true)
-
-
-            runAsync {
-                BackgroundJob job2 = BackgroundJob.get(job.id)
-                job2.status = BackgroundJobStatus.RUNNING
-                job2.save(flush: true)
-                blastService.addBlastHitsFromInput(f.inputStream, job.id, assemblyId)
-                println "back in controller, indexing"
-
-
-                job2.progress = 'finished'
-                job2.status = BackgroundJobStatus.FINISHED
-                job2.save(flush: true)
-            }
-
-            redirect(controller: 'backgroundJob', action: 'list')
-        }
-        else {
-            flash.message = 'file cannot be empty'
-            render(view: 'uploadForm')
+        if (f.empty) {
+            flash.error = "File cannot be empty"
+            redirect(action: 'show', id: params.id)
+            return
         }
 
+        Assembly a = Assembly.get(params.id)
+        if (!a) {
+            flash.error = "Assembly doesn't exist"
+            redirect(controller: 'Study')
+            return
+        }
+
+        if (a?.study?.user?.id != springSecurityService.principal.id) {
+            flash.error = "Assembly doesn't belong to you"
+            redirect(action: 'show', id: params.id)
+            return
+        }
+
+        // error have been handled, do the upload
+        def assemblyId = params.id
+
+        BackgroundJob job = new BackgroundJob(
+                name: 'uploading BLAST annotation',
+                progress: 'running',
+                study: a.study,
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
+        job.save(flush: true)
+
+        runAsync {
+            BackgroundJob job2 = BackgroundJob.get(job.id)
+            job2.status = BackgroundJobStatus.RUNNING
+            job2.save(flush: true)
+            blastService.addBlastHitsFromInput(f.inputStream, job.id, assemblyId)
+            println "back in controller, indexing"
+
+
+            job2.progress = 'finished'
+            job2.status = BackgroundJobStatus.FINISHED
+            job2.save(flush: true)
+        }
+
+        redirect(controller: 'backgroundJob', action: 'list')
     }
+
+
+
 
     def uploadContigs = {
         def f = request.getFile('contigsFile')

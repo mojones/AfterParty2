@@ -24,7 +24,7 @@ class StudyController {
             response.outputStream << image
             response.outputStream.flush()
         }
-        else{
+        else {
             render "no such study"
         }
     }
@@ -45,8 +45,7 @@ class StudyController {
     @Secured(['ROLE_USER'])
     def makePublished = {
         def study = Study.get(params.id)
-        def user = AfterpartyUser.get(springSecurityService.principal.id)
-        if (study.user == user) {
+        if (study.user.id == springSecurityService.principal.id) {
             study.published = true
             flash.success = "published study ${study.name}"
         }
@@ -75,7 +74,6 @@ class StudyController {
 
         }
     }
-
 
 
 }
