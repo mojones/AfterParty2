@@ -9,8 +9,6 @@ class StudyController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-
-
     def index = {
         redirect(action: "listPublished", params: params)
     }
@@ -37,9 +35,7 @@ class StudyController {
 
     @Secured(['ROLE_USER'])
     def create = {
-
         def studyInstance = new Study(name: 'Study name', description: 'Study description', published: false)
-//        AfterpartyUser.findByUsername('martin').addToStudies(studyInstance)
         def user = AfterpartyUser.get(springSecurityService.principal.id)
         user.addToStudies(studyInstance)
         studyInstance.save()
