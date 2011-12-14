@@ -16,20 +16,7 @@ class AssemblyController {
     @Secured(['ROLE_USER'])
     def uploadBlastAnnotation = {
         def f = request.getFile('myFile')
-        Assembly a = Assembly.get(params.id)
-        if (!a) {
-            flash.error = "Assembly doesn't exist"
-            redirect(controller: 'Study')
-            return
-        }
 
-        if (a?.study?.user?.id != springSecurityService.principal.id) {
-            flash.error = "Assembly doesn't belong to you"
-            redirect(action: 'show', id: params.id)
-            return
-        }
-
-        // error have been handled, do the upload
         def assemblyId = params.id
 
         BackgroundJob job = new BackgroundJob(
@@ -56,92 +43,81 @@ class AssemblyController {
         redirect(controller: 'backgroundJob', action: 'list')
     }
 
-
-
     @Secured(['ROLE_USER'])
     def uploadContigs = {
         def f = request.getFile('myFile')
-        if (f.empty) {
-            flash.error = "File cannot be empty"
-            redirect(action: 'show', id: params.id)
-            return
-        }
 
-        if (!f.empty) {
-            println "uploading file of contigs called ${f.name}"
-            def assemblyId = params.id.toInteger()
+
+        println "uploading file of contigs called ${f.name}"
+        def assemblyId = params.id.toInteger()
 
 
 
-            BackgroundJob job = new BackgroundJob(
-                    name: 'uploading contigs',
-                    progress: 'queued',
-                    study: Assembly.get(assemblyId).study,
-                    status: BackgroundJobStatus.QUEUED,
-                    type: BackgroundJobType.UPLOAD_CONTIGS)
-            job.save(flush: true)
+        BackgroundJob job = new BackgroundJob(
+                name: 'uploading contigs',
+                progress: 'queued',
+                study: Assembly.get(assemblyId).study,
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.UPLOAD_CONTIGS)
+        job.save(flush: true)
 
 
-            runAsync {
-                BackgroundJob job2 = BackgroundJob.get(job.id)
-                job2.status = BackgroundJobStatus.RUNNING
-                job2.save(flush: true)
+        runAsync {
+            BackgroundJob job2 = BackgroundJob.get(job.id)
+            job2.status = BackgroundJobStatus.RUNNING
+            job2.save(flush: true)
 
-                job2.progress = "deleting old contigs"
-                job2.save(flush: true)
+            job2.progress = "deleting old contigs"
+            job2.save(flush: true)
 
 
-                Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
-                Assembly assembly = Assembly.get(assemblyId)
-                def contigs = miraService.parseFasta(f.inputStream)
-                println "got some contigs: ${contigs.size()}"
+            Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
+            Assembly assembly = Assembly.get(assemblyId)
+            def contigs = miraService.parseFasta(f.inputStream)
+            println "got some contigs: ${contigs.size()}"
 
-                def created = 0
-                contigs.each { name, seq ->
+            def created = 0
+            contigs.each { name, seq ->
 
-                    def contig = new Contig(name: name, sequence: seq)
-                    contig.quality = '0 ' * seq.length()
-                    contig.readCount = 1
-                    contig.length = seq.length()
-                    contig.averageQuality = 0
-                    contig.averageCoverage = 1
-                    contig.maximumCoverage = 1
-                    def gcCount = 0
-                    seq.toLowerCase().each { base ->
-                        if (base == 'c' || base == 'g') {
-                            gcCount++
-                        }
+                def contig = new Contig(name: name, sequence: seq)
+                contig.quality = '0 ' * seq.length()
+                contig.readCount = 1
+                contig.length = seq.length()
+                contig.averageQuality = 0
+                contig.averageCoverage = 1
+                contig.maximumCoverage = 1
+                def gcCount = 0
+                seq.toLowerCase().each { base ->
+                    if (base == 'c' || base == 'g') {
+                        gcCount++
                     }
-                    contig.gc = gcCount / seq.length()
-                    contig.searchAssemblyId = assemblyId
-                    assembly.addToContigs(contig)
-                    created++
-                    if (created % 1000 == 0) {
-                        job2.progress = "uploaded $created of ${contigs.size()}"
-                        job2.save(flush: true)
-
-                    }
-
+                }
+                contig.gc = gcCount / seq.length()
+                contig.searchAssemblyId = assemblyId
+                assembly.addToContigs(contig)
+                created++
+                if (created % 1000 == 0) {
+                    job2.progress = "uploaded $created of ${contigs.size()}"
+                    job2.save(flush: true)
 
                 }
-                job2.progress = "indexing contigs for search"
-                job2.save(flush: true)
-
-                Contig.index(assembly.contigs)
 
 
-
-                job2.progress = 'finished'
-                job2.status = BackgroundJobStatus.FINISHED
-                job2.save(flush: true)
             }
+            job2.progress = "indexing contigs for search"
+            job2.save(flush: true)
 
-            redirect(controller: 'backgroundJob', action: 'list')
+            Contig.index(assembly.contigs)
+
+
+
+            job2.progress = 'finished'
+            job2.status = BackgroundJobStatus.FINISHED
+            job2.save(flush: true)
         }
-        else {
-            flash.message = 'file cannot be empty'
-            render(view: 'uploadForm')
-        }
+
+        redirect(controller: 'backgroundJob', action: 'list')
+
     }
 
 
