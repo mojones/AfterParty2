@@ -20,7 +20,7 @@ class UserFilters {
 
         }
 
-        assemblyExists(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|download|runBlast)') {
+        assemblyExists(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|download|runBlast|scatterplotAjax|histogramAjax)') {
             before = {
                 println "checking if assembly exists"
                 Assembly a = Assembly.get(params.id)
@@ -32,7 +32,7 @@ class UserFilters {
             }
         }
 
-        assemblyIsPublicOrOwnedByUser(controller: 'assembly', action: '(download)') {
+        assemblyIsPublicOrOwnedByUser(controller: 'assembly', action: '(download|scatterplotAjax|histogramAjax)') {
             before = {
                 println "checking if study is either public or owned"
                 Assembly a = Assembly.get(params.id)

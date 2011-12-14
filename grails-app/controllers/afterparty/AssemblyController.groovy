@@ -184,6 +184,7 @@ class AssemblyController {
         response.outputStream.flush()
     }
 
+
     def create = {
         def assemblyInstance = new Assembly(name: 'Assembly name', description: 'Assembly description')
         Study.get(params.studyId.toLong()).addToAssemblies(assemblyInstance)
