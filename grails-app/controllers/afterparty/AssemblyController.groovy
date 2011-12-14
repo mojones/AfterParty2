@@ -184,7 +184,7 @@ class AssemblyController {
         response.outputStream.flush()
     }
 
-
+    @Secured(['ROLE_USER'])
     def create = {
         def assemblyInstance = new Assembly(name: 'Assembly name', description: 'Assembly description')
         Study.get(params.studyId.toLong()).addToAssemblies(assemblyInstance)
@@ -195,16 +195,9 @@ class AssemblyController {
 
     def show = {
         def assemblyInstance = Assembly.get(params.id)
-        if (!assemblyInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'assembly.label', default: 'Assembly'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [
-                    assemblyInstance: assemblyInstance,
-            ]
-        }
+        [assemblyInstance: assemblyInstance]
     }
+
 
     def delete = {
         def assemblyInstance = Assembly.get(params.id)
