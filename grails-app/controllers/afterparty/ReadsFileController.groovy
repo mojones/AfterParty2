@@ -108,60 +108,7 @@ class ReadsFileController {
         }
     }
 
-    def edit = {
-        def readsFileInstance = ReadsFile.get(params.id)
-        if (!readsFileInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            return [readsFileInstance: readsFileInstance]
-        }
-    }
 
-    def update = {
-        def readsFileInstance = ReadsFile.get(params.id)
-        if (readsFileInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (readsFileInstance.version > version) {
 
-                    readsFileInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'readsFile.label', default: 'ReadsFile')] as Object[], "Another user has updated this ReadsFile while you were editing")
-                    render(view: "edit", model: [readsFileInstance: readsFileInstance])
-                    return
-                }
-            }
-            readsFileInstance.properties = params
-            if (!readsFileInstance.hasErrors() && readsFileInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), readsFileInstance.id])}"
-                redirect(action: "show", id: readsFileInstance.id)
-            }
-            else {
-                render(view: "edit", model: [readsFileInstance: readsFileInstance])
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-            redirect(action: "list")
-        }
-    }
 
-    def delete = {
-        def readsFileInstance = ReadsFile.get(params.id)
-        if (readsFileInstance) {
-            try {
-                readsFileInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-                redirect(action: "show", id: params.id)
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-            redirect(action: "list")
-        }
-    }
 }
