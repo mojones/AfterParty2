@@ -10,6 +10,8 @@ class BackgroundJobController {
         redirect(action: "list", params: params)
     }
 
+
+
     def overview = {
         def image = overviewService.getWorkflowOverview(params.id.toLong())
         response.setHeader('Content-length', image.length.toString())
