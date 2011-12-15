@@ -19,23 +19,7 @@ class ContigController {
 
 
 
-    def search = {
-        println "searching with assembly $params.assemblyId"
 
-        println "query is " + params.q
-        def study = Study.get(session.studyId)
-        if (!params.q?.trim()) {
-            return [assemblies: study.assemblies]
-        }
-        try {
-            String completeQuery = "${params.q} AND searchAssemblyId:${params.assemblyId}"
-            params.max = 50
-            return [searchResult: Contig.search(completeQuery), assemblies: study.assemblies]
-//            return [searchResult: Contig.search('assemblyId:42', params)]
-        } catch (SearchEngineQueryParseException ex) {
-            return [parseException: true]
-        }
-    }
 
 
 

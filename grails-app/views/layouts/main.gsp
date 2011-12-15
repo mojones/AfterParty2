@@ -70,7 +70,7 @@
                 <li><a href="#"><b>Search</b></a>
                     <g:if test="${session.studyId}">
                         <ul>
-                            <li><b><g:link controller="contig" action="search">Contigs</g:link></b></li>
+                            <li><b><g:link controller="assembly" action="search">Contigs</g:link></b></li>
                         </ul>
                     </g:if>
                     <g:else>

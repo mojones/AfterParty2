@@ -1,6 +1,7 @@
 package afterparty
 
 import grails.plugins.springsecurity.Secured
+import org.compass.core.engine.SearchEngineQueryParseException
 
 class AssemblyController {
 
@@ -196,6 +197,24 @@ class AssemblyController {
     def show = {
         def assemblyInstance = Assembly.get(params.id)
         [assemblyInstance: assemblyInstance]
+    }
+
+    def search = {
+        println "searching with assembly $params.id"
+
+        println "query is " + params.q
+        def study = Study.get(session.studyId)
+        if (!params.q?.trim()) {
+            return [assemblies: study.assemblies]
+        }
+        try {
+            String completeQuery = "${params.q} AND searchAssemblyId:${params.id}"
+            params.max = 50
+            return [searchResult: Contig.search(completeQuery), assemblies: study.assemblies]
+//            return [searchResult: Contig.search('assemblyId:42', params)]
+        } catch (SearchEngineQueryParseException ex) {
+            return [parseException: true]
+        }
     }
 
 }

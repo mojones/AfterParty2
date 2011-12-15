@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <meta name="layout" content="main.gsp"/>
+    <meta name="layout" content="main"/>
 
     <title>Search contigs</title>
 
@@ -29,7 +29,7 @@
 
         <div class="block_content">
 
-            <g:form url='[action: "search"]' id="searchableForm" name="searchableForm" method="get">
+            <g:form url='[controller: "assembly", action: "search"]' id="searchableForm" name="searchableForm" method="get">
                 <p>
                     <label>Search string:</label><br/>
                     <g:textField name="q" value="${params.q}" class="text small"/>
@@ -39,7 +39,7 @@
 
                 <p><label>Search assembly:</label> <br/>
 
-                    <select class="styled" name="assemblyId">
+                    <select class="styled" name="id">
                         <g:each in="${assemblies}" var="a">
                             <option value="${a.id}">${a.name}</option>
                         </g:each>
