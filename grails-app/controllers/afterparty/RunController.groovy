@@ -4,15 +4,6 @@ class RunController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index = {
-        redirect(action: "list", params: params)
-    }
-
-    def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [runInstanceList: Run.list(params), runInstanceTotal: Run.count()]
-    }
-
     def create = {
         def runInstance = new Run(name : 'Run name', description: 'Run description')
         Experiment.get(params.experimentId.toLong()).addToRuns(runInstance)
@@ -20,17 +11,7 @@ class RunController {
         redirect(action: show, id : runInstance.id)
     }
 
-    def save = {
-        def runInstance = new Run(params)
-        runInstance.experiment = Experiment.get(params.experimentId)
-        if (runInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'run.label', default: 'Run'), runInstance.id])}"
-            redirect(action: "show", id: runInstance.id)
-        }
-        else {
-            render(view: "create", model: [runInstance: runInstance])
-        }
-    }
+
 
     def attachRawReads = {
         def f = request.getFile('myFile')
@@ -120,60 +101,9 @@ class RunController {
         }
     }
 
-    def edit = {
-        def runInstance = Run.get(params.id)
-        if (!runInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            return [runInstance: runInstance]
-        }
-    }
 
-    def update = {
-        def runInstance = Run.get(params.id)
-        if (runInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (runInstance.version > version) {
 
-                    runInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'run.label', default: 'Run')] as Object[], "Another user has updated this Run while you were editing")
-                    render(view: "edit", model: [runInstance: runInstance])
-                    return
-                }
-            }
-            runInstance.properties = params
-            if (!runInstance.hasErrors() && runInstance.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'run.label', default: 'Run'), runInstance.id])}"
-                redirect(action: "show", id: runInstance.id)
-            }
-            else {
-                render(view: "edit", model: [runInstance: runInstance])
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-            redirect(action: "list")
-        }
-    }
 
-    def delete = {
-        def runInstance = Run.get(params.id)
-        if (runInstance) {
-            try {
-                runInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-                redirect(action: "show", id: params.id)
-            }
-        }
-        else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-            redirect(action: "list")
-        }
-    }
+
+
 }
