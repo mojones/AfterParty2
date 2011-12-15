@@ -1,4 +1,5 @@
 package afterparty
+import grails.plugins.springsecurity.Secured
 
 class ReadsFileController {
 
@@ -18,6 +19,7 @@ class ReadsFileController {
         response.outputStream.flush()
     }
 
+    @Secured(['ROLE_USER'])
     def trim = {
 
         def id = params.id
@@ -41,7 +43,7 @@ class ReadsFileController {
 
 
     }
-
+    @Secured(['ROLE_USER'])
     def runMira = {
 
         def id = params.id
@@ -70,45 +72,6 @@ class ReadsFileController {
         response.setHeader("Content-disposition", "attachment; filename=${read.name}");
         response.outputStream << read.data.fileData
     }
-
-    def index = {
-        redirect(action: "list", params: params)
-    }
-
-    def list = {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [readsFileInstanceList: ReadsFile.list(params), readsFileInstanceTotal: ReadsFile.count()]
-    }
-
-    def create = {
-        def readsFileInstance = new ReadsFile()
-        readsFileInstance.properties = params
-        return [readsFileInstance: readsFileInstance]
-    }
-
-    def save = {
-        def readsFileInstance = new ReadsFile(params)
-        if (readsFileInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), readsFileInstance.id])}"
-            redirect(action: "show", id: readsFileInstance.id)
-        }
-        else {
-            render(view: "create", model: [readsFileInstance: readsFileInstance])
-        }
-    }
-
-    def show = {
-        def readsFileInstance = ReadsFile.get(params.id)
-        if (!readsFileInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'readsFile.label', default: 'ReadsFile'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [readsFileInstance: readsFileInstance]
-        }
-    }
-
-
 
 
 }
