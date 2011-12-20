@@ -9,8 +9,19 @@ class StudyController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+
+
     def index = {
         redirect(action: "listPublished", params: params)
+    }
+
+    def createCompoundSample = {
+        def studyInstance = Study.get(params.id)
+        def newCompoundSample = new CompoundSample(name : 'compound sample name')
+        studyInstance.addToCompoundSamples(newCompoundSample)
+        studyInstance.save()
+        flash.success = "added a new compound sample"
+        redirect(action: show, id:studyInstance.id)
     }
 
 
@@ -55,24 +66,10 @@ class StudyController {
 
     def show = {
         def studyInstance = Study.get(params.id)
+        session.studyId = params.id
+        def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
+        [studyInstance: studyInstance, isOwner: studyInstance.user.id == userId]
 
-        if (!studyInstance) {
-            flash.error = "Couldn't find a dataset with that ID"
-            redirect(action: "listPublished")
-        }
-
-        if (studyInstance.published || studyInstance.user.id == springSecurityService?.principal?.id) {
-            session.studyId = params.id
-            def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : 'none'
-            [studyInstance: studyInstance, isOwner: studyInstance.user == user]
-        }
-
-
-        else {
-            flash.error = "That dataset is not public, you must log in to view it"
-            redirect(action: "listPublished")
-
-        }
     }
 
 

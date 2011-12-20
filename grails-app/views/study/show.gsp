@@ -74,7 +74,7 @@ To make a bit of text editable we need to
             <ul>
                 <li>
                     <g:link controller="study" action="createCompoundSample"
-                            params="${[studyId : studyInstance.id]}">Add new</g:link>
+                            params="${[id : studyInstance.id]}">Add new</g:link>
                 </li>
             </ul>
         </g:if>

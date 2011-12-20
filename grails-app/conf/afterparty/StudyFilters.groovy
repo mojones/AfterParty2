@@ -6,13 +6,13 @@ class StudyFilters {
 
 
     def filters = {
-        studyExists(controller: 'study', action: '(overview|show)') {
+        studyExists(controller: 'study', action: '(overview|show|createCompoundSample)') {
             before = {
                 println "checking if study exists"
                 Study s = Study.get(params.id)
                 if (!s) {
                     flash.error = "Study doesn't exist"
-                    redirect(controller: 'study', action:'listPublished')
+                    redirect(controller: 'study', action: 'listPublished')
                     return false
                 }
             }
@@ -26,11 +26,24 @@ class StudyFilters {
 
                 if (!s.published && s.user.id != user?.id) {
                     flash.error = "Study is not published and you are not the owner"
-                    redirect(controller: 'study', action:'listPublished')
+                    redirect(controller: 'study', action: 'listPublished')
                     return false
                 }
             }
         }
+
+        studyIsOwnedByUser(controller: 'study', action: '(makePublished|createCompoundSample)') {
+            before = {
+                println "checking if study is owned by user"
+                Study s = Study.get(params.id)
+                if (s.user.id != springSecurityService.principal.id) {
+                    flash.error = "Study doesn't belong to you"
+                    redirect(controller: 'study', action: 'show', id: s.id)
+                    return false
+                }
+            }
+        }
+
     }
 
 }
