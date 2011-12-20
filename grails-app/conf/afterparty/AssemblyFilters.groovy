@@ -38,7 +38,7 @@ class AssemblyFilters {
                 Assembly a = Assembly.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!a.study.published && a.study.user.id != user?.id) {
+                if (!a.compoundSample.study.published && a.compoundSample.study.user.id != user?.id) {
                     flash.error = "Assembly is not published and you are not the owner"
                     redirect(controller: 'study', action:'listPublished')
                     return false
@@ -51,7 +51,7 @@ class AssemblyFilters {
             before = {
                 println "checking if assembly is owned by user"
                 Assembly a = Assembly.get(params.id)
-                if (a?.study?.user?.id != springSecurityService.principal.id) {
+                if (a.compoundSample.study.user.id != springSecurityService.principal.id) {
                     flash.error = "Assembly doesn't belong to you"
                     redirect(controller: 'assembly', action: 'show', id: params.id)
                     return false

@@ -38,7 +38,7 @@ class ExperimentFilters {
                 Experiment a = Experiment.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!a.sample.study.published && a.sample.study.user.id != user?.id) {
+                if (!a.sample.compoundSample.study.published && a.sample.compoundSample.study.user.id != user?.id) {
                     flash.error = "Experiment is not published and you are not the owner"
                     redirect(controller: 'study', action:'listPublished')
                     return false
@@ -51,7 +51,7 @@ class ExperimentFilters {
             before = {
                 println "checking if experiment is owned by user"
                 Experiment e = Experiment.get(params.id)
-                if (e.sample.study.user.id != springSecurityService.principal.id) {
+                if (e.sample.compoundSample.study.user.id != springSecurityService.principal.id) {
                     flash.error = "Experiment doesn't belong to you"
                     redirect(controller: 'sample', action: 'show', id: e.sample.id)
                     return false

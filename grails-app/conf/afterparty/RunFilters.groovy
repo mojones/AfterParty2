@@ -38,7 +38,7 @@ class RunFilters {
                 Run r = Run.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!r.experiment.sample.study.published && r.experiment.sample.study.user.id != user?.id) {
+                if (!r.experiment.sample.compoundSample.study.published && r.experiment.sample.compoundSample.study.user.id != user?.id) {
                     flash.error = "Run is not published and you are not the owner"
                     redirect(controller: 'study', action:'listPublished')
                     return false

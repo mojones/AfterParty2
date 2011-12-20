@@ -38,7 +38,7 @@ class ReadsFileFilters {
                 ReadsFile r = ReadsFile.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!r.run.experiment.sample.study.published && r.run.experiment.sample.study.user.id != user?.id) {
+                if (!r.run.experiment.sample.compoundSample.study.published && r.run.experiment.sample.compoundSample.study.user.id != user?.id) {
                     flash.error = "ReadsFile is not published and you are not the owner"
                     redirect(controller: 'study', action: 'listPublished')
                     return false
@@ -51,7 +51,7 @@ class ReadsFileFilters {
             before = {
                 println "checking if readsFile is owned by user"
                 ReadsFile r = ReadsFile.get(params.id)
-                if (r.run.experiment.sample.study.user.id != springSecurityService.principal.id) {
+                if (r.run.experiment.sample.compoundSample.study.user.id != springSecurityService.principal.id) {
                     flash.error = "ReadsFile doesn't belong to you"
                     redirect(controller: 'sample', action: 'show', id: r.run.experiment.sample.id)
                     return false
