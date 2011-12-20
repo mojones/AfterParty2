@@ -15,14 +15,14 @@ hibernate {
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop','update'
+            dbCreate = "update" // one of 'create', 'create-drop','update'
                         loggingSql = false
         }
     }
 
     development_rebuild {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop','update'
+            dbCreate = "create" // one of 'create', 'create-drop','update'
 //            loggingSql = true
         }
     }
