@@ -68,7 +68,7 @@ To make a bit of text editable we need to
 
         <div class="bheadr"></div>
 
-        <h2>Samples</h2>
+        <h2>Compound Samples</h2>
 
         <g:if test="${isOwner}">
             <ul>
