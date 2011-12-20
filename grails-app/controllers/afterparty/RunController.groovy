@@ -20,7 +20,7 @@ class RunController {
     def attachRawReads = {
         def f = request.getFile('myFile')
 
-        def runId = params.runId
+        def runId = params.id
         BackgroundJob job = new BackgroundJob(
                 name: 'adding FASTQ file',
                 status: BackgroundJobStatus.QUEUED,
@@ -40,14 +40,14 @@ class RunController {
             job.save(flush: true)
             ReadsFileData d = new ReadsFileData(fileData: f)
             ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${f.originalFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW)
-            run.addToReadsFiles(r)
+            run.rawReadsFile = r
             run.save()
             job.status = BackgroundJobStatus.FINISHED
 
             job.save(flush: true)
         }
 
-        redirect(controller: 'backgroundJob', action: list)
+        redirect(controller: 'backgroundJob', action: 'list')
 
     }
 
@@ -56,7 +56,7 @@ class RunController {
     def attachTrimmedReads = {
         def f = request.getFile('myFile')
 
-        def runId = params.runId
+        def runId = params.id
         BackgroundJob job = new BackgroundJob(
                 name: 'adding trimmed reads file',
                 status: BackgroundJobStatus.QUEUED,
@@ -83,7 +83,7 @@ class RunController {
             job.save(flush: true)
         }
 
-        redirect(controller: 'backgroundJob', action: list)
+        redirect(controller: 'backgroundJob', action: 'list')
 
     }
 

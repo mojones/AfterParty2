@@ -104,7 +104,7 @@
                     <label>Select new file:</label><br/>
                     <input type="file" name="myFile"/>
                 </p>
-                <g:hiddenField name="runId" value="${runInstance?.id}"/>
+                <g:hiddenField name="id" value="${runInstance?.id}"/>
                 <p style="clear:none;">
                     <input type="submit" class="submit long" value="Upload new file"/>
                 </p>
@@ -199,7 +199,7 @@
                     <label>Select new file:</label><br/>
                     <input type="file" name="myFile"/>
                 </p>
-                <g:hiddenField name="runId" value="${runInstance?.id}"/>
+                <g:hiddenField name="id" value="${runInstance?.id}"/>
                 <p style="clear:none;">
                     <input type="submit" class="submit long" value="Upload new file"/>
                 </p>

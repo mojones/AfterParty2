@@ -50,7 +50,7 @@ class RunFilters {
         runIsOwnedByUser(controller: 'run', action: '(attachTrimmedReads|attachRawReads)') {
             before = {
                 println "checking if run is owned by user"
-                Run a = Run.get(params.id)
+                Run r = Run.get(params.id)
                 if (r.experiment.sample.study.user.id != springSecurityService.principal.id) {
                     flash.error = "Run doesn't belong to you"
                     redirect(controller: 'run', action: 'show', id: params.id)
