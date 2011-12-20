@@ -8,7 +8,7 @@ class miraService {
 
     def sessionFactory
 
-    Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File contigsFile, File contigsQualityFile, File contigsStatsFile, Study s) {
+    Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File contigsFile, File contigsQualityFile, File contigsStatsFile, CompoundSample s) {
 
         // open up the assembly info file and create an Assembly to hold it
         Assembly a = new Assembly(description: miraInfoFile.text, name: "assembly from ${miraInfoFile.name} ")
@@ -67,7 +67,7 @@ class miraService {
 
 
 
-    def runMira(def readsFileIds, def jobId, def studyId) {
+    def runMira(def readsFileIds, def jobId, def compoundSampleId) {
 
         println " ${new Date()} running mira on reads file with id $readsFileIds"
 
@@ -112,7 +112,7 @@ class miraService {
         File contigsQualityFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.padded.fasta.qual")
         File contigsStatsFile = new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_contigstats.txt")
 
-        Study s = Study.get(studyId)
+        CompoundSample s = CompoundSample.get(compoundSampleId)
 
         Assembly a = createAssemblyAndContigsFromMiraInfo(assemblyInfoFile, contigsFile, contigsQualityFile, contigsStatsFile, s)
 

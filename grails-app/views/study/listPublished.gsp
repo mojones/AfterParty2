@@ -44,11 +44,6 @@
             </div>        <!-- .sidebar_content ends -->
 
 
-            <div class="sidebar_content" id="sb2_${studyInstance.id}">
-                 <p>Samples:${studyInstance.samples.size()}</p>
-                 <p>Assemblies:${studyInstance.assemblies.size()}</p>
-                 <p>Read count:${studyInstance.getRawReadsCount()}</p>
-            </div>        <!-- .sidebar_content ends -->
 
 
             <div class="sidebar_content" id="sb3_${studyInstance.id}">

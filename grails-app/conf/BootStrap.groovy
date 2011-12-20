@@ -60,12 +60,17 @@ class BootStrap {
                         user: normalUser
                 ).save()
 
+                CompoundSample lSig = new CompoundSample(
+                        name: 'Litomosoides sigmodontis'
+                )
+                litoStudy.addToCompoundSamples(lSig)
+
                 Sample femaleSample = new Sample(name: 'Adult female transcriptome')
                 Sample maleSample = new Sample(name: 'Adult mail transcriptome')
                 Sample microfilariaSample = new Sample(name: 'Microfilaria transcriptome')
-                litoStudy.addToSamples(femaleSample)
-                litoStudy.addToSamples(maleSample)
-                litoStudy.addToSamples(microfilariaSample)
+                lSig.addToSamples(femaleSample)
+                lSig.addToSamples(maleSample)
+                lSig.addToSamples(microfilariaSample)
 
 
                 Experiment femaleExperiment = new Experiment(name: '454 GS FLX sequencing', description: 'Total RNA from Litomosoides sigmodontis adult female was converted to double stranded cDNA using Evrogen?s MINT cDNA synthesis kit. First strand cDNA was synthesised using reverse transcriptase (RT) from a 3?-primer with oligo(dT) sequence that annealed to the poly-A stretch of RNA and synthesised cDNA until the 5? end of the mRNA. Finally, double stranded cDNA synthesis was performed using PCR amplification, and the final product contained the same MINT adapter sequence at both 3? and 5? ends. The cDNA was fragmented, size-selected, library-prepped, and sequenced according to standard Roche-454 FLX and Titanium protocols.')
@@ -140,12 +145,12 @@ class BootStrap {
 
                 println "uploading assembly"
 
-                miraService.createAssemblyAndContigsFromMiraInfo(
+                def a = miraService.createAssemblyAndContigsFromMiraInfo(
                         new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_info_assembly.txt'),
                         new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_out.padded.fasta'),
                         new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_out.padded.fasta.qual'),
                         new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_info_contigstats.txt'),
-                        litoStudy
+                        lSig
                 )
 
                 println "adding blast annotation"
@@ -161,7 +166,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-                blastService.addBlastHitsFromInput(blastInput, job.id)
+                //blastService.addBlastHitsFromInput(blastInput, job.id, a.id )
 
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',

@@ -22,7 +22,7 @@ class Assembly {
 
     }
 
-    static belongsTo = [study: Study]
+    static belongsTo = [compoundSample: CompoundSample]
 
     def getContigCount() {
         return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).readCount : 0

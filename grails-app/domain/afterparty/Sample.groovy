@@ -10,7 +10,7 @@ class Sample {
         description(maxSize: 10000, nullable: true)
     }
 
-    static belongsTo = [study: Study]
+    static belongsTo = [compoundSample: CompoundSample]
 
     static hasMany = [experiments: Experiment]
 
