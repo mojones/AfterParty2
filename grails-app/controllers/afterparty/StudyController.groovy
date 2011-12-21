@@ -15,13 +15,14 @@ class StudyController {
         redirect(action: "listPublished", params: params)
     }
 
+    @Secured(['ROLE_USER'])
     def createCompoundSample = {
         def studyInstance = Study.get(params.id)
-        def newCompoundSample = new CompoundSample(name : 'compound sample name')
+        def newCompoundSample = new CompoundSample(name: 'compound sample name')
         studyInstance.addToCompoundSamples(newCompoundSample)
         studyInstance.save()
         flash.success = "added a new compound sample"
-        redirect(action: show, id:studyInstance.id)
+        redirect(action: show, id: studyInstance.id)
     }
 
 

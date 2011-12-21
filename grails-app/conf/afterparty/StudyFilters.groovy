@@ -6,7 +6,7 @@ class StudyFilters {
 
 
     def filters = {
-        studyExists(controller: 'study', action: '(overview|show|createCompoundSample)') {
+        studyExists(controller: 'study', action: '(overview|show|createCompoundSample|makePublished)') {
             before = {
                 println "checking if study exists"
                 Study s = Study.get(params.id)
