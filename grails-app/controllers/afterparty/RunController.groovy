@@ -7,16 +7,6 @@ class RunController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     @Secured(['ROLE_USER'])
-    def create = {
-        def runInstance = new Run(name: 'Run name', description: 'Run description')
-        Experiment.get(params.experimentId.toLong()).addToRuns(runInstance)
-        runInstance.save()
-        redirect(action: show, id: runInstance.id)
-    }
-
-
-
-    @Secured(['ROLE_USER'])
     def attachRawReads = {
         def f = request.getFile('myFile')
 
@@ -89,13 +79,8 @@ class RunController {
 
     def show = {
         def runInstance = Run.get(params.id)
-        if (!runInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'run.label', default: 'Run'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [runInstance: runInstance]
-        }
+        [runInstance: runInstance]
+
     }
 
 

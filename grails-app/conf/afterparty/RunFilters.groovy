@@ -36,9 +36,9 @@ class RunFilters {
             before = {
                 println "checking if run is either public or owned"
                 Run r = Run.get(params.id)
-                def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!r.experiment.sample.compoundSample.study.published && r.experiment.sample.compoundSample.study.user.id != user?.id) {
+
+                if (!r.isPublished() && !r.isOwnedBy(springSecurityService.principal)) {
                     flash.error = "Run is not published and you are not the owner"
                     redirect(controller: 'study', action:'listPublished')
                     return false
@@ -51,7 +51,7 @@ class RunFilters {
             before = {
                 println "checking if run is owned by user"
                 Run r = Run.get(params.id)
-                if (r.experiment.sample.study.user.id != springSecurityService.principal.id) {
+                if (!r.isOwnedBy(springSecurityService.principal)) {
                     flash.error = "Run doesn't belong to you"
                     redirect(controller: 'run', action: 'show', id: params.id)
                     return false
