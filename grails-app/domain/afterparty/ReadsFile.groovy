@@ -42,4 +42,13 @@ class ReadsFile {
     }
 
 
+    def isPublished(){
+        return this.run.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.run.isOwnedBy(user)
+    }
+
+
 }

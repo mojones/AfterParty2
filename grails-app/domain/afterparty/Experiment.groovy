@@ -34,4 +34,13 @@ class Experiment {
     }
 
 
+    def isPublished(){
+        return this.sample.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.sample.isOwnedBy(user)
+    }
+
+
 }

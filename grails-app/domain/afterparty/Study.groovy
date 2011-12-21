@@ -23,6 +23,10 @@ class Study {
         return result
     }
 
+    def isPublished(){
+        return this.published
+    }
+
     def isOwnedBy(def user) {
         return user?.id && user?.id == this.study.user.id
     }

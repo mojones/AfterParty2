@@ -48,4 +48,12 @@ class Assembly {
         return contigs ? statisticsService.getAssemblyStats(this.id.toLong()).n50 : 0
     }
 
+
+    def isPublished(){
+        return this.compoundSample.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.compoundSample.isOwnedBy(user)
+    }
 }

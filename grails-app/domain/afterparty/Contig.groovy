@@ -34,6 +34,7 @@ class Contig implements Taggable{
 
 
 
+
     static hasMany = [blastHits: BlastHit]
 
     // TODO change this
@@ -42,4 +43,13 @@ class Contig implements Taggable{
     }
 
     static belongsTo = [assembly: Assembly]
+
+
+    def isPublished(){
+        return this.assembly.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.assembly.isOwnedBy(user)
+    }
 }

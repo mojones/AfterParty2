@@ -30,4 +30,12 @@ class Run {
     def getTrimmedReadsBaseCount(){  return trimmedReadsFile ? trimmedReadsFile.baseCount : 0    }
 
 
+    def isPublished(){
+        return this.experiment.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.experiment.isOwnedBy(user)
+    }
+
 }

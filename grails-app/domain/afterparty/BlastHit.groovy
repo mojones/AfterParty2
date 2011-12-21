@@ -22,4 +22,13 @@ class BlastHit {
     }
 
     static belongsTo = [contig: Contig]
+
+
+    def isPublished(){
+        return this.contig.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.contig.isOwnedBy(user)
+    }
 }

@@ -22,4 +22,12 @@ class Sample {
         return result
     }
 
+    def isPublished(){
+        return this.compoundSample.isPublished()
+    }
+
+    def isOwnedBy(def user){
+         return this.compoundSample.isOwnedBy(user)
+    }
+
 }
