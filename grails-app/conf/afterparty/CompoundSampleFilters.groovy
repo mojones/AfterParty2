@@ -24,7 +24,7 @@ class CompoundSampleFilters {
                 CompoundSample s = CompoundSample.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!s.study.published && s.study.user.id != user?.id) {
+                if (!s.isPublished() && !s.isOwnedBy(user)) {
                     flash.error = "Compound sample is not published and you are not the owner"
                     redirect(controller: 'study', action: 'listPublished')
                     return false
@@ -36,7 +36,7 @@ class CompoundSampleFilters {
             before = {
                 println "checking if compound sample is owned by user"
                 CompoundSample s = CompoundSample.get(params.id)
-                if (s.study.user.id != springSecurityService.principal.id) {
+                if (!s.isOwnedBy(springSecurityService.principal)) {
                     flash.error = "Compound sample doesn't belong to you"
                     redirect(controller: 'compoundSample', action: 'show', id: s.id)
                     return false

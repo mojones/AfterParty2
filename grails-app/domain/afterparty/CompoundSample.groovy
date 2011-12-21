@@ -12,4 +12,12 @@ class CompoundSample {
     static constraints = {
         name(maxSize: 1000)
     }
+
+    def isPublished(){
+        return this.study.published
+    }
+
+    def isOwnedBy(def user){
+         return this.study.isOwnedBy(user)
+    }
 }
