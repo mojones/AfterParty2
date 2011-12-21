@@ -1,28 +1,32 @@
 package afterparty
 
+import grails.plugins.springsecurity.Secured
+
 class SampleController {
+
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
 
-    def create = {
-        def sampleInstance = new Sample(name: 'Sample name', description: 'Sample description')
-        Study.get(params.studyId.toLong()).addToSamples(sampleInstance)
+
+
+
+    @Secured(['ROLE_USER'])
+    def createExperiment = {
+        def sampleInstance = Sample.get(params.id)
+        def newExperiment = new Experiment(name: 'experiment name')
+        sampleInstance.addToExperiments(newExperiment)
         sampleInstance.save()
+        flash.success = "added a new experiment"
         redirect(action: show, id: sampleInstance.id)
     }
 
 
-
     def show = {
         def sampleInstance = Sample.get(params.id)
-        if (!sampleInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'sample.label', default: 'Sample'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [sampleInstance: sampleInstance]
-        }
+        [sampleInstance: sampleInstance, isOwner : sampleInstance.isOwnedBy(springSecurityService.principal)]
+
     }
 
 

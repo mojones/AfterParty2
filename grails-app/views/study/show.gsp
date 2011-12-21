@@ -109,56 +109,6 @@ To make a bit of text editable we need to
     <div class="bendr"></div>
 </div>
 
-%{--<div class="block">--}%
-
-    %{--<div class="block_head">--}%
-        %{--<div class="bheadl"></div>--}%
-
-        %{--<div class="bheadr"></div>--}%
-
-        %{--<h2>Assemblies</h2>--}%
-        %{--<g:if test="${isOwner}">--}%
-
-            %{--<ul>--}%
-                %{--<li>--}%
-                    %{--<g:link controller="assembly" action="create"--}%
-                            %{--params="${[studyId : studyInstance.id]}">Add new</g:link>--}%
-                %{--</li>--}%
-            %{--</ul>--}%
-        %{--</g:if>--}%
-    %{--</div>        <!-- .block_head ends -->--}%
-
-    %{--<div class="block_content">--}%
-        %{--<g:if test="${studyInstance.assemblies}">--}%
-
-            %{--<table cellpadding="0" cellspacing="0" width="100%" class="sortable">--}%
-                %{--<thead>--}%
-                %{--<tr>--}%
-                    %{--<th>Assembly name</th>--}%
-                    %{--<th>Number of Contigs</th>--}%
-                    %{--<td>Span</td>--}%
-                %{--</tr>--}%
-                %{--</thead>--}%
-                %{--<tbody>--}%
-                %{--<g:each in="${studyInstance.assemblies}" var="assembly">--}%
-                    %{--<tr>--}%
-                        %{--<td><g:link controller="assembly" action="show"--}%
-                                    %{--id="${assembly.id}">${assembly.name}</g:link></td>--}%
-                        %{--<td>${assembly.contigs.size()}</td>--}%
-                        %{--<td>${assembly.baseCount}</td>--}%
-                    %{--</tr>--}%
-                %{--</g:each>--}%
-                %{--</tbody>--}%
-            %{--</table>--}%
-        %{--</g:if>--}%
-        %{--<g:else>--}%
-            %{--<h3>Click "ADD NEW" to add an assembly for this study.</h3>--}%
-        %{--</g:else>--}%
-    %{--</div>        <!-- .block_content ends -->--}%
-    %{--<div class="bendl"></div>--}%
-
-    %{--<div class="bendr"></div>--}%
-%{--</div>--}%
 
 %{--only show workflow and structure if we have at least one sample--}%
 <g:if test="${studyInstance.compoundSamples}">
