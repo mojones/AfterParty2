@@ -7,6 +7,8 @@ class ExperimentController {
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def trimReadsService
+    def springSecurityService
+
 
     @Secured(['ROLE_USER'])
     def trimAllReadFiles = {
@@ -62,39 +64,23 @@ class ExperimentController {
 
     }
 
-
-
     @Secured(['ROLE_USER'])
-    def create = {
-        def experimentInstance = new Experiment(name: 'Experiment name', description: 'Experiment description')
-        Sample.get(params.sampleId.toLong()).addToExperiments(experimentInstance)
+    def createRun = {
+        def experimentInstance = Experiment.get(params.id)
+        def newRun = new Run(name: 'run name')
+        experimentInstance.addToRuns(newRun)
         experimentInstance.save()
+        flash.success = "added a new run"
         redirect(action: show, id: experimentInstance.id)
-
     }
 
-    @Secured(['ROLE_USER'])
-    def save = {
-        def experimentInstance = new Experiment(params)
-        experimentInstance.sample = Sample.get(params.sampleId)
-        if (experimentInstance.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'experiment.label', default: 'Experiment'), experimentInstance.id])}"
-            redirect(action: "show", id: experimentInstance.id)
-        }
-        else {
-            render(view: "create", model: [experimentInstance: experimentInstance])
-        }
-    }
+
 
     def show = {
         def experimentInstance = Experiment.get(params.id)
-        if (!experimentInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'experiment.label', default: 'Experiment'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            [experimentInstance: experimentInstance]
-        }
+
+        [experimentInstance: experimentInstance, isOwner: experimentInstance.isOwnedBy(springSecurityService.principal)]
+
     }
 
 

@@ -61,12 +61,12 @@
         <div class="bheadr"></div>
 
         <h2>Runs</h2>
-        <sec:ifLoggedIn>
+        <g:if test="${isOwner}">
             <ul>
-                <g:link controller="run" action="create"
-                        params="${[experimentId : experimentInstance.id]}">Add new</g:link>
+                <g:link controller="experiment" action="createRun"
+                        params="${[id : experimentInstance.id]}">Add new</g:link>
             </ul>
-        </sec:ifLoggedIn>
+        </g:if>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">

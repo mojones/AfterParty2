@@ -28,7 +28,7 @@ class Study {
     }
 
     def isOwnedBy(def user) {
-        return user?.id && user?.id == this.user.id
+        return user.hasProperty('id') && user?.id == this.user.id
     }
 
 
