@@ -13,15 +13,6 @@ class ContigController {
         redirect(action: "list", params: params)
     }
 
-    def annotation = {
-        render contigAnnotationService.drawAnnotation(params.id)
-    }
-
-
-
-
-
-
 
 
     def show = {

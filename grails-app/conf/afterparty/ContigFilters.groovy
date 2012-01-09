@@ -7,7 +7,7 @@ class ContigFilters {
     def filters = {
 
 
-        contigExists(controller: 'contig', action: '(show|annotation|showJSON)') {
+        contigExists(controller: 'contig', action: '(show|showJSON)') {
             before = {
                 println "checking if contig exists"
                 Contig c = Contig.get(params.id)
@@ -19,7 +19,7 @@ class ContigFilters {
             }
         }
 
-        contigIsPublicOrOwnedByUser(controller: 'contig', action: '(show|annotation|showJSON)') {
+        contigIsPublicOrOwnedByUser(controller: 'contig', action: '(show|showJSON)') {
             before = {
                 println "checking if contig is either public or owned"
                 Contig c = Contig.get(params.id)
