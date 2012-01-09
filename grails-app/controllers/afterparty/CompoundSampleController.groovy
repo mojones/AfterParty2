@@ -23,4 +23,14 @@ class CompoundSampleController {
         redirect(action: show, id: compoundSampleInstance.id)
     }
 
+    @Secured(['ROLE_USER'])
+    def createAssembly = {
+        def compoundSampleInstance = CompoundSample.get(params.id)
+        def newAssembly = new Assembly(name: 'assembly name', description: 'assembly description')
+        compoundSampleInstance.addToAssemblies(newAssembly)
+        compoundSampleInstance.save()
+        flash.success = "added a new assembly"
+        redirect(action: show, id: compoundSampleInstance.id)
+    }
+
 }

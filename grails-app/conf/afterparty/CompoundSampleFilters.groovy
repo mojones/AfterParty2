@@ -6,7 +6,7 @@ class CompoundSampleFilters {
 
 
     def filters = {
-        compoundSampleExists(controller: 'compoundSample', action: '(show|createSample)') {
+        compoundSampleExists(controller: 'compoundSample', action: '(show|createSample|createAssembly)') {
             before = {
                 println "checking if compound sample exists"
                 CompoundSample s = CompoundSample.get(params.id)
@@ -32,7 +32,7 @@ class CompoundSampleFilters {
             }
         }
 
-        studyIsOwnedByUser(controller: 'compoundSample', action: '(createSample)') {
+        studyIsOwnedByUser(controller: 'compoundSample', action: '(createSample|createAssembly)') {
             before = {
                 println "checking if compound sample is owned by user"
                 CompoundSample s = CompoundSample.get(params.id)
