@@ -110,10 +110,9 @@ class StatisticsService {
         println "got contigs : " + (System.currentTimeMillis() - start)
         def result = [
                 id: contigs*.id,
-                length: contigs*.length,
-                quality: contigs*.averageQuality,
-                coverage: contigs*.averageCoverage,
-                gc: contigs*.gc,
+                length: contigs*.length(),
+                quality: contigs*.averageQuality(),
+                gc: contigs*.gc(),
                 topBlast: topBlasts
         ]
         println "built return : " + (System.currentTimeMillis() - start)

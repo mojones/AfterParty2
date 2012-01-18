@@ -37,6 +37,21 @@ class Contig implements Taggable{
         return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore : 0)
     }
 
+    def averageQuality(){
+        List qualities = quality.split(/ /).collect({it.toInteger()})
+        Integer sum = qualities.sum()
+        Integer size = qualities.size()
+        return  sum / size
+    }
+
+    def gc(){
+        return sequence.findAll({it == 'g' || it == 'c'}).size() / sequence.length()
+    }
+
+    def length(){
+        return this.sequence.length()
+    }
+
     static belongsTo = [assembly: Assembly]
 
 
