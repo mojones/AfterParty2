@@ -7,18 +7,13 @@ class Contig implements Taggable{
     String name
     String sequence
     String quality
-    Integer readCount
-    Integer length
-    Integer averageQuality
-    Float maximumCoverage
-    Float averageCoverage
-    Float gc
 
     // this allows us to search contigs from specific assemblies
     Integer searchAssemblyId
 
     // tell the searchable plugin that the blast hits are to be treated as a componenet of the contig for searching purposes
     static searchable = {
+        except = ['id', 'reads']
         blastHits component: true
         searchAssemblyId : accessor:'property'
     }
@@ -35,7 +30,7 @@ class Contig implements Taggable{
 
 
 
-    static hasMany = [blastHits: BlastHit]
+    static hasMany = [blastHits: BlastHit, reads : Read]
 
     // TODO change this
     def topBlastHitMatching(String query){

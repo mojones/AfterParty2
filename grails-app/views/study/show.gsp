@@ -111,47 +111,47 @@ To make a bit of text editable we need to
 
 
 %{--only show workflow and structure if we have at least one sample--}%
-<g:if test="${studyInstance.compoundSamples}">
+%{--<g:if test="${studyInstance.compoundSamples}">--}%
 
-    <div class="block">
-        <div class="block_head">
-            <div class="bheadl"></div>
+    %{--<div class="block">--}%
+        %{--<div class="block_head">--}%
+            %{--<div class="bheadl"></div>--}%
 
-            <div class="bheadr"></div>
+            %{--<div class="bheadr"></div>--}%
 
-            <h2>Dataset overviews</h2>
-            <ul class="tabs">
-                <li><a href="#tab1">Structure</a></li>
-                <li><a href="#tab2">Workflow</a></li>
-            </ul>
-        </div>        <!-- .block_head ends -->
+            %{--<h2>Dataset overviews</h2>--}%
+            %{--<ul class="tabs">--}%
+                %{--<li><a href="#tab1">Structure</a></li>--}%
+                %{--<li><a href="#tab2">Workflow</a></li>--}%
+            %{--</ul>--}%
+        %{--</div>        <!-- .block_head ends -->--}%
 
-        <div class="block_content tab_content" id="tab1">
+        %{--<div class="block_content tab_content" id="tab1">--}%
 
-            <h3>Structure</h3>
-            <object data=" <g:createLink controller="study" action="overview" params="['id' : studyInstance.id]"/> "
-                    type="image/svg+xml" id="overviewSVG"></object>
+            %{--<h3>Structure</h3>--}%
+            %{--<object data=" <g:createLink controller="study" action="overview" params="['id' : studyInstance.id]"/> "--}%
+                    %{--type="image/svg+xml" id="overviewSVG"></object>--}%
 
-        </div>        <!-- .block_content ends -->
+        %{--</div>        <!-- .block_content ends -->--}%
 
 
 
-        <div class="block_content tab_content" id="tab2">
+        %{--<div class="block_content tab_content" id="tab2">--}%
 
-            <h3>Workflow</h3>
+            %{--<h3>Workflow</h3>--}%
 
-            <object data=" <g:createLink controller="backgroundJob" action="overview"
-                                         params="['id' : studyInstance.id]"/> "
-                    type="image/svg+xml" id="workflowSVG"></object>
+            %{--<object data=" <g:createLink controller="backgroundJob" action="overview"--}%
+                                         %{--params="['id' : studyInstance.id]"/> "--}%
+                    %{--type="image/svg+xml" id="workflowSVG"></object>--}%
 
-        </div>        <!-- .block_content ends -->
+        %{--</div>        <!-- .block_content ends -->--}%
 
-        <div class="bendl"></div>
+        %{--<div class="bendl"></div>--}%
 
-        <div class="bendr"></div>
+        %{--<div class="bendr"></div>--}%
 
-    </div>
-</g:if>
+    %{--</div>--}%
+%{--</g:if>--}%
 
 </body>
 </html>

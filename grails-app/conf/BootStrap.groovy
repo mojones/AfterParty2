@@ -146,10 +146,8 @@ class BootStrap {
                 println "uploading assembly"
 
                 def a = miraService.createAssemblyAndContigsFromMiraInfo(
-                        new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_info_assembly.txt'),
-                        new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_out.padded.fasta'),
-                        new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_out.padded.fasta.qual'),
-                        new File('/home/martin/Downloads/afterPartydata/bigAssembly/big_info_contigstats.txt'),
+                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_info/lito_info_assembly.txt'),
+                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/small.ace'),
                         lSig
                 )
 

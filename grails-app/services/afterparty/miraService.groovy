@@ -1,65 +1,164 @@
 package afterparty
 
-import java.util.regex.Matcher
-
 class miraService {
 
     static transactional = false
 
     def sessionFactory
 
-    Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File contigsFile, File contigsQualityFile, File contigsStatsFile, CompoundSample s) {
+    Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File aceFile, CompoundSample s) {
 
         // open up the assembly info file and create an Assembly to hold it
         Assembly a = new Assembly(description: miraInfoFile.text, name: "assembly from ${miraInfoFile.name} ")
         // attach the assembly to the appropriate study
         s.addToAssemblies(a)
-        a.save(flush:true)
+        a.save(flush: true)
         println "created assembly"
 
         // open up the contigs FASTA file and parse it, creating contigs as we go
         // keep a map of name->contig so that we can add stats to the contig later
-        Map name2contig = [:]
-        def contigs = parseFasta(new FileInputStream(contigsFile))
-        contigs.each { name, seq ->
-            Matcher m = (name =~ /.+_(c\d+$)/)
-            def contigId = m[0][1]
-            def contig = new Contig(name: contigId, sequence: seq)
-            name2contig.put(name, contig)
-        }
+        //        Map name2contig = [:]
+        //        def contigs = parseFasta(new FileInputStream(contigsFile))
+        //        contigs.each { name, seq ->
+        //            Matcher m = (name =~ /.+_(c\d+$)/)
+        //            def contigId = m[0][1]
+        //            def contig = new Contig(name: contigId, sequence: seq)
+        //            name2contig.put(name, contig)
+        //        }
 
         // open up the contigs quality FASTA file and parse it
-        def contigsQuality = parseFasta(new FileInputStream(contigsQualityFile))
-        contigsQuality.each { name, seq ->
-            Matcher m = (name =~ /.+_(c\d+$)/)
-            name2contig.get(name).quality = seq
-        }
+        //        def contigsQuality = parseFasta(new FileInputStream(contigsQualityFile))
+        //        contigsQuality.each { name, seq ->
+        //            Matcher m = (name =~ /.+_(c\d+$)/)
+        //            name2contig.get(name).quality = seq
+        //        }
 
 
+        //        contigsStatsFile.eachLine { line ->
+        //            if (!line.startsWith('#')) {
+        //                def cols = line.split(/\s+/)
+        //                Contig theContig = name2contig.get(cols[0])
+        //                theContig.length = cols[1].toInteger()
+        //                theContig.averageQuality = cols[2].toFloat()
+        //                theContig.readCount = cols[3].toFloat()
+        //                theContig.maximumCoverage = cols[4].toFloat()
+        //                theContig.averageCoverage = cols[5].toFloat()
+        //                theContig.gc = cols[6].toFloat()
+        //                theContig.searchAssemblyId = a.id
+        //                a.addToContigs(theContig)
+        //            }
+        //
+        //        }
+
+        def currentContigName
+        def id2Start = [:]
+
+        boolean inReadString = false
+        boolean inContigString = false
+        boolean inQualityString = false
+
+        ArrayList currentReadString = []
+        ArrayList currentContigString = []
+        ArrayList currentQualityString = []
+
+        def currentReadId
+
+        def currentContig
 
 
-        contigsStatsFile.eachLine { line ->
-            if (!line.startsWith('#')) {
-                def cols = line.split(/\s+/)
-                Contig theContig = name2contig.get(cols[0])
-                theContig.length = cols[1].toInteger()
-                theContig.averageQuality = cols[2].toFloat()
-                theContig.readCount = cols[3].toFloat()
-                theContig.maximumCoverage = cols[4].toFloat()
-                theContig.averageCoverage = cols[5].toFloat()
-                theContig.gc = cols[6].toFloat()
-                theContig.searchAssemblyId = a.id
-                a.addToContigs(theContig)
+        aceFile.eachLine { line ->
+
+            if (line.startsWith(/CO /)) {
+                if (currentContig) {
+                    a.addToContigs(currentContig)
+                    a.save(flush: true)
+                    println "savid ${currentContig.name}"
+                }
+                currentContigString = []
+                currentContigName = line.split(/ /)[1]
+                println currentContigName
+                inContigString = true
+
+                currentContig = new Contig(name: currentContigName, searchAssemblyId: a.id)
+            }
+
+            else if (line.startsWith(/BQ/)) {
+                inQualityString = true
+            }
+
+            else if (line.startsWith(/AF /)) {
+                id2Start.put(line.split(/ /)[1], line.split(/ /)[3].toInteger())
+            }
+
+            else if (line.startsWith(/RD /)) {
+                currentReadId = line.split(/ /)[1]
+                inReadString = true
+            }
+
+            else if (line.equals('') && inReadString) {    // we have reached the end of the read sequence string
+                Integer start = id2Start.get(currentReadId).toInteger()
+                StringBuilder outputString = new StringBuilder()
+                if (start > 0) {
+                    ArrayList alignedReadString = ['-'].multiply(start - 1) + currentReadString
+                    alignedReadString.eachWithIndex {base, i ->
+                        def contigBase = currentContigString[i]
+                        if (currentContigString.size() > i && contigBase == '*') {
+                            outputString.append("")
+                        }
+                        else {
+                            outputString.append(base)
+                        }
+                    }
+                }
+
+                def r = new Read(name: currentReadId, start: start, sequence: outputString.toString(), stop: start + outputString.length())
+                currentContig.addToReads(r)
+                currentReadString = []
+                inReadString = false;
+            }
+
+            else if (line.equals('') && inContigString) {    // we have reached the end of the contig sequence string
+                currentContig.sequence = currentContigString.join('').replaceAll(/\*/, '')
+                inContigString = false;
+            }
+
+            else if (line.equals('') && inQualityString) {    // we have reached the end of the contig sequence string
+                //        currentFile.append(currentQualityString.join('') + "\n")
+                currentContig.quality = currentQualityString.join(' ')
+                currentQualityString = []
+                inQualityString = false;
+            }
+
+            else if (inReadString) {
+                currentReadString.addAll(line.split('').findAll({it != ''}))
+            }
+
+            else if (inContigString) {
+                currentContigString.addAll(line.split('').findAll({it != ''}))
+            }
+            else if (inQualityString) {
+                currentQualityString.addAll(line.split(' ').findAll({it != ''}))
             }
 
         }
+        if (currentContig) {
+            a.addToContigs(currentContig)
+            a.save(flush: true)
+            println "savid ${currentContig.name}"
+        }
+
+
 
         println "saving contigs"
-        a.save(flush:true)
+        a.save(flush: true)
         println "saved all contigs"
-        println "indexing...."
-        Contig.index(name2contig.values())
-        println "finished indexing"
+        // we will not bother indexing - there is nothing interesting here anyway
+        //        println "indexing...."
+        //        allContigs.each{
+        //            Contig c = (Contig) it
+        ////            c.index()
+        //        }
+        //        println "finished indexing"
 
         return a
 
