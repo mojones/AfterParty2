@@ -1,24 +1,20 @@
 package afterparty
 
 import javax.xml.parsers.SAXParserFactory
-import org.xml.sax.Attributes
+
 import org.xml.sax.InputSource
-import org.xml.sax.helpers.DefaultHandler
-
-
-
 
 class BlastService {
 
     static transactional = false
 
-    def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assmemblyId) {
+    def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
 
 //        input.eachLine {
 //            println "BLAST: $it"
 //        }
 //
-        def handler = new RecordsHandler(jobId : backgroundJobId, assembly: Assembly.get(assmemblyId.toLong()))
+        def handler = new RecordsHandler(jobId : backgroundJobId, assembly: Assembly.get(assemblyId.toLong()))
         def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
@@ -56,14 +52,11 @@ class BlastService {
 
 
                 def writer = new PrintWriter(new BufferedOutputStream(p.out))
-                writer.println(">${contig.id}\n${contig.sequence}")
+                writer.println(">${contig.name}\n${contig.sequence}")
                 writer.close()
 
 //                        println "saw $count hits"
-                addBlastHitsFromInput(p.in, job.id
-
-
-                )
+                addBlastHitsFromInput(p.in, job.id, assembly.id)
 
             }
             n++

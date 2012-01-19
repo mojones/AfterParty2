@@ -30,9 +30,10 @@ class ContigController {
     def showJSON = {
         def contigInstance = Contig.get(params.id)
         render(contentType: "text/json") {
-            length = contigInstance.length
+            length = contigInstance.length()
             quality = contigInstance.quality.split(' ')
             blastHits = contigInstance.blastHits.sort({-it.bitscore})
+            reads = contigInstance.reads.sort({it.start})   // sort the reads by start position so they pile up nicely
         }
     }
 

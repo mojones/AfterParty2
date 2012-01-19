@@ -150,7 +150,7 @@ class AssemblyController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
-                study: Assembly.get(assemblyId).study
+                study: Assembly.get(assemblyId).compoundSample.study
         )
         job.save(flush: true)
 
@@ -196,7 +196,8 @@ class AssemblyController {
 
     def show = {
         def assemblyInstance = Assembly.get(params.id)
-        [assemblyInstance: assemblyInstance]
+        def contigs = assemblyInstance.contigs.sort({it.reads.size()})
+        [assemblyInstance: assemblyInstance, contigs:contigs]
     }
 
     def search = {

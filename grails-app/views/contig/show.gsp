@@ -38,41 +38,49 @@
 
     <div class="block_content">
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
-        <script type="text/coffeescript">
+        <script type="text/javascript">
 
-            drawContig = (data) ->
-                paperWidth = $('#coffeescript_annotation').width() - 20
-                drawing = new BioDrawing
-                drawing.start(paperWidth, 'coffeescript_annotation')
-                drawing.drawSpacer(50)
-                drawing.drawTitle('Contig annotation')
-                drawing.drawScale(data.length)
-                drawing.drawSpacer(50)
+            var drawContig = function(data) {
+                var paperWidth = $('#coffeescript_annotation').width() - 20;
+                var drawing = new BioDrawing();
+                drawing.start(paperWidth, 'coffeescript_annotation');
+                drawing.drawSpacer(50);
+                drawing.drawTitle('Contig annotation');
+                drawing.drawSpacer(50);
+                drawing.drawScale(data.length);
+                drawing.drawSpacer(50);
+                drawing.drawTitle('Quality');
+                drawing.drawChart(data.quality, 100);
+                drawing.drawTitle('BLAST hits vs uniprot');
+                for (var i = 0; i < data.blastHits.length; i++) {
+                    var hit = data.blastHits[0];
+                    var hitColour = drawing.getBLASTColour(hit.bitscore);
+                    blastRect = drawing.drawBar(hit.start, hit.stop, 10, hitColour, hit.description);
+                    blastRect.hover(
+                            function(event) {
+                                this.attr({stroke: 'black', 'stroke-width' : '5'});
+                                $('#' + hit.accession).css("background-color", "bisque");
 
-                drawing.drawTitle('Quality')
-                drawing.drawChart(data.quality, 100)
+                            },
+                            function(event) {
+                                this.attr({stroke: 'black', 'stroke-width' : '0'});
+                                $('#' + hit.accession).css("background-color", "white");
+                            }
+                    );
+                }
+                drawing.drawSpacer(50);
+                drawing.drawTitle('Reads');
+                for (var i = 0; i < data.reads.length; i++) {
+                    var read = data.reads[i];
+                    readRect = drawing.drawBar(read.start, read.stop, 2, 'black', read.name);
+                }
 
-                drawing.drawTitle('BLAST hits vs uniprot')
-                for hit in data.blastHits
-                    do (hit) ->
-                        hitColour = drawing.getBLASTColour(hit.bitscore)
-                        blastRect = drawing.drawBar(hit.start, hit.stop, hitColour, hit.description)
-                        blastRect.hover(
-                            (event) ->
-                                this.attr({stroke: 'black', 'stroke-width' : '5'})
-                                $("##{hit.accession}").css("background-color","bisque")
-                                null
-                            ,
-                            (event) ->
-                                this.attr({stroke: 'black', 'stroke-width' : '0'})
-                                $("##{hit.accession}").css("background-color","white")
-                                null
-                        )
-                drawing.end()
+                drawing.end();
 
-            null
 
-            $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig)
+            }
+
+            $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig);
 
 
         </script>
@@ -98,7 +106,7 @@
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <h3>Read count : ${contigInstance.readCount}</h3>
+        <h3>Read count : ${contigInstance.reads.size()}</h3>
 
         <p>tags : ${contigInstance.tags.join(',')}</p>
 
