@@ -6,7 +6,16 @@ class miraService {
 
     def sessionFactory
 
+    def cleanUpGorm() {
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+    }
+
     Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File aceFile, CompoundSample s) {
+
+        def added = 0
+        def startTime = System.currentTimeMillis()
 
         // open up the assembly info file and create an Assembly to hold it
         Assembly a = new Assembly(description: miraInfoFile.text, name: "assembly from ${miraInfoFile.name} ")
@@ -15,40 +24,7 @@ class miraService {
         a.save(flush: true)
         println "created assembly"
 
-        // open up the contigs FASTA file and parse it, creating contigs as we go
-        // keep a map of name->contig so that we can add stats to the contig later
-        //        Map name2contig = [:]
-        //        def contigs = parseFasta(new FileInputStream(contigsFile))
-        //        contigs.each { name, seq ->
-        //            Matcher m = (name =~ /.+_(c\d+$)/)
-        //            def contigId = m[0][1]
-        //            def contig = new Contig(name: contigId, sequence: seq)
-        //            name2contig.put(name, contig)
-        //        }
 
-        // open up the contigs quality FASTA file and parse it
-        //        def contigsQuality = parseFasta(new FileInputStream(contigsQualityFile))
-        //        contigsQuality.each { name, seq ->
-        //            Matcher m = (name =~ /.+_(c\d+$)/)
-        //            name2contig.get(name).quality = seq
-        //        }
-
-
-        //        contigsStatsFile.eachLine { line ->
-        //            if (!line.startsWith('#')) {
-        //                def cols = line.split(/\s+/)
-        //                Contig theContig = name2contig.get(cols[0])
-        //                theContig.length = cols[1].toInteger()
-        //                theContig.averageQuality = cols[2].toFloat()
-        //                theContig.readCount = cols[3].toFloat()
-        //                theContig.maximumCoverage = cols[4].toFloat()
-        //                theContig.averageCoverage = cols[5].toFloat()
-        //                theContig.gc = cols[6].toFloat()
-        //                theContig.searchAssemblyId = a.id
-        //                a.addToContigs(theContig)
-        //            }
-        //
-        //        }
 
         def currentContigName
         def id2Start = [:]
@@ -66,20 +42,33 @@ class miraService {
         def currentContig
 
 
+        def session = sessionFactory.openStatelessSession()
+
         aceFile.eachLine { line ->
 
             if (line.startsWith(/CO /)) {
                 if (currentContig) {
                     a.addToContigs(currentContig)
-                    a.save(flush: true)
-                    println "savid ${currentContig.name}"
+                    session.insert(currentContig)
+//                    println "savid ${currentContig.name}"
+                    if (++added % 100 == 0) {
+                        println added
+                    }
+//                    println "${System.currentTimeMillis() - startTime}  :  $added"
+                    // current best :  141155 after inserting 100
+                    //                  80707 by switching to explicit setting of properties rather than using maps
+                    //                  80926 by switching to saving contig rather than assembly
+                    //                  25809 by switching to stateless session
+
                 }
                 currentContigString = []
                 currentContigName = line.split(/ /)[1]
                 println currentContigName
                 inContigString = true
 
-                currentContig = new Contig(name: currentContigName, searchAssemblyId: a.id)
+                currentContig = new Contig()
+                currentContig.name = currentContigName
+                currentContig.searchAssemblyId = a.id
             }
 
             else if (line.startsWith(/BQ/)) {
@@ -98,20 +87,34 @@ class miraService {
             else if (line.equals('') && inReadString) {    // we have reached the end of the read sequence string
                 Integer start = id2Start.get(currentReadId).toInteger()
                 StringBuilder outputString = new StringBuilder()
+                ArrayList alignedReadString = []
+
+                Integer deletedBases = 0
+
                 if (start > 0) {
-                    ArrayList alignedReadString = ['-'].multiply(start - 1) + currentReadString
-                    alignedReadString.eachWithIndex {base, i ->
-                        def contigBase = currentContigString[i]
-                        if (currentContigString.size() > i && contigBase == '*') {
-                            outputString.append("")
-                        }
-                        else {
-                            outputString.append(base)
-                        }
+                    alignedReadString = ['-'].multiply(start - 1) + currentReadString
+                }
+                else {
+                    ((1 - start)..currentReadString.size()).each {
+                        alignedReadString.add(currentReadString[it])
+                    }
+                }
+                alignedReadString.eachWithIndex {base, i ->
+                    def contigBase = currentContigString[i]
+                    if (currentContigString.size() > i && contigBase == '*') {
+                        outputString.append("")
+                        deletedBases++
+                    }
+                    else {
+                        outputString.append(base)
                     }
                 }
 
-                def r = new Read(name: currentReadId, start: start, sequence: outputString.toString(), stop: start + outputString.length())
+                def r = new Read()
+                r.name = currentReadId
+                r.start = start
+                r.sequence = outputString.toString()
+                r.stop = start + currentReadString.size() - deletedBases
                 currentContig.addToReads(r)
                 currentReadString = []
                 inReadString = false;
@@ -144,7 +147,8 @@ class miraService {
         if (currentContig) {
             a.addToContigs(currentContig)
             a.save(flush: true)
-            println "savid ${currentContig.name}"
+            println "saved ${currentContig.name}"
+
         }
 
 

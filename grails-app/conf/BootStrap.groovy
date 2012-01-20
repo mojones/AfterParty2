@@ -147,7 +147,7 @@ class BootStrap {
 
                 def a = miraService.createAssemblyAndContigsFromMiraInfo(
                         new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_info/lito_info_assembly.txt'),
-                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/small.ace'),
+                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace'),
                         lSig
                 )
 

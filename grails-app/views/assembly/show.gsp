@@ -292,7 +292,7 @@
 
         <div class="bheadr"></div>
 
-        <h2> Browse contigs for this assembly</h2>
+        <h2>Browse contigs for this assembly</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -308,7 +308,7 @@
             </thead>
 
             <tbody>
-            <g:each var="contig" in="${contigs}" status="index">
+            <g:each var="contig" in="${contigs[0..10]}" status="index">
 
                 <tr>
                     <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>

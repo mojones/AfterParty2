@@ -195,9 +195,20 @@ class AssemblyController {
     }
 
     def show = {
-        def assemblyInstance = Assembly.get(params.id)
-        def contigs = assemblyInstance.contigs.sort({it.reads.size()})
-        [assemblyInstance: assemblyInstance, contigs:contigs]
+//        def assemblyInstance = Assembly.get(params.id)
+        def criteria = Assembly.createCriteria()
+        def start = System.currentTimeMillis()
+
+        def a = criteria.get({
+            eq('id', params.id.toLong())
+            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
+        })
+        println "fetched : ${System.currentTimeMillis() - start}"
+        def contigs = a.contigs.sort({-it.reads.size()})
+        println "sorted : ${System.currentTimeMillis() - start}"
+        [assemblyInstance: a, contigs: contigs]
     }
 
     def search = {

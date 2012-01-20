@@ -72,7 +72,8 @@
                 drawing.drawTitle('Reads');
                 for (var i = 0; i < data.reads.length; i++) {
                     var read = data.reads[i];
-                    readRect = drawing.drawBar(read.start, read.stop, 2, 'black', read.name);
+                    var readTooltip = read.name + ' : ' + read.start + ' - ' + read.stop;
+                    readRect = drawing.drawBar(read.start, read.stop, 2, 'black', readTooltip);
                 }
 
                 drawing.end();
