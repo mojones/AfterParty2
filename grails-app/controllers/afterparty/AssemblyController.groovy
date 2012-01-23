@@ -202,11 +202,10 @@ class AssemblyController {
         def a = criteria.get({
             eq('id', params.id.toLong())
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
-            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
+        def contigs = Contig.findAllByAssembly(a, [max: 20])
         println "fetched : ${System.currentTimeMillis() - start}"
-        def contigs = a.contigs.sort({-it.reads.size()})
         println "sorted : ${System.currentTimeMillis() - start}"
         [assemblyInstance: a, contigs: contigs]
     }

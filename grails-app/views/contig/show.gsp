@@ -46,8 +46,9 @@
                 drawing.start(paperWidth, 'coffeescript_annotation');
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Contig annotation');
-                drawing.drawSpacer(50);
+
                 drawing.drawScale(data.length);
+
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Quality');
                 drawing.drawChart(data.quality, 100);
@@ -55,7 +56,7 @@
                 for (var i = 0; i < data.blastHits.length; i++) {
                     var hit = data.blastHits[0];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    blastRect = drawing.drawBar(hit.start, hit.stop, 10, hitColour, hit.description);
+                    var blastRect = drawing.drawBar(hit.start, hit.stop, 10, hitColour, hit.description);
                     blastRect.hover(
                             function(event) {
                                 this.attr({stroke: 'black', 'stroke-width' : '5'});
@@ -73,15 +74,15 @@
                 for (var i = 0; i < data.reads.length; i++) {
                     var read = data.reads[i];
                     var readTooltip = read.name + ' : ' + read.start + ' - ' + read.stop;
-                    readRect = drawing.drawBar(read.start, read.stop, 2, 'black', readTooltip);
+
+                    var readRect = drawing.drawBar(read.start, read.stop, 2, 'black', readTooltip);
                 }
-
                 drawing.end();
-
-
             }
 
             $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig);
+
+
 
 
         </script>

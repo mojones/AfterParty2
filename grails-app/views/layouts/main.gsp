@@ -100,6 +100,7 @@
             <div class="message errormsg"><p>${flash.error}</p></div>
         </g:if>
 
+        <p id="log"></p>
 
         <g:layoutBody/>
 
