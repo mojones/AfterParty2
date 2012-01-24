@@ -6,6 +6,7 @@ import org.xml.sax.helpers.DefaultHandler
 class RecordsHandler extends DefaultHandler {
 
     def jobId
+    def statelessSession
 
     // to make sure we only add annotation to the right contigs
     def assembly
@@ -37,35 +38,39 @@ class RecordsHandler extends DefaultHandler {
     void endElement(String ns, String localName, String qName) {
         currentElement = null
         if (qName == 'Hsp') {
-            BlastHit b = new BlastHit(
-                    description: currentProperties.get('Hit_def'),
-                    accession: currentProperties.get('Hit_accession'),
-                    bitscore: currentProperties.get('Hsp_bit-score').toFloat(),
-                    start: currentProperties.get('Hsp_query-from').toInteger(),
-                    stop: currentProperties.get('Hsp_query-to').toInteger()
-            )
+            BlastHit b = new BlastHit()
+            b.description = currentProperties.get('Hit_def')
+            b.accession = currentProperties.get('Hit_accession')
+            b.bitscore = currentProperties.get('Hsp_bit-score').toFloat()
+            b.start = currentProperties.get('Hsp_query-from').toInteger()
+            b.stop = currentProperties.get('Hsp_query-to').toInteger()
+
             currentContig.addToBlastHits(b)
-            b.description.tokenize().unique().findAll({it.size() > 5}).each {
-                currentTags.add(it.toString())
-            }
+            b.save()
+//            statelessSession.insert(b)
+//            b.description.tokenize().unique().findAll({it.size() > 5}).each {
+            //                currentTags.add(it.toString())
+            //            }
 
         }
 
         if (qName == 'Iteration') {
             count++
 
-            println "added hits for $currentContig.name"
+//            println "added hits for $currentContig.name"
 //            currentContig.addTags(currentTags)
-            currentContig.save(flush: true)
-            currentContig.index()
+            //            currentContig.save(flush: true)
+            //            currentContig.index()
             currentContig = null
             currentTags.clear()
 
-            if ((count % 10) == 0) {
-                println "updating job to $count"
-                BackgroundJob job = BackgroundJob.get(jobId)
-                job.progress = "added $count contigs"
-                job.save(flush: true)
+            if ((count % 100) == 0) {
+                BackgroundJob.withNewSession {
+                    println "updating job to $count"
+                    BackgroundJob job = BackgroundJob.get(jobId)
+                    job.progress = "added $count contigs"
+                    job.save(flush: true)
+                }
             }
         }
     }

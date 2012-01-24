@@ -5,8 +5,11 @@ import javax.xml.parsers.SAXParserFactory
 import org.xml.sax.InputSource
 
 class BlastService {
+    def sessionFactory
+
 
     static transactional = false
+
 
     def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
 
@@ -14,13 +17,15 @@ class BlastService {
 //            println "BLAST: $it"
 //        }
 //
-        def handler = new RecordsHandler(jobId : backgroundJobId, assembly: Assembly.get(assemblyId.toLong()))
+        def session = sessionFactory.openStatelessSession()
+
+        def handler = new RecordsHandler(jobId : backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)
         def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
         reader.parse(new InputSource(input))
-
+        session.finalize()
         println "returning from service"
     }
 

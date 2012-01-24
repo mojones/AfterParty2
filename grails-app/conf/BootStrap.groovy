@@ -153,7 +153,7 @@ class BootStrap {
 
                 println "adding blast annotation"
 
-                File blastFile = new File('/home/martin/Downloads/contigs.xml')
+                File blastFile = new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out_blast.xml')
                 InputStream blastInput = new FileInputStream(blastFile)
                 def job = new BackgroundJob(
                         name: "bootstrapping blast data",
@@ -164,7 +164,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-                //blastService.addBlastHitsFromInput(blastInput, job.id, a.id )
+                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',

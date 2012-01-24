@@ -23,7 +23,7 @@ class AssemblyController {
         BackgroundJob job = new BackgroundJob(
                 name: 'uploading BLAST annotation',
                 progress: 'running',
-                study: a.study,
+                study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
         job.save(flush: true)
@@ -35,10 +35,13 @@ class AssemblyController {
             blastService.addBlastHitsFromInput(f.inputStream, job.id, assemblyId)
             println "back in controller, indexing"
 
+            BackgroundJob.withNewSession {
+                job2 = BackgroundJob.get(job.id)
+                job2.progress = 'finished'
+                job2.status = BackgroundJobStatus.FINISHED
+                job2.save()
+            }
 
-            job2.progress = 'finished'
-            job2.status = BackgroundJobStatus.FINISHED
-            job2.save(flush: true)
         }
 
         redirect(controller: 'backgroundJob', action: 'list')
