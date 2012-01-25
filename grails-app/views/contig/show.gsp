@@ -110,7 +110,7 @@
     <div class="block_content">
         <h3>Read count : ${contigInstance.reads.size()}</h3>
 
-        <p>tags : ${contigInstance.tags.join(',')}</p>
+
 
         <h3>Sequence</h3>
         <textarea rows="10" cols="100">${contigInstance.sequence}</textarea>
