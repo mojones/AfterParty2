@@ -1,8 +1,7 @@
 package afterparty
 
-import org.grails.taggable.Taggable
 
-class Contig implements Taggable{
+class Contig{
 
     String name
     String sequence

@@ -6,7 +6,7 @@ class StudyFilters {
 
 
     def filters = {
-        studyExists(controller: 'study', action: '(overview|show|createCompoundSample|makePublished)') {
+        studyExists(controller: 'study', action: '(overview|show|createCompoundSample|makePublished|indexForSearching)') {
             before = {
                 println "checking if study exists"
                 Study s = Study.get(params.id)
@@ -32,7 +32,7 @@ class StudyFilters {
             }
         }
 
-        studyIsOwnedByUser(controller: 'study', action: '(makePublished|createCompoundSample)') {
+        studyIsOwnedByUser(controller: 'study', action: '(makePublished|createCompoundSample|indexForSearching)') {
             before = {
                 println "checking if study is owned by user"
                 Study s = Study.get(params.id)

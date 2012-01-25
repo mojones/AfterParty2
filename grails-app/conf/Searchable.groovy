@@ -131,7 +131,7 @@ searchable {
      * If you use BootStrap.groovy to insert your data then you should use "true",
      * which means do a non-forking, otherwise "fork" is recommended
      */
-    bulkIndexOnStartup = true
+    bulkIndexOnStartup = false
 
     /**
      * Should index locks be removed (if present) at startup?
@@ -143,7 +143,7 @@ searchable {
 environments {
 
     development_rebuild{
-        bulkIndexOnStartup = true
+        bulkIndexOnStartup = false
 
     }
 
