@@ -225,7 +225,6 @@ class AssemblyController {
             String completeQuery = "${params.q} AND searchAssemblyId:${params.id}"
             params.max = 50
             return [searchResult: Contig.search(completeQuery), assemblies: study.compoundSamples.assemblies.flatten()]
-//            return [searchResult: Contig.search('assemblyId:42', params)]
         } catch (SearchEngineQueryParseException ex) {
             return [parseException: true]
         }
