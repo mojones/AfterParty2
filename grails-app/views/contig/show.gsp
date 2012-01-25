@@ -41,6 +41,7 @@
         <script type="text/javascript">
 
             var drawContig = function(data) {
+
                 var paperWidth = $('#coffeescript_annotation').width() - 20;
                 var drawing = new BioDrawing();
                 drawing.start(paperWidth, 'coffeescript_annotation');
@@ -88,7 +89,9 @@
         </script>
 
 
-        <div id="coffeescript_annotation"></div>
+        <div id="coffeescript_annotation">
+            <h2>Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"></h2>
+        </div>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
