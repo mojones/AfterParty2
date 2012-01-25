@@ -60,7 +60,7 @@ class AssemblyController {
         BackgroundJob job = new BackgroundJob(
                 name: 'uploading contigs',
                 progress: 'queued',
-                study: Assembly.get(assemblyId).study,
+                study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_CONTIGS)
         job.save(flush: true)
@@ -85,18 +85,6 @@ class AssemblyController {
 
                 def contig = new Contig(name: name, sequence: seq)
                 contig.quality = '0 ' * seq.length()
-                contig.readCount = 1
-                contig.length = seq.length()
-                contig.averageQuality = 0
-                contig.averageCoverage = 1
-                contig.maximumCoverage = 1
-                def gcCount = 0
-                seq.toLowerCase().each { base ->
-                    if (base == 'c' || base == 'g') {
-                        gcCount++
-                    }
-                }
-                contig.gc = gcCount / seq.length()
                 contig.searchAssemblyId = assemblyId
                 assembly.addToContigs(contig)
                 created++

@@ -286,57 +286,60 @@
 
 </div>
 
-<div class="block">
-    <div class="block_head">
-        <div class="bheadl"></div>
+<g:if test="${contigs.size() > 10}">
 
-        <div class="bheadr"></div>
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
 
-        <h2>Browse contigs for this assembly</h2>
-    </div>        <!-- .block_head ends -->
+            <div class="bheadr"></div>
 
-    <div class="block_content">
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <h2>Browse contigs for this assembly</h2>
+        </div>        <!-- .block_head ends -->
 
-            <thead>
-            <tr>
+        <div class="block_content">
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 
-                <th>Contig ID</th>
-                <th>Length</th>
-                <th>Reads</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <g:each var="contig" in="${contigs[0..10]}" status="index">
-
+                <thead>
                 <tr>
-                    <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-                    <td>${contig.length()}</td>
-                    <td>${contig.reads.size()}</td>
 
+                    <th>Contig ID</th>
+                    <th>Length</th>
+                    <th>Reads</th>
                 </tr>
-            </g:each>
-            </tbody>
+                </thead>
 
-        </table>
+                <tbody>
+                <g:each var="contig" in="${contigs[0..10]}" status="index">
 
-        <g:set var="totalPages" value="${assemblyInstance.contigs.size() / 10}"/>
-        <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
-        <g:else>
+                    <tr>
+                        <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
+                        <td>${contig.length()}</td>
+                        <td>${contig.reads.size()}</td>
 
-            <div class="pagination left">
-                <g:paginate controller="assembly" action="show" params="[id: assemblyInstance.id]"
-                            total="${assemblyInstance.contigs.size()}"
-                            prev="&lt; previous" next="next &gt;"/>
-            </div>        <!-- .pagination ends -->
+                    </tr>
+                </g:each>
+                </tbody>
 
-        </g:else>
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
+            </table>
 
-    <div class="bendr"></div>
-</div>
+            <g:set var="totalPages" value="${assemblyInstance.contigs.size() / 10}"/>
+            <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
+            <g:else>
+
+                <div class="pagination left">
+                    <g:paginate controller="assembly" action="show" params="[id: assemblyInstance.id]"
+                                total="${assemblyInstance.contigs.size()}"
+                                prev="&lt; previous" next="next &gt;"/>
+                </div>        <!-- .pagination ends -->
+
+            </g:else>
+        </div>        <!-- .block_content ends -->
+        <div class="bendl"></div>
+
+        <div class="bendr"></div>
+    </div>
+</g:if>
 
 
 <div class="block">

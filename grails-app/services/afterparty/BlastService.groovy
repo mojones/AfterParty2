@@ -34,15 +34,16 @@ class BlastService {
     def runBlast(def assemblyId, def backgroundJobId) {
 
         println "running blast for $assemblyId"
+        Assembly assembly = Assembly.get(assemblyId)
         BackgroundJob job = BackgroundJob.get(backgroundJobId)
         job.progress = "starting BLAST"
 //        job.status = BackgroundJob.RUNNING
+        def contigCount = assembly.contigs.size()
+        job.totalUnits = contigCount
         job.status = BackgroundJobStatus.RUNNING
         job.save(flush: true)
 
-        Assembly assembly = Assembly.get(assemblyId)
 
-        def contigCount = assembly.contigs.size()
 
         def n = 0
 
@@ -66,6 +67,7 @@ class BlastService {
             }
             n++
             job.progress = "BLASTED $n / $contigCount"
+            job.unitsDone = n
             job.save(flush: true)
         }
         job.progress = "creating search index"
