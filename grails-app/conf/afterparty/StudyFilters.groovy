@@ -6,7 +6,7 @@ class StudyFilters {
 
 
     def filters = {
-        studyExists(controller: 'study', action: '(overview|show|createCompoundSample|makePublished|indexForSearching)') {
+        studyExists(controller: 'study', action: '(overview|show|createCompoundSample|makePublished|indexForSearching|search)') {
             before = {
                 println "checking if study exists"
                 Study s = Study.get(params.id)
@@ -18,7 +18,7 @@ class StudyFilters {
             }
         }
 
-        studyIsPublicOrOwnedByUser(controller: 'study', action: '(overview|show)') {
+        studyIsPublicOrOwnedByUser(controller: 'study', action: '(overview|show|search)') {
             before = {
                 println "checking if study is either public or owned"
                 Study s = Study.get(params.id)

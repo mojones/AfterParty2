@@ -201,21 +201,5 @@ class AssemblyController {
         [assemblyInstance: a, contigs: contigs]
     }
 
-    def search = {
-        println "searching with assembly $params.id"
-
-        println "query is " + params.q
-        def study = Study.get(session.studyId)
-        if (!params.q?.trim()) {
-            return [assemblies: study.compoundSamples.assemblies.flatten()]
-        }
-        try {
-            String completeQuery = "${params.q} AND searchAssemblyId:${params.id}"
-            params.max = 50
-            return [searchResult: Contig.search(completeQuery), assemblies: study.compoundSamples.assemblies.flatten()]
-        } catch (SearchEngineQueryParseException ex) {
-            return [parseException: true]
-        }
-    }
 
 }

@@ -150,7 +150,7 @@ a:hover {
 	}
 
 #header #nav ul li {
-	width: 190px;
+	width: 300px;
 	float: left; /*For IE 7 lack of compliance*/
 	display: block !important;
 	display: inline; /*For IE*/

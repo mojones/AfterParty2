@@ -61,6 +61,12 @@ To make a bit of text editable we need to
                 <input type="submit" class="submit long" value="Index contigs for searching"/>
             </g:form>
         </g:if>
+        <p>
+            <g:form controller="study" action="search" method="get">
+                <g:hiddenField name="id" value="${studyInstance.id}"/>
+                <input type="submit" class="submit long" value="Search contigs"/>
+            </g:form>
+        </p>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>

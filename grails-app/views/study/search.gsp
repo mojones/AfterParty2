@@ -29,7 +29,9 @@
 
         <div class="block_content">
 
-            <g:form url='[controller: "assembly", action: "search"]' id="searchableForm" name="searchableForm" method="get">
+            <g:form url='[controller: "study", action: "search"]' id="searchableForm" name="searchableForm"
+                    method="get">
+                <g:hiddenField name="id" value="${studyInstance.id}"/>
                 <p>
                     <label>Search string:</label><br/>
                     <g:textField name="q" value="${params.q}" class="text small"/>
@@ -39,11 +41,13 @@
 
                 <p><label>Search assembly:</label> <br/>
 
-                    <select class="styled" name="id">
-                        <g:each in="${assemblies}" var="a">
-                            <option value="${a.id}">${a.name}</option>
-                        </g:each>
-                    </select></p>
+
+
+                    <g:each in="${assemblies}" var="a">
+                        <g:checkBox name="check_${a.id}" value="${true}"/>
+                        ${a.name}
+                        <br/>
+                    </g:each>
 
 
                 <p>

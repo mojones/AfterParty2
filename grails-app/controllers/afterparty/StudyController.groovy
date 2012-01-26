@@ -1,6 +1,7 @@
 package afterparty
 
 import grails.plugins.springsecurity.Secured
+import org.compass.core.engine.SearchEngineQueryParseException
 
 class StudyController {
 
@@ -73,6 +74,36 @@ class StudyController {
         redirect(controller: 'backgroundJob', action: 'list')
 
     }
+
+    def search = {
+
+
+        println "query is " + params.q
+        def study = Study.get(params.id)
+        if (!params.q?.trim()) {
+            return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study]
+        }
+        try {
+
+            List assemblyIds = []
+            //which assemblies are we looking at?
+            params.entrySet().findAll({it.key.startsWith('check_')}).each {
+                Integer assemblyId = it.key.split(/_/)[1].toInteger()
+                assemblyIds.add(assemblyId)
+            }
+
+            StringBuilder queryStringBuilder = new StringBuilder()
+            queryStringBuilder.append("${params.q} AND (")
+            queryStringBuilder.append(assemblyIds.collect({"searchAssemblyId:$it"}).join(' OR '))
+            queryStringBuilder.append(')')
+            params.max = 50
+            println "final query string is " + queryStringBuilder.toString()
+            return [searchResult: Contig.search(queryStringBuilder.toString()), assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study]
+        } catch (SearchEngineQueryParseException ex) {
+            return [parseException: true]
+        }
+    }
+
 
     @Secured(['ROLE_USER'])
     def createCompoundSample = {
