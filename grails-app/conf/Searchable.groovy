@@ -108,7 +108,7 @@ searchable {
      * http://grails.org/Searchable+Plugin
      */
     defaultMethodOptions = [
-            search: [reload: false, escape: false, offset: 0, max: 10, defaultOperator: "and"],
+            search: [reload: false, escape: false, offset: 0, max: 50, defaultOperator: "and"],
             suggestQuery: [userFriendly: true]
     ]
 

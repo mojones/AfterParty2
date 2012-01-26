@@ -91,7 +91,7 @@ class StudyController {
         println "query is " + params.q
         def study = Study.get(params.id)
         if (!params || !params.q?.trim()) {
-            println "returning without searchResult"
+            // if there is no query then we will just return the assembiles
             return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: false]
         }
         try {
@@ -121,7 +121,7 @@ class StudyController {
             println "final query string is " + queryStringBuilder.toString()
 
             def searchResultContigs = []
-            def rawSearchResult = Contig.search(queryStringBuilder.toString())
+            def rawSearchResult = Contig.search(queryStringBuilder.toString(), [max: 50])
             rawSearchResult.results.each {
                 searchResultContigs.add(Contig.get(it.id))
             }
@@ -133,7 +133,8 @@ class StudyController {
                     searchResultContigs: searchResultContigs,         // the list of results, as full Contig domain objects
                     searchResult: rawSearchResult,                    // the result object that contains the query, offset, etc
                     assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
-                    studyInstance: study, showResults: true                     // the study that we are looking at
+                    studyInstance: study, // the study that we are looking at
+                    showResults: true                                           // tell the gsp to show the results
             ]
 
 
