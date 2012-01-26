@@ -33,15 +33,25 @@ class StudyController {
             job2.save(flush: true)
 
 
-
             Study s = Study.get(studyId)
+
+            // first calculate the total number of contigs we will be indexing
+            Integer totalContigsToIndex = 0
+            s.compoundSamples.each { compoundSample ->
+                compoundSample.assemblies.each { ass ->
+                    totalContigsToIndex += ass.contigs.size()
+                }
+            }
+            job2.totalUnits = totalContigsToIndex
+            job2.save(flush: true)
+
+            // now do the indexing
+
             s.compoundSamples.each { compoundSample ->
                 println "indexing compound sample $compoundSample.name"
                 compoundSample.assemblies.each { ass ->
                     println "indexing assembly $ass.name"
-                    // testing
-                    println ass.contigs.size()
-                    job2.totalUnits = ass.contigs.size()
+
                     Integer batchSize = 100
                     for (Integer offset = 0; offset < ass.contigs.size(); offset += batchSize) {
                         Integer remaining = ass.contigs.size() - offset
@@ -62,8 +72,8 @@ class StudyController {
                         println "fetched in : " + (System.currentTimeMillis() - start)
                         Contig.index(result)
                         println "indexed in : " + (System.currentTimeMillis() - start)
-                        job2.progress = "indexed $offset / ${ass.contigs.size()}"
-                        job2.unitsDone = offset
+                        job2.progress = "indexed $offset / ${ass.contigs.size()} (total $totalContigsToIndex)"
+                        job2.unitsDone = job2.unitsDone + thisBatch
                         job2.save(flush: true)
                     }
                 }
@@ -86,18 +96,26 @@ class StudyController {
         }
         try {
 
-            List assemblyIds = []
+            List assemblies = []
             //which assemblies are we looking at?
             params.entrySet().findAll({it.key.startsWith('check_')}).each {
                 Integer assemblyId = it.key.split(/_/)[1].toInteger()
-                assemblyIds.add(assemblyId)
+                assemblies.add(Assembly.get(assemblyId))
             }
+
+            // set up colours for assemblies
+            def assemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
+            def assemblyToColour = [:]
+            assemblies.eachWithIndex { assembly, index ->
+                assemblyToColour.put(assembly, assemblyColours.get(index))
+            }
+
 
 
 
             StringBuilder queryStringBuilder = new StringBuilder()
             queryStringBuilder.append("${params.q} AND (")
-            queryStringBuilder.append(assemblyIds.collect({"searchAssemblyId:$it"}).join(' OR '))
+            queryStringBuilder.append(assemblies.collect({"searchAssemblyId:$it.id"}).join(' OR '))
             queryStringBuilder.append(')')
             params.max = 50
             println "final query string is " + queryStringBuilder.toString()
@@ -107,7 +125,18 @@ class StudyController {
             rawSearchResult.results.each {
                 searchResultContigs.add(Contig.get(it.id))
             }
-            return [searchResultContigs: searchResultContigs, searchResult: rawSearchResult, assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: true]
+
+            // we will return a lot of data to render the search results...
+            return [
+                    assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
+                    searchedAssemblies: assemblies,         // the list of assemblies that was involved in the search
+                    searchResultContigs: searchResultContigs,         // the list of results, as full Contig domain objects
+                    searchResult: rawSearchResult,                    // the result object that contains the query, offset, etc
+                    assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
+                    studyInstance: study, showResults: true                     // the study that we are looking at
+            ]
+
+
         } catch (SearchEngineQueryParseException ex) {
             return [parseException: true]
         }

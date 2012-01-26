@@ -123,6 +123,12 @@
             <div class="block_content">
                 <g:if test="${haveResults}">
 
+                    <g:each var="assembly" in="${searchedAssemblies}" status="index">
+                        <p style="background-color: ${assemblyToColour.get(assembly)}" class="assemblyNameBar" >${assembly.name}</p>
+
+                    </g:each>
+                    <br/><br/><br/><br/>
+
                     <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 
                         <thead>
@@ -137,8 +143,8 @@
                         <tbody>
                         <g:each var="contig" in="${searchResultContigs}" status="index">
 
-                            <tr>
-                                <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name} (assembly ${contig.assembly}) </g:link></td>
+                            <tr style="background-color: ${assemblyToColour.get(contig.assembly)}">
+                                <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
                                 <td>${contig.topBlastHitMatching(params.q).description}</td>
                                 <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
 

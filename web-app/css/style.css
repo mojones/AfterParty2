@@ -1017,3 +1017,11 @@ a:hover {
 	float: right;
 	text-align: right;
 	}
+
+/*  added by martin*/
+
+.assemblyNameBar{
+    padding: 15px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
