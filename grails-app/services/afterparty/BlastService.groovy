@@ -61,7 +61,6 @@ class BlastService {
                 writer.println(">${contig.name}\n${contig.sequence}")
                 writer.close()
 
-//                        println "saw $count hits"
                 addBlastHitsFromInput(p.in, job.id, assembly.id)
 
             }
@@ -70,10 +69,6 @@ class BlastService {
             job.unitsDone = n
             job.save(flush: true)
         }
-        job.progress = "creating search index"
-        job.save(flush: true)
-
-        Contig.index(assembly.contigs)
 
         job.progress = "finished"
         job.status = BackgroundJobStatus.FINISHED

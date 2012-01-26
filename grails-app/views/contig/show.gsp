@@ -79,6 +79,7 @@
                     var readRect = drawing.drawBar(read.start, read.stop, 2, 'black', readTooltip);
                 }
                 drawing.end();
+                $('#spinner').hide();
             }
 
             $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig);
@@ -90,7 +91,7 @@
 
 
         <div id="coffeescript_annotation">
-            <h2>Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"></h2>
+            <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"></h2>
         </div>
     </div>        <!-- .block_content ends -->
 
