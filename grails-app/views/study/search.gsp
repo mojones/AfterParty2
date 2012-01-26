@@ -96,66 +96,77 @@
     </div>
 
 
-    <g:set var="haveQuery" value="${params.q?.trim()}"/>
-    <g:set var="haveResults" value="${searchResult?.results}"/>
+    <g:if test="${showResults}">
+        <g:set var="haveQuery" value="${params.q?.trim()}"/>
+        <g:set var="haveResults" value="${searchResult && searchResult?.results}"/>
 
-    <g:if test="${haveResults}">
 
         <div class="block">
             <div class="block_head">
                 <div class="bheadl"></div>
 
                 <div class="bheadr"></div>
+                <g:if test="${haveResults}">
 
+                    <h2>
+                        Showing ${searchResult.offset + 1} - ${searchResult.results.size() + searchResult.offset} of ${searchResult.total} results for ${params.q}
+
+                    </h2>
+                </g:if><g:else>
                 <h2>
-                    Showing ${searchResult.offset + 1} - ${searchResult.results.size() + searchResult.offset} of ${searchResult.total} results for ${params.q}
+                    No results for "${params.q}"
 
                 </h2>
+            </g:else>
             </div>        <!-- .block_head ends -->
 
             <div class="block_content">
-                <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <g:if test="${haveResults}">
 
-                    <thead>
-                    <tr>
+                    <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 
-                        <th>Contig ID</th>
-                        <th>Top Hit description</th>
-                        <th>Top Hit bitscore</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <g:each var="result" in="${searchResult.results}" status="index">
-
+                        <thead>
                         <tr>
-                            <td><g:link controller="contig" action="show" id="${result.id}">${result.name}</g:link></td>
-                            <td>${result.topBlastHitMatching(params.q).description}</td>
-                            <td>${result.topBlastHitMatching(params.q).bitscore}</td>
 
+                            <th>Contig ID</th>
+                            <th>Top Hit description</th>
+                            <th>Top Hit bitscore</th>
                         </tr>
-                    </g:each>
-                    </tbody>
+                        </thead>
 
-                </table>
+                        <tbody>
+                        <g:each var="result" in="${searchResult.results}" status="index">
 
-                <g:set var="totalPages" value="${Math.ceil(searchResult.total / searchResult.max)}"/>
-                <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
-                <g:else>
+                            <tr>
+                                <td><g:link controller="contig" action="show"
+                                            id="${result.id}">${result.name}</g:link></td>
+                                <td>${result.topBlastHitMatching(params.q).description}</td>
+                                <td>${result.topBlastHitMatching(params.q).bitscore}</td>
 
-                    <div class="pagination left">
-                        <g:paginate controller="contig" action="search" params="[q: params.q]"
-                                    total="${searchResult.total}"
-                                    prev="&lt; previous" next="next &gt;"/>
-                    </div>        <!-- .pagination ends -->
+                            </tr>
+                        </g:each>
+                        </tbody>
 
-                </g:else>
+                    </table>
+
+                    <g:set var="totalPages" value="${Math.ceil(searchResult.total / searchResult.max)}"/>
+                    <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
+                    <g:else>
+
+                        <div class="pagination left">
+                            <g:paginate controller="contig" action="search" params="[q: params.q]"
+                                        total="${searchResult.total}"
+                                        prev="&lt; previous" next="next &gt;"/>
+                        </div>        <!-- .pagination ends -->
+
+                    </g:else>
+                </g:if>
             </div>        <!-- .block_content ends -->
             <div class="bendl"></div>
 
             <div class="bendr"></div>
-        </div>
 
+        </div>
     </g:if>
 
 </body>

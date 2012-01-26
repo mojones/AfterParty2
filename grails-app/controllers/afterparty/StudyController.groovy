@@ -80,8 +80,9 @@ class StudyController {
 
         println "query is " + params.q
         def study = Study.get(params.id)
-        if (!params.q?.trim()) {
-            return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study]
+        if (!params || !params.q?.trim()) {
+            println "returning without searchResult"
+            return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: false]
         }
         try {
 
@@ -98,7 +99,7 @@ class StudyController {
             queryStringBuilder.append(')')
             params.max = 50
             println "final query string is " + queryStringBuilder.toString()
-            return [searchResult: Contig.search(queryStringBuilder.toString()), assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study]
+            return [searchResult: Contig.search(queryStringBuilder.toString()), assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults : true]
         } catch (SearchEngineQueryParseException ex) {
             return [parseException: true]
         }
