@@ -91,7 +91,7 @@ class StudyController {
         println "query is " + params.q
         def study = Study.get(params.id)
         if (!params || !params.q?.trim()) {
-            // if there is no query then we will just return the assembiles
+            // if there is no query then we will just return the assemblies
             return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: false]
         }
         try {
