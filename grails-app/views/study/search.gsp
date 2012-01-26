@@ -159,9 +159,7 @@
                     <g:else>
 
                         <div class="pagination left">
-                            <g:paginate controller="contig" action="search" params="[q: params.q]"
-                                        total="${searchResult.total}"
-                                        prev="&lt; previous" next="next &gt;"/>
+                            <g:paginate controller="study" action="search" params="${params}" total="${searchResult.total}" prev="&lt; previous" next="next &gt;"/>
                         </div>        <!-- .pagination ends -->
 
                     </g:else>

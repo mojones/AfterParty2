@@ -120,8 +120,10 @@ class StudyController {
             params.max = 50
             println "final query string is " + queryStringBuilder.toString()
 
+            Integer offset = params.offset ? params.offset.toInteger() : 0
+
             def searchResultContigs = []
-            def rawSearchResult = Contig.search(queryStringBuilder.toString(), [max: 50])
+            def rawSearchResult = Contig.search(queryStringBuilder.toString(), [max: 50, offset: offset])
             rawSearchResult.results.each {
                 searchResultContigs.add(Contig.get(it.id))
             }
