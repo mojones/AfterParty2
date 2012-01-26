@@ -93,13 +93,21 @@ class StudyController {
                 assemblyIds.add(assemblyId)
             }
 
+
+
             StringBuilder queryStringBuilder = new StringBuilder()
             queryStringBuilder.append("${params.q} AND (")
             queryStringBuilder.append(assemblyIds.collect({"searchAssemblyId:$it"}).join(' OR '))
             queryStringBuilder.append(')')
             params.max = 50
             println "final query string is " + queryStringBuilder.toString()
-            return [searchResult: Contig.search(queryStringBuilder.toString()), assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults : true]
+
+            def searchResultContigs = []
+            def rawSearchResult = Contig.search(queryStringBuilder.toString())
+            rawSearchResult.results.each {
+                searchResultContigs.add(Contig.get(it.id))
+            }
+            return [searchResultContigs: searchResultContigs, searchResult: rawSearchResult, assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: true]
         } catch (SearchEngineQueryParseException ex) {
             return [parseException: true]
         }

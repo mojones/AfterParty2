@@ -135,13 +135,12 @@
                         </thead>
 
                         <tbody>
-                        <g:each var="result" in="${searchResult.results}" status="index">
+                        <g:each var="contig" in="${searchResultContigs}" status="index">
 
                             <tr>
-                                <td><g:link controller="contig" action="show"
-                                            id="${result.id}">${result.name}</g:link></td>
-                                <td>${result.topBlastHitMatching(params.q).description}</td>
-                                <td>${result.topBlastHitMatching(params.q).bitscore}</td>
+                                <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name} (assembly ${contig.assembly}) </g:link></td>
+                                <td>${contig.topBlastHitMatching(params.q).description}</td>
+                                <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
 
                             </tr>
                         </g:each>
