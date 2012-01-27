@@ -1,4 +1,4 @@
-<%@ page import="afterparty.Study" %>
+<%@ page import="afterparty.StatisticsService; afterparty.Study" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -165,8 +165,8 @@ To make a bit of text editable we need to
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${compoundSample.assemblies}" var="assembly">
-                    <tr>
+                <g:each in="${compoundSample.assemblies.sort()}" var="assembly" status="index">
+                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
                         <td><g:link controller="assembly" action="show" id="${assembly.id}">${assembly.name}</g:link></td>
                         <td>${assembly.contigs.size()}</td>
                         <td>${assembly.baseCount}</td>
@@ -189,6 +189,51 @@ To make a bit of text editable we need to
         <g:else>
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
         </g:else>
+    </div>        <!-- .block_content ends -->
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
+<div class="block withsidebar">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Assembly graphs</h2>
+    </div>        <!-- .block_head ends -->
+
+
+
+    <div class="block_content">
+
+        <div class="sidebar">
+            <ul class="sidemenu">
+                <li><a href="#sb1_raw">Length</a></li>
+                <li><a href="#sb2_raw">Quality</a></li>
+                <li><a href="#sb3_raw">Coverage</a></li>
+            </ul>
+
+            <p>Use the <strong>Contigs</strong> tab to download/upload contigs. Use the <strong>Annotations</strong> tab to run BLAST or upload a BLAST result.
+            </p>
+        </div>        <!-- .sidebar ends -->
+
+        <div class="sidebar_content" id="sb1_raw">
+            <p>Length graph will go here</p>
+        </div>        <!-- .sidebar_content ends -->
+
+
+        <div class="sidebar_content" id="sb2_raw">
+            <p>Quality graph will go here</p>
+        </div>        <!-- .sidebar_content ends -->
+
+
+        <div class="sidebar_content" id="sb3_raw">
+            <p>Coverage graph will go here</p>
+        </div>        <!-- .sidebar_content ends -->
+
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
 

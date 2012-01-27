@@ -46,7 +46,7 @@ class CompoundSampleController {
 
         println "overall max length is $overallMaxLength"
 
-        compoundSample.assemblies.eachWithIndex{  assembly, index ->
+        compoundSample.assemblies.sort().eachWithIndex{  assembly, index ->
 
             def assemblyJSON = [:]
 
