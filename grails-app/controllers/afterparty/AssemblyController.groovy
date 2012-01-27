@@ -1,7 +1,6 @@
 package afterparty
 
 import grails.plugins.springsecurity.Secured
-import org.compass.core.engine.SearchEngineQueryParseException
 
 class AssemblyController {
 

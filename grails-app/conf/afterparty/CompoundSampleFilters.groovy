@@ -6,7 +6,7 @@ class CompoundSampleFilters {
 
 
     def filters = {
-        compoundSampleExists(controller: 'compoundSample', action: '(show|createSample|createAssembly)') {
+        compoundSampleExists(controller: 'compoundSample', action: '(show|createSample|createAssembly|showAssembliesJSON)') {
             before = {
                 println "checking if compound sample exists"
                 CompoundSample s = CompoundSample.get(params.id)
@@ -18,7 +18,7 @@ class CompoundSampleFilters {
             }
         }
 
-        compoundSampleIsPublicOrOwnedByUser(controller: 'compoundSample', action: '(show)') {
+        compoundSampleIsPublicOrOwnedByUser(controller: 'compoundSample', action: '(show|showAssembliesJSON)') {
             before = {
                 println "checking if compound sample is either public or owned"
                 CompoundSample s = CompoundSample.get(params.id)

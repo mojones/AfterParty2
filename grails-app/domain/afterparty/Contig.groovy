@@ -51,7 +51,7 @@ class Contig{
         return this.sequence.length()
     }
 
-    static belongsTo = [assembly: Assembly]
+        static belongsTo = [assembly: Assembly]
 
 
     def isPublished(){

@@ -104,10 +104,9 @@ class StudyController {
             }
 
             // set up colours for assemblies
-            def assemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
             def assemblyToColour = [:]
             assemblies.eachWithIndex { assembly, index ->
-                assemblyToColour.put(assembly, assemblyColours.get(index))
+                assemblyToColour.put(assembly, StatisticsService.paleAssemblyColours.get(index))
             }
 
 
@@ -203,6 +202,7 @@ class StudyController {
         [studyInstance: studyInstance, isOwner: studyInstance.user.id == userId]
 
     }
+
 
 
 }
