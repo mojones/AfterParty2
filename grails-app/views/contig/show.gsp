@@ -53,6 +53,11 @@
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Quality');
                 drawing.drawChart(data.quality, 100);
+
+                drawing.drawSpacer(50);
+                drawing.drawTitle('Coverage');
+                drawing.drawChart(data.coverage, 100);
+
                 drawing.drawTitle('BLAST hits vs uniprot');
                 for (var i = 0; i < data.blastHits.length; i++) {
                     var hit = data.blastHits[0];

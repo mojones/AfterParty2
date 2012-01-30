@@ -32,6 +32,7 @@ class ContigController {
         render(contentType: "text/json") {
             length = contigInstance.length()
             quality = contigInstance.quality.split(' ')
+            coverage = contigInstance.coverage()
             blastHits = contigInstance.blastHits.sort({-it.bitscore})
             reads = contigInstance.reads.sort({it.start})   // sort the reads by start position so they pile up nicely
         }

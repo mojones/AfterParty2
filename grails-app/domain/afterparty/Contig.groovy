@@ -1,7 +1,7 @@
 package afterparty
 
 
-class Contig{
+class Contig {
 
     String name
     String sequence
@@ -14,7 +14,7 @@ class Contig{
     static searchable = {
         except = ['id', 'reads']
         blastHits component: true
-        searchAssemblyId : accessor:'property'
+        searchAssemblyId: accessor: 'property'
     }
 
     static constraints = {
@@ -29,36 +29,45 @@ class Contig{
 
 
 
-    static hasMany = [blastHits: BlastHit, reads : Read]
+    static hasMany = [blastHits: BlastHit, reads: Read]
 
     // TODO change this
-    def topBlastHitMatching(String query){
-        return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore : 0)
+    def topBlastHitMatching(String query) {
+        return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore: 0)
     }
 
-    def averageQuality(){
+    def averageQuality() {
         List qualities = quality.split(/ /).collect({it.toInteger()})
         Integer sum = qualities.sum()
         Integer size = qualities.size()
-        return  sum / size
+        return sum / size
     }
 
-    def gc(){
+    def coverage() {
+        def result = []
+        this.sequence.eachWithIndex { base, i ->
+            Integer coverage = this.reads.findAll({it.start <= i+1 && it.stop > i+1}).size()    // use i+1 because read alignment positions start at 1 not 0
+            result.add(coverage)
+        }
+        return result
+    }
+
+    def gc() {
         return sequence.findAll({it == 'g' || it == 'c'}).size() / sequence.length()
     }
 
-    def length(){
+    def length() {
         return this.sequence.length()
     }
 
-        static belongsTo = [assembly: Assembly]
+    static belongsTo = [assembly: Assembly]
 
 
-    def isPublished(){
+    def isPublished() {
         return this.assembly.isPublished()
     }
 
-    def isOwnedBy(def user){
-         return this.assembly.isOwnedBy(user)
+    def isOwnedBy(def user) {
+        return this.assembly.isOwnedBy(user)
     }
 }
