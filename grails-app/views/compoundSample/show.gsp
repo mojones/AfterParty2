@@ -9,7 +9,8 @@
     %{--we need raphael to draw comparison graphs--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>
+    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>
 
 
 
@@ -42,11 +43,45 @@ To make a bit of text editable we need to
             var raphaelWidth = $('#lengthGraphDiv').width() - 40;
             var chartWidth = raphaelWidth - 400;
 
+            // allow arrays to calculate their own maximum value
+            Array.prototype.max = function() {
+                return Math.max.apply(Math, this);
+            };
 
             // function to draw a chart
-            var drawAChart = function(containingElementId, xValues, yValues, colours) {
+            var drawAChart = function(containingElementId, xValues, yValues, colours, log, yMax) {
                 var r = Raphael(containingElementId, raphaelWidth, 1000);
-                var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 1"});
+                if (log) {
+                    var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0", axisymax: 5});
+                    var axis = r.g.axis(
+                            85, // distance away from the left side of the canvas
+                            600 + 100 - 10, // distance from the top = the chart height + the y-position of the chart - 10 pixels padding
+                            600 - 10, // position of the end of the text - probably we want this to be the length of the axis
+                            null, // start of the range - leave it as null as we are using our own labels
+                            null, // end of the range ditto
+                            4, // number of labels we want - 1 (i.e. 0-based index of the last label)
+                            1, // orientation: 0 -> x-axis, 1 -> y-axis
+                            ['1', '10', '100', '1000', '10000'], // array of labels
+                            "|", // the type of tick mark
+                            10); // the size of the tick mark
+                }
+                else {
+                    var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0"});
+                    var maximum = Math.max(yValues);
+                    var axis = r.g.axis(
+                            85, // distance away from the left side of the canvas
+                            600 + 100 - 10, // distance from the top = the chart height + the y-position of the chart - 10 pixels padding
+                            600 - 10, // position of the end of the text - probably we want this to be the length of the axis
+                            0, // start of the range - leave it as null as we are using our own labels
+                            yMax, //Math.max(yValues), // end of the range ditto
+                            3, // number of labels we want - 1 (i.e. 0-based index of the last label)
+                            1, // orientation: 0 -> x-axis, 1 -> y-axis
+                            null, // array of labels
+                            "|", // the type of tick mark
+                            10); // the size of the tick mark
+
+                }
+
             };
 
             $.get('/compoundSample/showAssembliesJSON/' + ${compoundSample.id}, function(data) {
@@ -63,17 +98,21 @@ To make a bit of text editable we need to
                 // draw length chart
                 var lengthYvalues = extractField('lengthYvalues');
                 var lengthXvalues = extractField('lengthXvalues');
-                drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours);
+                var lengthYmax = data.assemblyList[0].lengthYmax;
+                drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours, false, lengthYmax);
 
                 // draw quality chart
                 var qualityYvalues = extractField('qualityYvalues');
                 var qualityXvalues = extractField('qualityXvalues');
-                drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours);
+                var qualityYmax = data.assemblyList[0].qualityYmax;
+
+                drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours, false, qualityYmax);
 
                 // draw coverage chart
                 var coverageYvalues = extractField('coverageYvalues');
                 var coverageXvalues = extractField('coverageXvalues');
-                drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours);
+                var coverageYmax = data.assemblyList[0].coverageYmax;
+                drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours, true, coverageYmax);
 
                 //TODO why does this not work if the quality tab is showing while we are trying to load the charts????
 

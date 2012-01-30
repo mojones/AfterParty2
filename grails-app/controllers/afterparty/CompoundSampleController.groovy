@@ -34,6 +34,8 @@ class CompoundSampleController {
         redirect(action: show, id: compoundSampleInstance.id)
     }
 
+
+
     def showAssembliesJSON = {
 
         // this is what we will eventually render as JSON
@@ -69,6 +71,7 @@ class CompoundSampleController {
             }
             assemblyJSON.lengthXvalues = lengthX
             assemblyJSON.lengthYvalues = lengthY
+            assemblyJSON.lengthYmax = lengthY.max()
 
             // build a histogram of quality
             def qualityX = []
@@ -82,6 +85,8 @@ class CompoundSampleController {
             }
             assemblyJSON.qualityXvalues = qualityX
             assemblyJSON.qualityYvalues = qualityY
+            assemblyJSON.qualityYmax = qualityY.max()
+
 
             // build a histogram of coverage
             def coverageX = []
@@ -89,12 +94,15 @@ class CompoundSampleController {
             (0..overallMaxCoverage).each {
                 def floor = it
                 def ceiling = it  + 1
-                def count = contigStats.coverage.findAll({it >= floor && it < ceiling}).size()
+                def count = contigStats.coverage.findAll({it >= floor && it < ceiling}).size() + 1
                 coverageX.add(floor)
-                coverageY.add(count)
+                Float logCount = Math.log10(count)
+                println logCount
+                coverageY.add(logCount)
             }
             assemblyJSON.coverageXvalues = coverageX
             assemblyJSON.coverageYvalues = coverageY
+            assemblyJSON.coverageYmax = 10000
 
             assemblies.add(assemblyJSON)
         }
