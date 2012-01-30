@@ -70,6 +70,11 @@ To make a bit of text editable we need to
                 var qualityXvalues = extractField('qualityXvalues');
                 drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours);
 
+                // draw coverage chart
+                var coverageYvalues = extractField('coverageYvalues');
+                var coverageXvalues = extractField('coverageXvalues');
+                drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours);
+
                 //TODO why does this not work if the quality tab is showing while we are trying to load the charts????
 
                 $('.spinner').hide();

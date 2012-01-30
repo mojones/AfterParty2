@@ -52,6 +52,10 @@ class Contig {
         return result
     }
 
+    def averageCoverage(){
+        return (Float) this.coverage().sum() / this.coverage().size()
+    }
+
     def gc() {
         return sequence.findAll({it == 'g' || it == 'c'}).size() / sequence.length()
     }

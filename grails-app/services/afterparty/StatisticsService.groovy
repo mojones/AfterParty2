@@ -97,6 +97,7 @@ class StatisticsService {
             eq('id', id)
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
             fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println "got $a"
 
@@ -116,6 +117,7 @@ class StatisticsService {
                 id: contigs*.id,
                 length: contigs*.length(),
                 quality: contigs*.averageQuality(),
+                coverage : contigs*.averageCoverage(),
                 gc: contigs*.gc(),
                 topBlast: topBlasts
         ]
