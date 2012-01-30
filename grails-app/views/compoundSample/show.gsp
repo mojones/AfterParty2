@@ -37,24 +37,42 @@ To make a bit of text editable we need to
 
         //         set up ajax compare assemblies
         $(document).ready(function() {
-            $('#spinner').hide();
 
-            $('#spinner').show();
+// we will need some variables that apply to all three charts
+            var raphaelWidth = $('#lengthGraphDiv').width() - 40;
+            var chartWidth = raphaelWidth - 400;
+
+
+            // function to draw a chart
+            var drawAChart = function(containingElementId, xValues, yValues, colours) {
+                var r = Raphael(containingElementId, raphaelWidth, 1000);
+                var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 1"});
+            };
+
             $.get('/compoundSample/showAssembliesJSON/' + ${compoundSample.id}, function(data) {
 
-                // create at top left corner of #element
-                var raphaelWidth = $('#comparison').width() - 40;
-                var chartWidth = raphaelWidth - 400;
-                var r = Raphael('comparison', raphaelWidth, 1000);
-                var lengthYvalues = data.assemblyList.map(function(a) {
-                    return a.lengthYvalues
-                });
-                var colours = data.assemblyList.map(function(a) {
-                    return a.colour
-                });
-                var linechart = r.g.linechart(100, 100, chartWidth, 600, data.assemblyList[0].lengthXvalues, lengthYvalues, {colors:colours, axis:"0 0 1 1"});
-//                    var linechart = r.g.linechart(100, 100, chartWidth, 600, , [[3,2,6,5,1,4,5,8,5], [6,2,5,4,1,8,7,5,4]], {"symbol":"", axis:"0 0 1 1"});
-                $('#spinner').hide();
+                // utility function - lets us do the equivalent of data.assemblyList*.colour, data.assemblyList*.lengthYvalues, etc as per Groovy
+                var extractField = function(fieldname) {
+                    return  data.assemblyList.map(function(a) {
+                        return a[fieldname];
+                    });
+                };
+
+                var colours = extractField('colour');
+
+                // draw length chart
+                var lengthYvalues = extractField('lengthYvalues');
+                var lengthXvalues = extractField('lengthXvalues');
+                drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours);
+
+                // draw quality chart
+                var qualityYvalues = extractField('qualityYvalues');
+                var qualityXvalues = extractField('qualityXvalues');
+                drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours);
+
+                //TODO why does this not work if the quality tab is showing while we are trying to load the charts????
+
+                $('.spinner').hide();
             });
 
 
@@ -176,15 +194,6 @@ To make a bit of text editable we need to
 
             </table>
 
-            <div id="comparison" style="height: 1000px;">
-                <h2 id="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
-            </div>
-
-            <p>
-                <input id='compareAssembliesButton' type="submit" class="submit small" value="Compare"/>
-            </p>
-
         </g:if>
         <g:else>
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
@@ -202,7 +211,7 @@ To make a bit of text editable we need to
 
         <div class="bheadr"></div>
 
-        <h2>Assembly graphs</h2>
+        <h2>Assembly charts</h2>
     </div>        <!-- .block_head ends -->
 
 
@@ -216,22 +225,37 @@ To make a bit of text editable we need to
                 <li><a href="#sb3_raw">Coverage</a></li>
             </ul>
 
-            <p>Use the <strong>Contigs</strong> tab to download/upload contigs. Use the <strong>Annotations</strong> tab to run BLAST or upload a BLAST result.
-            </p>
+            <p>Use the tabs to navigate between charts</p>
         </div>        <!-- .sidebar ends -->
 
         <div class="sidebar_content" id="sb1_raw">
+
             <p>Length graph will go here</p>
+
+            <div id="lengthGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
         </div>        <!-- .sidebar_content ends -->
 
 
         <div class="sidebar_content" id="sb2_raw">
             <p>Quality graph will go here</p>
+
+            <div id="qualityGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
         </div>        <!-- .sidebar_content ends -->
 
 
         <div class="sidebar_content" id="sb3_raw">
             <p>Coverage graph will go here</p>
+
+            <div id="coverageGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->

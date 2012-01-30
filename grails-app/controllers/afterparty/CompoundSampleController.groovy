@@ -43,18 +43,20 @@ class CompoundSampleController {
 
         // figure out the buckets for length histogram
         def overallMaxLength = compoundSample.assemblies.collect({statisticsService.getContigStatsForAssembly(it.id).length.max()}).max()     // nicely functional
+        def overallMaxQuality = compoundSample.assemblies.collect({statisticsService.getContigStatsForAssembly(it.id).quality.max()}).max()
 
         println "overall max length is $overallMaxLength"
+        println "overall max quality is $overallMaxQuality"
 
         compoundSample.assemblies.sort().eachWithIndex{  assembly, index ->
 
             def assemblyJSON = [:]
 
-            println "getting assembly $assembly.name"
             assemblyJSON.id = it
             assemblyJSON.colour = StatisticsService.boldAssemblyColours[index]
-            // build a histogram of length
             def contigStats = statisticsService.getContigStatsForAssembly(assembly.id)
+
+            // build a histogram of length
             def lengthX = []
             def lengthY = []
             (0..overallMaxLength / 10).each {
@@ -66,6 +68,19 @@ class CompoundSampleController {
             }
             assemblyJSON.lengthXvalues = lengthX
             assemblyJSON.lengthYvalues = lengthY
+
+            // build a histogram of quality
+            def qualityX = []
+            def qualityY = []
+            (0..overallMaxQuality).each {
+                def floor = it
+                def ceiling = it  + 1
+                def count = contigStats.quality.findAll({it >= floor && it < ceiling}).size()
+                qualityX.add(floor)
+                qualityY.add(count)
+            }
+            assemblyJSON.qualityXvalues = qualityX
+            assemblyJSON.qualityYvalues = qualityY
 
             assemblies.add(assemblyJSON)
         }
