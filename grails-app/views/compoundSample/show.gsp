@@ -50,6 +50,8 @@ To make a bit of text editable we need to
 
             // function to draw a chart
             var drawAChart = function(containingElementId, xValues, yValues, colours, log, yMax) {
+
+
                 var r = Raphael(containingElementId, raphaelWidth, 1000);
                 if (log) {
                     var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0", axisymax: 5});
@@ -67,6 +69,12 @@ To make a bit of text editable we need to
                 }
                 else {
                     var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0"});
+                    chart.hoverColumn(function() {
+                        console.log(this);
+//                        r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+                    }, function() {
+//                        console.log('out');
+                    });
                     var maximum = Math.max(yValues);
                     var axis = r.g.axis(
                             85, // distance away from the left side of the canvas

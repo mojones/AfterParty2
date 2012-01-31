@@ -44,16 +44,33 @@ class Contig {
     }
 
     def coverage() {
-        def result = []
-        this.sequence.eachWithIndex { base, i ->
-            Integer coverage = this.reads.findAll({it.start <= i+1 && it.stop > i+1}).size()    // use i+1 because read alignment positions start at 1 not 0
-            result.add(coverage)
+
+//        println "calculating coverage for ${this.id}, sequence length is ${sequence.length()}"
+        def result = new Integer[sequence.length()]
+        (0..sequence.length() - 1).each {
+            result[it] = 0
+        }
+
+        this.reads.each {
+//            println "start is $it.start and stop is $it.stop"
+
+            def firstPosition = [[it.start, it.stop, sequence.length() - 1].min(), 0].max()
+
+            def lastPosition = [[it.stop, it.start, 0].max(), this.sequence.length() - 1].min()
+//            println "incrementing from $firstPosition to $lastPosition (length is ${result.size()})"
+
+            (firstPosition..lastPosition).each {
+                result[it]++
+            }
+
         }
         return result
+
     }
 
-    def averageCoverage(){
-        return (Float) this.coverage().sum() / this.coverage().size()
+    def averageCoverage() {
+        def coverage = this.coverage()
+        return (Float) coverage.sum() / coverage.size()
     }
 
     def gc() {
@@ -74,4 +91,5 @@ class Contig {
     def isOwnedBy(def user) {
         return this.assembly.isOwnedBy(user)
     }
+
 }

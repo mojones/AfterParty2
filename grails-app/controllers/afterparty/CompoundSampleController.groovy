@@ -34,78 +34,27 @@ class CompoundSampleController {
         redirect(action: show, id: compoundSampleInstance.id)
     }
 
-
-
     def showAssembliesJSON = {
 
-        // this is what we will eventually render as JSON
-        def assemblies = []
 
         def compoundSample = CompoundSample.get(params.id)
-
-        // figure out the buckets for length histogram
-        def overallMaxLength = compoundSample.assemblies.collect({statisticsService.getContigStatsForAssembly(it.id).length.max()}).max()     // nicely functional
-        def overallMaxQuality = compoundSample.assemblies.collect({statisticsService.getContigStatsForAssembly(it.id).quality.max()}).max()
-        def overallMaxCoverage = compoundSample.assemblies.collect({statisticsService.getContigStatsForAssembly(it.id).coverage.max()}).max()
-
-        println "overall max length is $overallMaxLength"
-        println "overall max quality is $overallMaxQuality"
-
-        compoundSample.assemblies.sort().eachWithIndex{  assembly, index ->
-
-            def assemblyJSON = [:]
-
-            assemblyJSON.id = it
-            assemblyJSON.colour = StatisticsService.boldAssemblyColours[index]
-            def contigStats = statisticsService.getContigStatsForAssembly(assembly.id)
-
-            // build a histogram of length
-            def lengthX = []
-            def lengthY = []
-            (0..overallMaxLength / 10).each {
-                def floor = it * 10
-                def ceiling = (it * 10) + 10
-                def count = contigStats.length.findAll({it >= floor && it < ceiling}).size()
-                lengthX.add(floor)
-                lengthY.add(count)
+        def contigSetList = []
+        compoundSample.assemblies.each { assembly ->
+            def cs = new ContigSet(
+                    name: "$assembly.name",
+                    description: "automatically generated contig set for $assembly.name",
+                    study: compoundSample.study
+            )
+            assembly.contigs.each {
+                cs.addToContigs(it)
             }
-            assemblyJSON.lengthXvalues = lengthX
-            assemblyJSON.lengthYvalues = lengthY
-            assemblyJSON.lengthYmax = lengthY.max()
-
-            // build a histogram of quality
-            def qualityX = []
-            def qualityY = []
-            (0..overallMaxQuality).each {
-                def floor = it
-                def ceiling = it  + 1
-                def count = contigStats.quality.findAll({it >= floor && it < ceiling}).size()
-                qualityX.add(floor)
-                qualityY.add(count)
-            }
-            assemblyJSON.qualityXvalues = qualityX
-            assemblyJSON.qualityYvalues = qualityY
-            assemblyJSON.qualityYmax = qualityY.max()
-
-
-            // build a histogram of coverage
-            def coverageX = []
-            def coverageY = []
-            (0..overallMaxCoverage).each {
-                def floor = it
-                def ceiling = it  + 1
-                def count = contigStats.coverage.findAll({it >= floor && it < ceiling}).size() + 1
-                coverageX.add(floor)
-                Float logCount = Math.log10(count)
-                println logCount
-                coverageY.add(logCount)
-            }
-            assemblyJSON.coverageXvalues = coverageX
-            assemblyJSON.coverageYvalues = coverageY
-            assemblyJSON.coverageYmax = 10000
-
-            assemblies.add(assemblyJSON)
+            cs.save(flush: true)
+            contigSetList.add(cs)
         }
+
+        def assemblies = statisticsService.getStatsForContigSets(contigSetList)
+
+
         render(contentType: "text/json") {
             assemblyList = assemblies
         }

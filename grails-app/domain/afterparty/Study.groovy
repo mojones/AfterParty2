@@ -11,7 +11,7 @@ class Study {
         description(maxSize: 10000, nullable: true)
     }
 
-    static hasMany = [compoundSamples: CompoundSample]
+    static hasMany = [compoundSamples: CompoundSample, contigSets : ContigSet]
 
     static belongsTo = [user: AfterpartyUser]
 
