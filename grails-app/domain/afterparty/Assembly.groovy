@@ -7,11 +7,14 @@ class Assembly {
     String description
     String name
 
+    ContigSet defaultContigSet
+
     static hasMany = [contigs: Contig]
 
     static fetchMode = [contigs: "eager"]
 
     static constraints = {
+        defaultContigSet(nullable: true)
     }
 
 
