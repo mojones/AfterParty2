@@ -34,31 +34,4 @@ class CompoundSampleController {
         redirect(action: show, id: compoundSampleInstance.id)
     }
 
-    def showAssembliesJSON = {
-
-
-        def compoundSample = CompoundSample.get(params.id)
-        def contigSetList = []
-        compoundSample.assemblies.each { assembly ->
-            def cs = new ContigSet(
-                    name: "$assembly.name",
-                    description: "automatically generated contig set for $assembly.name",
-                    study: compoundSample.study
-            )
-            assembly.contigs.each {
-                cs.addToContigs(it)
-            }
-            cs.save(flush: true)
-            contigSetList.add(cs)
-        }
-
-        def assemblies = statisticsService.getStatsForContigSets(contigSetList)
-
-
-        render(contentType: "text/json") {
-            assemblyList = assemblies
-        }
-    }
-
-
 }

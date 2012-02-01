@@ -22,7 +22,7 @@ class StatisticsService {
             eq('id', id)
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
 //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
+            //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println "got raw assembly object : " + (System.currentTimeMillis() - start)
 
@@ -119,15 +119,15 @@ class StatisticsService {
         println "got contigs : " + (System.currentTimeMillis() - start)
 
 //        ArrayList topBlasts = cs.contigs.collect({ contig ->
-//            def hits = contig.blastHits.toArray().sort({-it.bitscore})
-//            if (hits.size() > 0) {
-//                return hits[0]
-//            }
-//            else {
-//                return null
-//            }
-//        })
-//        println "assembled blast hits : " + (System.currentTimeMillis() - start)
+        //            def hits = contig.blastHits.toArray().sort({-it.bitscore})
+        //            if (hits.size() > 0) {
+        //                return hits[0]
+        //            }
+        //            else {
+        //                return null
+        //            }
+        //        })
+        //        println "assembled blast hits : " + (System.currentTimeMillis() - start)
 
         def contigs = cs.contigs
         def result = [
@@ -165,8 +165,6 @@ class StatisticsService {
     def getStatsForContigSets(List<ContigSet> contigSetList) {
 
         def result = []
-
-
 
         // figure out the buckets sizes for histograms
         def overallMaxLength = contigSetList.collect({grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(it.id).length.max()}).max()     // nicely functional
@@ -227,6 +225,26 @@ class StatisticsService {
             result.add(contigSetJSON)
         }
         return result
+
+    }
+
+    def createContigSetForAssembly(Long id) {
+        def criteria = Assembly.createCriteria()
+        def a = criteria.get({
+            eq('id', id)
+            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+        })
+
+        def cs = new ContigSet(
+                name: "$a.name",
+                description: "automatically generated contig set for $a.name",
+                study: a.compoundSample.study
+        )
+        a.contigs.each {
+            cs.addToContigs(it)
+        }
+        a.defaultContigSet = cs
+        cs.save(flush: true)
 
     }
 }

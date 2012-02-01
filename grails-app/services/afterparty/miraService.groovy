@@ -63,6 +63,7 @@ class miraService {
                 }
                 currentContigString = []
                 currentContigName = line.split(/ /)[1]
+                println currentContigName
                 inContigString = true
 
                 currentContig = new Contig()
@@ -115,6 +116,7 @@ class miraService {
                 r.sequence = outputString.toString()
                 r.stop = start + currentReadString.size() - deletedBases
                 currentContig.addToReads(r)
+                session.insert(r)
                 currentReadString = []
                 inReadString = false;
             }
@@ -145,16 +147,14 @@ class miraService {
         }
         if (currentContig) {
             a.addToContigs(currentContig)
-            a.save(flush: true)
-            println "saved ${currentContig.name}"
+            session.insert(currentContig)
 
         }
 
-
-
-        println "saving contigs"
+//        println "saving contigs"
+        a = a.merge()
         a.save(flush: true)
-        println "saved all contigs"
+//        println "saved all contigs"
         // we will not bother indexing - there is nothing interesting here anyway
         //        println "indexing...."
         //        allContigs.each{
@@ -162,7 +162,6 @@ class miraService {
         ////            c.index()
         //        }
         //        println "finished indexing"
-
         return a
 
     }
