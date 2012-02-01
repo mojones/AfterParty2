@@ -12,6 +12,7 @@ class AssemblyController {
     def chartService
     def miraService
     def springSecurityService
+    def dataSource
 
     @Secured(['ROLE_USER'])
     def uploadBlastAnnotation = {
@@ -70,12 +71,38 @@ class AssemblyController {
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
 
+//            def sql = new Sql(dataSource)
+            //            def contigSetsToDelete = []
+            //
+            //            // get list of contig sets to delete
+            //            sql.eachRow("select distinct contig_set_contigs_id as cid from contig_set_contig where contig_id in (select id from contig where assembly_id = $assemblyId)") {
+            //                contigSetsToDelete.add(it.cid)
+            //            }
+            //            println contigSetsToDelete
+            //
+            //            // first delete the contigset->contig mappings
+            //            sql.execute("delete from contig_set_contig where contig_id in (select id from contig where assembly_id = $assemblyId)")
+            //
+            //            // now delete the contig sets themselves
+            //            contigSetsToDelete.each {csid ->
+            //                sql.execute("delete from contig_set where id=$csid")
+            //            }
+            //
+            //            // now we can go ahead and delete the contigs
             job2.progress = "deleting old contigs"
             job2.save(flush: true)
+            //
+            //
+            //            Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
 
-
-            Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
             Assembly assembly = Assembly.get(assemblyId)
+            assembly.defaultContigSet = null
+            assembly.save(flush: true)
+
+            assembly.contigs.each {
+                it.delete()
+            }
+
             def contigs = miraService.parseFasta(f.inputStream)
             println "got some contigs: ${contigs.size()}"
 
@@ -95,16 +122,16 @@ class AssemblyController {
 
 
             }
-            job2.progress = "indexing contigs for search"
+            assembly.save(flush: true)
+            job2.progress = "creating contig set"
             job2.save(flush: true)
 
-            Contig.index(assembly.contigs)
+            statisticsService.createContigSetForAssembly(assembly.id)
 
 
 
             job2.progress = 'finished'
             job2.status = BackgroundJobStatus.FINISHED
-            job2.save(flush: true)
         }
 
         redirect(controller: 'backgroundJob', action: 'list')

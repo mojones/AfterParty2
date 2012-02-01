@@ -26,7 +26,7 @@ class StatisticsService {
         })
         println "got raw assembly object : " + (System.currentTimeMillis() - start)
 
-        def cs = new ContigSet(name: 'a', description: 'b', study: a.compoundSample.study)
+        def cs = new ContigSet(name: a.name, description: "automatically created contigSet for assembly $a.name", study: a.compoundSample.study)
         a.contigs.each {cs.addToContigs(it)}
         println "created contig set : " + (System.currentTimeMillis() - start)
 

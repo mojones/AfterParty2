@@ -21,8 +21,6 @@ class BlastHit {
         sort bitscore:'desc'
     }
 
-    static belongsTo = [contig: Contig]
-
 
     def isPublished(){
         return this.contig.isPublished()

@@ -156,7 +156,7 @@ To make a bit of text editable we need to
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
         </g:else>
         <g:form controller="contigSet" action="compareContigSets" method="get">
-            <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it.defaultContigSet.id}).join(',')}"/>
+            <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it?.defaultContigSet?.id}).join(',')}"/>
             <input type="submit" class="submit long" value="Compare assemblies"/>
         </g:form>
     </div>        <!-- .block_content ends -->

@@ -24,6 +24,8 @@ class Contig {
     static mapping = {
         sequence type: 'text'
         quality type: 'text'
+        blastHits( index:'contig_to_blast2')
+        reads( index:'contig_to_reads2')
     }
 
 
