@@ -13,6 +13,10 @@ class Read {
     static mapping = {
         sequence type: 'text'
         sort "start"
+        contig (index:'read_contig')
+
     }
+
+    static belongsTo = [contig : Contig]
 
 }

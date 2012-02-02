@@ -118,17 +118,7 @@ class StatisticsService {
         println "got $cs"
         println "got contigs : " + (System.currentTimeMillis() - start)
 
-//        ArrayList topBlasts = cs.contigs.collect({ contig ->
-        //            def hits = contig.blastHits.toArray().sort({-it.bitscore})
-        //            if (hits.size() > 0) {
-        //                return hits[0]
-        //            }
-        //            else {
-        //                return null
-        //            }
-        //        })
-        //        println "assembled blast hits : " + (System.currentTimeMillis() - start)
-
+//
         def contigs = cs.contigs
         def result = [
                 id: contigs*.id,
@@ -172,6 +162,8 @@ class StatisticsService {
         def overallMaxCoverage = contigSetList.collect({grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(it.id).coverage.max()}).max()
 
         contigSetList.eachWithIndex {  ContigSet contigSet, index ->
+
+
 
             def contigSetJSON = [:]
 

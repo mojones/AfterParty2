@@ -19,8 +19,10 @@ class BlastHit {
 
     static mapping = {
         sort bitscore:'desc'
+        contig (index:'blasthit_contig')
     }
 
+    static belongsTo = [contig : Contig]
 
     def isPublished(){
         return this.contig.isPublished()

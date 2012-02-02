@@ -7,6 +7,7 @@ class StudyController {
 
     def overviewService
     def springSecurityService
+    def searchService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -111,31 +112,22 @@ class StudyController {
 
 
 
-
-            StringBuilder queryStringBuilder = new StringBuilder()
-            queryStringBuilder.append("${params.q} AND (")
-            queryStringBuilder.append(assemblies.collect({"searchAssemblyId:$it.id"}).join(' OR '))
-            queryStringBuilder.append(')')
-            params.max = 50
-            println "final query string is " + queryStringBuilder.toString()
-
             Integer offset = params.offset ? params.offset.toInteger() : 0
 
-            def searchResultContigs = []
-            def rawSearchResult = Contig.search(queryStringBuilder.toString(), [max: 50, offset: offset])
-            rawSearchResult.results.each {
-                searchResultContigs.add(Contig.get(it.id))
-            }
+            def query = searchService.buildQueryString(assemblies, params.q)
+            def searchResult = searchService.getContigsForSearch(query, offset, 50)
 
+            println searchResult.contigs
             // we will return a lot of data to render the search results...
             return [
                     assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
                     searchedAssemblies: assemblies,         // the list of assemblies that was involved in the search
-                    searchResultContigs: searchResultContigs,         // the list of results, as full Contig domain objects
-                    searchResult: rawSearchResult,                    // the result object that contains the query, offset, etc
+                    searchResultContigs: searchResult.contigs,         // the list of results, as full Contig domain objects
+                    searchResult: searchResult.rawSearch,                    // the result object that contains the query, offset, etc
                     assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
                     studyInstance: study, // the study that we are looking at
-                    showResults: true                                           // tell the gsp to show the results
+                    showResults: true ,                                          // tell the gsp to show the results
+                    finalQueryString : query    // so that we can pass it on in case we want to create a contig set
             ]
 
 

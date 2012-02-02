@@ -20,7 +20,7 @@
         //         set up ajax compare assemblies
         $(document).ready(function() {
 
-        // we will need some variables that apply to all three charts
+            // we will need some variables that apply to all three charts
             var raphaelWidth = $('#lengthGraphDiv').width() - 40;
             var chartWidth = raphaelWidth - 400;
 
@@ -73,7 +73,7 @@
 
             };
 
-            $.get('/contigSet/showContigSetsJSON/?idList=' + ${params.idList}, function(data) {
+            $.get('/contigSet/showContigSetsJSON/?idList=${params.idList}', function(data) {
 
                 // utility function - lets us do the equivalent of data.assemblyList*.colour, data.assemblyList*.lengthYvalues, etc as per Groovy
                 var extractField = function(fieldname) {
@@ -87,21 +87,30 @@
                 // draw length chart
                 var lengthYvalues = extractField('lengthYvalues');
                 var lengthXvalues = extractField('lengthXvalues');
-                var lengthYmax = data.contigSetList[0].lengthYmax;
+                var lengthYmax = 1000; //data.lengthYmax; // we need the max of the max!
                 drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours, false, lengthYmax);
 
-                // draw quality chart
-                var qualityYvalues = extractField('qualityYvalues');
-                var qualityXvalues = extractField('qualityXvalues');
-                var qualityYmax = data.contigSetList[0].qualityYmax;
 
-                drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours, false, qualityYmax);
+                if (data.drawQuality) {
+                    // draw quality chart
+                    var qualityYvalues = extractField('qualityYvalues');
+                    var qualityXvalues = extractField('qualityXvalues');
+                    var qualityYmax = 1000; //data.qualityYmax;
+                    drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours, false, qualityYmax);
+                }
+                else{
+                    $('qualityGraphDiv').html('<h2>No quality data</h2>')
+                }
 
-                // draw coverage chart
-                var coverageYvalues = extractField('coverageYvalues');
-                var coverageXvalues = extractField('coverageXvalues');
-                var coverageYmax = data.contigSetList[0].coverageYmax;
-                drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours, true, coverageYmax);
+                if (data.drawCoverage) {
+                    // draw coverage chart
+                    var coverageYvalues = extractField('coverageYvalues');
+                    var coverageXvalues = extractField('coverageXvalues');
+                    var coverageYmax = 10000; //data.coverageYmax;
+                    drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours, true, coverageYmax);
+                }else{
+                    $('coverageGraphDiv').html('<h2>No coverage data</h2>')
+                }
 
                 //TODO why does this not work if the quality tab is showing while we are trying to load the charts????
 
@@ -114,6 +123,47 @@
 </head>
 
 <body>
+
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Contig sets</h2>
+
+    </div>        <!-- .block_head ends -->
+
+    <div class="block_content">
+
+
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
+                <tr>
+                    <th>Contig Set name</th>
+                    <th>Number of Contigs</th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${contigSets}" var="contigSet" status="index">
+                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
+                        <td>${contigSet.name}</td>
+                        <td>${contigSet.contigs.size()}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+
+            </table>
+
+
+
+    </div>        <!-- .block_content ends -->
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
 
 <div class="block withsidebar">
 

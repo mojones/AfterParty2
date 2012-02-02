@@ -48,17 +48,11 @@ class miraService {
 
             if (line.startsWith(/CO /)) {
                 if (currentContig) {
-                    a.addToContigs(currentContig)
-                    session.insert(currentContig)
-//                    println "savid ${currentContig.name}"
+                    session.update(currentContig)
                     if (++added % 100 == 0) {
                         println added
                     }
-//                    println "${System.currentTimeMillis() - startTime}  :  $added"
-                    // current best :  141155 after inserting 100
-                    //                  80707 by switching to explicit setting of properties rather than using maps
-                    //                  80926 by switching to saving contig rather than assembly
-                    //                  25809 by switching to stateless session
+//
 
                 }
                 currentContigString = []
@@ -69,6 +63,10 @@ class miraService {
                 currentContig = new Contig()
                 currentContig.name = currentContigName
                 currentContig.searchAssemblyId = a.id
+                currentContig.quality = 'qqq'
+                currentContig.sequence = 'sss'
+                a.addToContigs(currentContig)
+                session.insert(currentContig)
             }
 
             else if (line.startsWith(/BQ/)) {
@@ -115,7 +113,8 @@ class miraService {
                 r.start = start
                 r.sequence = outputString.toString()
                 r.stop = start + currentReadString.size() - deletedBases
-                currentContig.addToReads(r)
+                r.contig = currentContig
+//                currentContig.addToReads(r)
                 session.insert(r)
                 currentReadString = []
                 inReadString = false;
@@ -146,22 +145,13 @@ class miraService {
 
         }
         if (currentContig) {
-            a.addToContigs(currentContig)
-            session.insert(currentContig)
+            session.update(currentContig)
 
         }
 
-//        println "saving contigs"
         a = a.merge()
         a.save(flush: true)
-//        println "saved all contigs"
-        // we will not bother indexing - there is nothing interesting here anyway
-        //        println "indexing...."
-        //        allContigs.each{
-        //            Contig c = (Contig) it
-        ////            c.index()
-        //        }
-        //        println "finished indexing"
+//
         return a
 
     }

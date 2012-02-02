@@ -124,7 +124,7 @@
                 <g:if test="${haveResults}">
 
                     <g:each var="assembly" in="${searchedAssemblies}" status="index">
-                        <p style="background-color: ${assemblyToColour.get(assembly)}" class="assemblyNameBar" >${assembly.name}</p>
+                        <p style="background-color: ${assemblyToColour.get(assembly)}" class="assemblyNameBar">${assembly.name}</p>
 
                     </g:each>
                     <br/><br/><br/><br/>
@@ -163,7 +163,13 @@
                         </div>        <!-- .pagination ends -->
 
                     </g:else>
+
                 </g:if>
+                <g:form controller="contigSet" action="createFromSearch" method="get">
+                    <g:hiddenField name="q" value="${finalQueryString}"/>
+                    <g:hiddenField name="studyId" value="${studyInstance.id}"/>
+                    <input type="submit" class="submit long" value="Save as contigSet"/>
+                </g:form>
             </div>        <!-- .block_content ends -->
             <div class="bendl"></div>
 

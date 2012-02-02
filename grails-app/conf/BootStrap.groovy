@@ -25,12 +25,6 @@ class BootStrap {
         BackgroundJob.findAllByStatus(BackgroundJobStatus.RUNNING).each {it.delete(flush: true)}
         BackgroundJob.findAllByStatus(BackgroundJobStatus.QUEUED).each {it.delete(flush: true)}
 
-//        def sql = new Sql(dataSource)
-//        sql.execute('create index contig_to_reads on contig_read (contig_reads_id)')
-//        sql.execute('create index contig_to_blasts on contig_blast_hit (contig_blast_hits_id)')
-
-
-
 
         environments {
             development_rebuild {
@@ -152,10 +146,10 @@ class BootStrap {
                 println "uploading assembly"
 
                 def a = miraService.createAssemblyAndContigsFromMiraInfo(
-//                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_info/lito_info_assembly.txt'),
-                        new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_info/smallAssembly_info_assembly.txt'),
-//                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace'),
-                        new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace'),
+                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_info/lito_info_assembly.txt'),
+//                        new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_info/smallAssembly_info_assembly.txt'),
+                        new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace'),
+//                        new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace'),
                         lSig
                 )
 
@@ -174,7 +168,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-//                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
+                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',
