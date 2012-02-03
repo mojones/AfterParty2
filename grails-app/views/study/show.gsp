@@ -122,6 +122,48 @@ To make a bit of text editable we need to
     <div class="bendr"></div>
 </div>
 
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Contig sets</h2>
+
+    </div>        <!-- .block_head ends -->
+
+    <div class="block_content">
+        <g:form url='[controller: "contigSet", action: "compareContigSetsFromCheckbox"]' id="searchableForm" name="searchableForm" method="get">
+
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
+                <tr>
+                    <th>Contig Set name</th>
+                    <th>Number of Contigs</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <g:each in="${studyInstance.contigSets}" var="contigSet" status="index">
+                    <tr>
+                        <td>
+                            <g:checkBox name="check_${contigSet.id}" value="${false}"/> ${contigSet.name}</td>
+                        <td>${contigSet.contigs.size()}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+
+            </table>
+            <input type="submit" class="submit long" value="Compare contig sets"/>
+        </g:form>
+
+    </div>        <!-- .block_content ends -->
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
 
 %{--only show workflow and structure if we have at least one sample--}%
 %{--<g:if test="${studyInstance.compoundSamples}">--}%

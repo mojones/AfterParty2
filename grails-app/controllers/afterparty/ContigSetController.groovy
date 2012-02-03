@@ -7,12 +7,24 @@ class ContigSetController {
 
     def index = { }
 
+
+    def compareContigSetsFromCheckbox = {
+
+        //which contigsets are we looking at?
+        def contigSetListResult = []
+        params.entrySet().findAll({it.key.startsWith('check_')}).each {
+            Integer contigSetId = it.key.split(/_/)[1].toInteger()
+            contigSetListResult.add(ContigSet.get(contigSetId))
+        }
+        render(view: 'compareContigSets', model: [contigSets: contigSetListResult])
+    }
+
     def compareContigSets = {
         def contigSetListResult = []
         params.idList.split(/,/).each {
             contigSetListResult.add(ContigSet.get(it.toLong()))
         }
-        [contigSets : contigSetListResult]
+        [contigSets: contigSetListResult]
     }
 
     def createFromSearch = {
@@ -58,8 +70,11 @@ class ContigSetController {
         render(contentType: "text/json") {
             contigSetList = contigSets
             lengthYmax = contigSets*.lengthYmax.max()
+            scaledLengthYmax = contigSets*.scaledLengthYmax.max()
             qualityYmax = contigSets*.qualityYmax.max()
+            scaledQualityYmax = contigSets*.scaledQualityYmax.max()
             coverageYmax = contigSets*.coverageYmax.max()
+            scaledCoverageYmax = contigSets*.scaledCoverageYmax.max()
             drawQuality = drawQualityBoolean
             drawCoverage = drawCoverageBoolean
         }

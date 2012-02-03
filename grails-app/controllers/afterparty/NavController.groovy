@@ -7,8 +7,8 @@ class NavController {
     def springSecurityService
 
     def show = {
-        def study = Study.get(session.studyId)
-        [study: study ]
+//        def study = Study.get(session.studyId)
+//        [study: study ]
     }
 
     @Secured(['ROLE_USER'])

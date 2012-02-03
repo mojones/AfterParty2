@@ -63,7 +63,7 @@
                             600 - 10, // position of the end of the text - probably we want this to be the length of the axis
                             0, // start of the range - leave it as null as we are using our own labels
                             yMax, //Math.max(yValues), // end of the range ditto
-                            3, // number of labels we want - 1 (i.e. 0-based index of the last label)
+                            9, // number of labels we want - 1 (i.e. 0-based index of the last label)
                             1, // orientation: 0 -> x-axis, 1 -> y-axis
                             null, // array of labels
                             "|", // the type of tick mark
@@ -73,7 +73,7 @@
 
             };
 
-            $.get('/contigSet/showContigSetsJSON/?idList=${params.idList}', function(data) {
+            $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
 
                 // utility function - lets us do the equivalent of data.assemblyList*.colour, data.assemblyList*.lengthYvalues, etc as per Groovy
                 var extractField = function(fieldname) {
@@ -87,18 +87,30 @@
                 // draw length chart
                 var lengthYvalues = extractField('lengthYvalues');
                 var lengthXvalues = extractField('lengthXvalues');
-                var lengthYmax = 1000; //data.lengthYmax; // we need the max of the max!
+                var lengthYmax = data.lengthYmax; // we need the max of the max!
                 drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours, false, lengthYmax);
+
+                // draw scaledlength chart
+                var scaledLengthYvalues = extractField('scaledLengthYvalues');
+                var scaledLengthXvalues = extractField('scaledLengthXvalues');
+                var scaledLengthYmax = data.scaledLengthYmax; // we need the max of the max!
+                drawAChart('scaledLengthGraphDiv', scaledLengthXvalues, scaledLengthYvalues, colours, false, scaledLengthYmax);
 
 
                 if (data.drawQuality) {
                     // draw quality chart
                     var qualityYvalues = extractField('qualityYvalues');
                     var qualityXvalues = extractField('qualityXvalues');
-                    var qualityYmax = 1000; //data.qualityYmax;
+                    var qualityYmax = data.qualityYmax;
                     drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours, false, qualityYmax);
+
+                    // draw scaled quality chart
+                    var scaledQualityYvalues = extractField('scaledQualityYvalues');
+                    var scaledQualityXvalues = extractField('scaledQualityXvalues');
+                    var scaledQualityYmax = data.scaledQualityYmax;
+                    drawAChart('scaledQualityGraphDiv', scaledQualityXvalues, scaledQualityYvalues, colours, false, scaledQualityYmax);
                 }
-                else{
+                else {
                     $('qualityGraphDiv').html('<h2>No quality data</h2>')
                 }
 
@@ -108,7 +120,13 @@
                     var coverageXvalues = extractField('coverageXvalues');
                     var coverageYmax = 10000; //data.coverageYmax;
                     drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours, true, coverageYmax);
-                }else{
+
+                    // draw coverage chart
+                    var scaledCoverageYvalues = extractField('scaledCoverageYvalues');
+                    var scaledCoverageXvalues = extractField('scaledCoverageXvalues');
+                    var scaledCoverageYmax = 10000; //data.coverageYmax;
+                    drawAChart('scaledCoverageGraphDiv', scaledCoverageXvalues, scaledCoverageYvalues, colours, true, scaledCoverageYmax);
+                } else {
                     $('coverageGraphDiv').html('<h2>No coverage data</h2>')
                 }
 
@@ -137,26 +155,23 @@
 
     <div class="block_content">
 
-
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-                <thead>
-                <tr>
-                    <th>Contig Set name</th>
-                    <th>Number of Contigs</th>
+        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <thead>
+            <tr>
+                <th>Contig Set name</th>
+                <th>Number of Contigs</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${contigSets}" var="contigSet" status="index">
+                <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
+                    <td>${contigSet.name}</td>
+                    <td>${contigSet.contigs.size()}</td>
                 </tr>
-                </thead>
-                <tbody>
-                <g:each in="${contigSets}" var="contigSet" status="index">
-                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
-                        <td>${contigSet.name}</td>
-                        <td>${contigSet.contigs.size()}</td>
-                    </tr>
-                </g:each>
-                </tbody>
+            </g:each>
+            </tbody>
 
-            </table>
-
-
+        </table>
 
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
@@ -184,6 +199,9 @@
                 <li><a href="#sb1_raw">Length</a></li>
                 <li><a href="#sb2_raw">Quality</a></li>
                 <li><a href="#sb3_raw">Coverage</a></li>
+                <li><a href="#sb4_raw">Scaled length</a></li>
+                <li><a href="#sb5_raw">Scaled quality</a></li>
+                <li><a href="#sb6_raw">Scaled coverage</a></li>
             </ul>
 
             <p>Use the tabs to navigate between charts</p>
@@ -214,6 +232,33 @@
             <p>Coverage graph will go here</p>
 
             <div id="coverageGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
+        </div>
+
+        <div class="sidebar_content" id="sb4_raw">
+            <p>Coverage graph will go here</p>
+
+            <div id="scaledLengthGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
+        </div>
+
+        <div class="sidebar_content" id="sb5_raw">
+            <p>Coverage graph will go here</p>
+
+            <div id="scaledQualityGraphDiv" style="height: 1000px;">
+                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+                </h2>
+            </div>
+        </div>
+
+        <div class="sidebar_content" id="sb6_raw">
+            <p>Coverage graph will go here</p>
+
+            <div id="scaledCoverageGraphDiv" style="height: 1000px;">
                 <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
                 </h2>
             </div>

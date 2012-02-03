@@ -29,8 +29,7 @@
 
         <div class="block_content">
 
-            <g:form url='[controller: "study", action: "search"]' id="searchableForm" name="searchableForm"
-                    method="get">
+            <g:form url='[controller: "study", action: "search"]' id="searchableForm" name="searchableForm" method="get">
                 <g:hiddenField name="id" value="${studyInstance.id}"/>
                 <p>
                     <label>Search string:</label><br/>
