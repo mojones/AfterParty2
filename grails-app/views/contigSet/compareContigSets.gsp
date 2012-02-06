@@ -98,10 +98,16 @@
                     renderer = $.jqplot.LinearAxisRenderer;
                 }
 
+                var colourList = contigSetData.contigSetList.map(function(a) {
+                    return a.colour;
+                });
+                console.log(colourList);
+
 
                 $.jqplot('lengthGraphDiv',
                         allLengthValues,
                         {
+                            seriesColors : colourList,
                             title: 'length histogram',
                             seriesDefaults:{
                                 showMarker: false,
