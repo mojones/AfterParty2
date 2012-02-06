@@ -34,6 +34,8 @@
             window.logOn = false;
             window.scaledOn = false;
 
+            window.chartType = 'length';
+
             // boring code to handle chart options
 
             var setUpToggle = function(variableName) {
@@ -57,6 +59,31 @@
             setUpToggle('scaled');
 
 
+            // handle chart type
+            $('#turnlengthOn').click(function() {
+                $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
+                window.chartType = 'length';
+                drawChart();
+            });
+
+            $('#turncoverageOn').click(function() {
+                $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
+                window.chartType = 'coverage';
+                drawChart();
+            });
+
+            $('#turnqualityOn').click(function() {
+                $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
+                window.chartType = 'quality';
+                drawChart();
+            });
+
             $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
                 contigSetData = data;
                 drawChart();
@@ -75,9 +102,9 @@
                 var fieldName;
 
                 if (scaledOn) {
-                    fieldName = 'scaledLengthvalues';
+                    fieldName = 'scaled' + window.chartType + 'values';
                 } else {
-                    fieldName = 'lengthvalues';
+                    fieldName = window.chartType + 'values';
                 }
 
                 if (logOn) {
@@ -108,14 +135,14 @@
                         allLengthValues,
                         {
                             seriesColors : colourList,
-                            title: 'length histogram',
+                            title: window.chartType + ' histogram',
                             seriesDefaults:{
                                 showMarker: false,
                                 lineWidth: 1
                             },
                             axes:{
                                 xaxis:{
-                                    label:'Length (bases)',
+                                    label:window.chartType,
                                     pad: 0
                                 },
                                 yaxis:{
@@ -217,16 +244,21 @@
         <div class="sidebar_content" id="sb1_raw">
 
             <p>Highlighter : <span id='turnhighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnhighlighterOff'>off</span>
+                &nbsp;&nbsp;&nbsp;
+
+                Cursor : <span id='turncursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turncursorOff'>off</span>
+                &nbsp;&nbsp;&nbsp;
+
+                Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
+                &nbsp;&nbsp;&nbsp;
+
+                Scale : <span id='turnscaledOn' style="cursor: pointer; ">per 1000 contigs</span> | <span style="font-weight: bold;" id='turnscaledOff'>raw frequency</span>
             </p>
 
-            <p>Cursor : <span id='turncursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turncursorOff'>off</span>
+            <p>
+                Chart type : <span id='turnlengthOn' style="font-weight: bold;">length</span> | <span style="cursor: pointer; " id='turnqualityOn'>quality</span> | <span style="cursor: pointer; " id='turncoverageOn'>coverage</span>
             </p>
 
-            <p>Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
-            </p>
-
-            <p>Scale : <span id='turnscaledOn' style="cursor: pointer; ">per 1000 contigs</span> | <span style="font-weight: bold;" id='turnscaledOff'>raw frequency</span>
-            </p>
 
             <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
             </h2>

@@ -9,7 +9,7 @@ class StatisticsService {
     def grailsApplication
 
     static paleAssemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
-    static boldAssemblyColours = ['Cyan', 'Pink', 'SkyBlue']
+    static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB']
 
 
     @Cacheable("myCache")
@@ -175,51 +175,37 @@ class StatisticsService {
 
             // build a histogram of length and a scaled histogram of length
             contigSetJSON.lengthvalues = []
-            contigSetJSON.scaledLengthvalues = []
+            contigSetJSON.scaledlengthvalues = []
             (0..overallMaxLength / 10).each {
                 def floor = it * 10
                 def ceiling = (it * 10) + 10
                 def count = contigStats.length.findAll({it >= floor && it < ceiling}).size()
                 contigSetJSON.lengthvalues.add([floor, count])
-                contigSetJSON.scaledLengthvalues.add([floor, (1000 * (count / contigStats.length.size())).toInteger()])
+                contigSetJSON.scaledlengthvalues.add([floor, (1000 * (count / contigStats.length.size())).toInteger()])
             }
 
-            // build a histogram of quality
-            contigSetJSON.qualityXvalues = []
-            contigSetJSON.qualityYvalues = []
-            contigSetJSON.scaledQualityXvalues = []
-            contigSetJSON.scaledQualityYvalues = []
-            (0..overallMaxQuality).each {
-                def floor = it
-                def ceiling = it + 1
+            // build a histogram of quality and a scaled histogram of length
+            contigSetJSON.qualityvalues = []
+            contigSetJSON.scaledqualityvalues = []
+            (0..overallMaxQuality / 1).each {
+                def floor = it * 1
+                def ceiling = (it * 1) + 1
                 def count = contigStats.quality.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.qualityXvalues.add(floor)
-                contigSetJSON.qualityYvalues.add(count)
-                contigSetJSON.scaledQualityXvalues.add(floor)
-                contigSetJSON.scaledQualityYvalues.add((1000 * (count / contigStats.length.size())).toInteger())
+                contigSetJSON.qualityvalues.add([floor, count])
+                contigSetJSON.scaledqualityvalues.add([floor, (1000 * (count / contigStats.quality.size())).toInteger()])
             }
 
-            contigSetJSON.qualityYmax = contigSetJSON.qualityYvalues.max()
-            contigSetJSON.scaledQualityYmax = contigSetJSON.scaledQualityYvalues.max()
-
-            // build a histogram of coverage
-            contigSetJSON.coverageXvalues = []
-            contigSetJSON.scaledCoverageXvalues = []
-            contigSetJSON.coverageYvalues = []
-            contigSetJSON.scaledCoverageYvalues = []
-            (0..overallMaxCoverage).each {
-                def floor = it
-                def ceiling = it + 1
+            // build a histogram of coverage and a scaled histogram of length
+            contigSetJSON.coveragevalues = []
+            contigSetJSON.scaledcoveragevalues = []
+            (0..overallMaxCoverage / 1).each {
+                def floor = it * 1
+                def ceiling = (it * 1) + 1
                 def count = contigStats.coverage.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.coverageXvalues.add(floor)
-                contigSetJSON.scaledCoverageXvalues.add(floor)
-                Float logCount = Math.log10(count + 1)
-                contigSetJSON.coverageYvalues.add(logCount)
-                Float scaledLogCount = Math.log10((1000 * (count / contigStats.length.size())) + 1)
-                contigSetJSON.scaledCoverageYvalues.add(scaledLogCount)
+                contigSetJSON.coveragevalues.add([floor, count])
+                contigSetJSON.scaledcoveragevalues.add([floor, (1000 * (count / contigStats.coverage.size())).toInteger()])
             }
-            contigSetJSON.coverageYmax = 10000
-            contigSetJSON.scaledCoverageYmax = 10000
+
 
             result.add(contigSetJSON)
         }

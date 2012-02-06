@@ -62,11 +62,11 @@ class ContigSetController {
 
 
         def drawQualityBoolean = false
-        if (contigSets[0].qualityYvalues.size() > 1) {
+        if (contigSets[0].qualityvalues.size() > 1) {
             drawQualityBoolean = true
         }
         def drawCoverageBoolean = false
-        if (contigSets[0].coverageYvalues.size() > 1) {
+        if (contigSets[0].coveragevalues.size() > 1) {
             drawCoverageBoolean = true
         }
 
