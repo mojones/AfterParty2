@@ -174,21 +174,19 @@ class StatisticsService {
             def contigStats = grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(contigSet.id)
 
             // build a histogram of length and a scaled histogram of length
-            contigSetJSON.lengthXvalues = []
-            contigSetJSON.lengthYvalues = []
+            contigSetJSON.lengthvalues = []
             contigSetJSON.scaledLengthXvalues = []
             contigSetJSON.scaledLengthYvalues = []
             (0..overallMaxLength / 10).each {
                 def floor = it * 10
                 def ceiling = (it * 10) + 10
                 def count = contigStats.length.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.lengthXvalues.add(floor)
-                contigSetJSON.lengthYvalues.add(count)
+                contigSetJSON.lengthvalues.add([floor, count])
                 contigSetJSON.scaledLengthXvalues.add(floor)
                 contigSetJSON.scaledLengthYvalues.add((1000 * (count / contigStats.length.size())).toInteger())
             }
             // add max Y value of histogram for drawing purposes
-            contigSetJSON.lengthYmax = contigSetJSON.lengthYvalues.max()
+//            contigSetJSON.lengthYmax = contigSetJSON.lengthYvalues.max()
             contigSetJSON.scaledLengthYmax = contigSetJSON.scaledLengthYvalues.max()
 
             // build a histogram of quality

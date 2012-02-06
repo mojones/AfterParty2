@@ -58,6 +58,9 @@ class ContigSetController {
 
         def contigSets = statisticsService.getStatsForContigSets(contigSetListResult)
 
+
+
+
         def drawQualityBoolean = false
         if (contigSets[0].qualityYvalues.size() > 1) {
             drawQualityBoolean = true
