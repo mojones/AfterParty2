@@ -175,19 +175,14 @@ class StatisticsService {
 
             // build a histogram of length and a scaled histogram of length
             contigSetJSON.lengthvalues = []
-            contigSetJSON.scaledLengthXvalues = []
-            contigSetJSON.scaledLengthYvalues = []
+            contigSetJSON.scaledLengthvalues = []
             (0..overallMaxLength / 10).each {
                 def floor = it * 10
                 def ceiling = (it * 10) + 10
                 def count = contigStats.length.findAll({it >= floor && it < ceiling}).size()
                 contigSetJSON.lengthvalues.add([floor, count])
-                contigSetJSON.scaledLengthXvalues.add(floor)
-                contigSetJSON.scaledLengthYvalues.add((1000 * (count / contigStats.length.size())).toInteger())
+                contigSetJSON.scaledLengthvalues.add([floor, (1000 * (count / contigStats.length.size())).toInteger()])
             }
-            // add max Y value of histogram for drawing purposes
-//            contigSetJSON.lengthYmax = contigSetJSON.lengthYvalues.max()
-            contigSetJSON.scaledLengthYmax = contigSetJSON.scaledLengthYvalues.max()
 
             // build a histogram of quality
             contigSetJSON.qualityXvalues = []

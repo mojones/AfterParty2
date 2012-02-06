@@ -29,49 +29,33 @@
         $(document).ready(function() {
 
             // global variables that determine how the chart is drawn
-            highlighterOn = false;
-            cursorOn = false;
-            logOn = false;
+            window.highlighterOn = false;
+            window.cursorOn = false;
+            window.logOn = false;
+            window.scaledOn = false;
 
             // boring code to handle chart options
-            $('#turnHighlighterOn').click(function() {
-                highlighterOn = true;
-                $('#turnHighlighterOff').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnHighlighterOn').css({'cursor':'default', 'font-weight':'bold'});
-                drawChart();
-            });
-            $('#turnHighlighterOff').click(function() {
-                highlighterOn = false;
-                $('#turnHighlighterOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnHighlighterOff').css({'cursor':'default', 'font-weight':'bold'});
-                drawChart();
-            });
 
-            $('#turnCursorOn').click(function() {
-                cursorOn = true;
-                $('#turnCursorOn').css({'cursor':'default', 'font-weight':'bold'});
-                $('#turnCursorOff').css({'cursor':'pointer', 'font-weight':'normal'});
-                drawChart();
-            });
-            $('#turnCursorOff').click(function() {
-                cursorOn = false;
-                $('#turnCursorOff').css({'cursor':'default', 'font-weight':'bold'});
-                $('#turnCursorOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                drawChart();
-            });
+            var setUpToggle = function(variableName) {
+                $('#turn' + variableName + 'On').click(function() {
+                    window[variableName + 'On'] = true;
+                    $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
+                    $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+                    drawChart();
+                });
+                $('#turn' + variableName + 'Off').click(function() {
+                    window[variableName + 'On'] = false;
+                    $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
+                    $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
+                    drawChart();
+                });
+            };
 
-            $('#turnLogOn').click(function() {
-                logOn = true;
-                $('#turnLogOn').css({'cursor':'default', 'font-weight':'bold'});
-                $('#turnLogOff').css({'cursor':'pointer', 'font-weight':'normal'});
-                drawChart();
-            });
-            $('#turnLogOff').click(function() {
-                logOn = false;
-                $('#turnLogOff').css({'cursor':'default', 'font-weight':'bold'});
-                $('#turnLogOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                drawChart();
-            });
+            setUpToggle('highlighter');
+            setUpToggle('cursor');
+            setUpToggle('log');
+            setUpToggle('scaled');
+
 
             $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
                 contigSetData = data;
@@ -88,11 +72,18 @@
 
                 var allLengthValues;
                 var renderer;
+                var fieldName;
+
+                if (scaledOn) {
+                    fieldName = 'scaledLengthvalues';
+                } else {
+                    fieldName = 'lengthvalues';
+                }
 
                 if (logOn) {
                     // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
                     allLengthValues = contigSetData.contigSetList.map(function(a) {
-                        return a.lengthvalues.map(function(b) {
+                        return a[fieldName].map(function(b) {
                             return [
                                 b[0], b[1] + 0.1
                             ];
@@ -100,18 +91,21 @@
                     });
                     renderer = $.jqplot.LogAxisRenderer;
                 } else {
+                    console.log(fieldName);
                     allLengthValues = contigSetData.contigSetList.map(function(a) {
-                        return a.lengthvalues;
+                        return a[fieldName];
                     });
                     renderer = $.jqplot.LinearAxisRenderer;
                 }
+
 
                 $.jqplot('lengthGraphDiv',
                         allLengthValues,
                         {
                             title: 'length histogram',
                             seriesDefaults:{
-                                showMarker: false
+                                showMarker: false,
+                                lineWidth: 1
                             },
                             axes:{
                                 xaxis:{
@@ -126,7 +120,7 @@
                                 }
                             },
                             highlighter: {
-                                show: highlighterOn,
+                                show: window.highlighterOn,
                                 sizeAdjust: 7.5
                             },
                             cursor: {
@@ -216,13 +210,16 @@
 
         <div class="sidebar_content" id="sb1_raw">
 
-            <p>Highlighter : <span id='turnHighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnHighlighterOff'>off</span>
+            <p>Highlighter : <span id='turnhighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnhighlighterOff'>off</span>
             </p>
 
-            <p>Cursor : <span id='turnCursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnCursorOff'>off</span>
+            <p>Cursor : <span id='turncursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turncursorOff'>off</span>
             </p>
 
-            <p>Scale : <span id='turnLogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnLogOff'>linear</span>
+            <p>Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
+            </p>
+
+            <p>Scale : <span id='turnscaledOn' style="cursor: pointer; ">per 1000 contigs</span> | <span style="font-weight: bold;" id='turnscaledOff'>raw frequency</span>
             </p>
 
             <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
