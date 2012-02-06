@@ -7,10 +7,18 @@
     <title>Viewing a set of contigs</title>
 
     %{--we need raphael to draw comparison graphs--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>
+    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>--}%
+    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>--}%
     %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>
+    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>--}%
+
+
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.min.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
+
 
 
 
@@ -20,121 +28,119 @@
         //         set up ajax compare assemblies
         $(document).ready(function() {
 
-            // we will need some variables that apply to all three charts
-            var raphaelWidth = $('#lengthGraphDiv').width() - 40;
-            var chartWidth = raphaelWidth - 400;
+            // global variables that determine how the chart is drawn
+            highlighterOn = false;
+            cursorOn = false;
+            logOn = false;
 
-            // allow arrays to calculate their own maximum value
-            Array.prototype.max = function() {
-                return Math.max.apply(Math, this);
-            };
-
-            // function to draw a chart
-            var drawAChart = function(containingElementId, xValues, yValues, colours, log, yMax) {
-
-
-                var r = Raphael(containingElementId, raphaelWidth, 1000);
-                if (log) {
-                    var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0", axisymax: 5});
-                    var axis = r.g.axis(
-                            85, // distance away from the left side of the canvas
-                            600 + 100 - 10, // distance from the top = the chart height + the y-position of the chart - 10 pixels padding
-                            600 - 10, // position of the end of the text - probably we want this to be the length of the axis
-                            null, // start of the range - leave it as null as we are using our own labels
-                            null, // end of the range ditto
-                            4, // number of labels we want - 1 (i.e. 0-based index of the last label)
-                            1, // orientation: 0 -> x-axis, 1 -> y-axis
-                            ['1', '10', '100', '1000', '10000'], // array of labels
-                            "|", // the type of tick mark
-                            10); // the size of the tick mark
-                }
-                else {
-                    var chart = r.g.linechart(100, 100, chartWidth, 600, xValues, yValues, {colors: colours, axis: "0 0 1 0"});
-                    chart.hoverColumn(function() {
-                        console.log(this);
-//                        r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
-                    }, function() {
-//                        console.log('out');
-                    });
-                    var maximum = Math.max(yValues);
-                    var axis = r.g.axis(
-                            85, // distance away from the left side of the canvas
-                            600 + 100 - 10, // distance from the top = the chart height + the y-position of the chart - 10 pixels padding
-                            600 - 10, // position of the end of the text - probably we want this to be the length of the axis
-                            0, // start of the range - leave it as null as we are using our own labels
-                            yMax, //Math.max(yValues), // end of the range ditto
-                            9, // number of labels we want - 1 (i.e. 0-based index of the last label)
-                            1, // orientation: 0 -> x-axis, 1 -> y-axis
-                            null, // array of labels
-                            "|", // the type of tick mark
-                            10); // the size of the tick mark
-
-                }
-
-            };
-
-            $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
-
-                // utility function - lets us do the equivalent of data.assemblyList*.colour, data.assemblyList*.lengthYvalues, etc as per Groovy
-                var extractField = function(fieldname) {
-                    return  data.contigSetList.map(function(a) {
-                        return a[fieldname];
-                    });
-                };
-
-                var colours = extractField('colour');
-
-                // draw length chart
-                var lengthYvalues = extractField('lengthYvalues');
-                var lengthXvalues = extractField('lengthXvalues');
-                var lengthYmax = data.lengthYmax; // we need the max of the max!
-                drawAChart('lengthGraphDiv', lengthXvalues, lengthYvalues, colours, false, lengthYmax);
-
-                // draw scaledlength chart
-                var scaledLengthYvalues = extractField('scaledLengthYvalues');
-                var scaledLengthXvalues = extractField('scaledLengthXvalues');
-                var scaledLengthYmax = data.scaledLengthYmax; // we need the max of the max!
-                drawAChart('scaledLengthGraphDiv', scaledLengthXvalues, scaledLengthYvalues, colours, false, scaledLengthYmax);
-
-
-                if (data.drawQuality) {
-                    // draw quality chart
-                    var qualityYvalues = extractField('qualityYvalues');
-                    var qualityXvalues = extractField('qualityXvalues');
-                    var qualityYmax = data.qualityYmax;
-                    drawAChart('qualityGraphDiv', qualityXvalues, qualityYvalues, colours, false, qualityYmax);
-
-                    // draw scaled quality chart
-                    var scaledQualityYvalues = extractField('scaledQualityYvalues');
-                    var scaledQualityXvalues = extractField('scaledQualityXvalues');
-                    var scaledQualityYmax = data.scaledQualityYmax;
-                    drawAChart('scaledQualityGraphDiv', scaledQualityXvalues, scaledQualityYvalues, colours, false, scaledQualityYmax);
-                }
-                else {
-                    $('qualityGraphDiv').html('<h2>No quality data</h2>')
-                }
-
-                if (data.drawCoverage) {
-                    // draw coverage chart
-                    var coverageYvalues = extractField('coverageYvalues');
-                    var coverageXvalues = extractField('coverageXvalues');
-                    var coverageYmax = 10000; //data.coverageYmax;
-                    drawAChart('coverageGraphDiv', coverageXvalues, coverageYvalues, colours, true, coverageYmax);
-
-                    // draw coverage chart
-                    var scaledCoverageYvalues = extractField('scaledCoverageYvalues');
-                    var scaledCoverageXvalues = extractField('scaledCoverageXvalues');
-                    var scaledCoverageYmax = 10000; //data.coverageYmax;
-                    drawAChart('scaledCoverageGraphDiv', scaledCoverageXvalues, scaledCoverageYvalues, colours, true, scaledCoverageYmax);
-                } else {
-                    $('coverageGraphDiv').html('<h2>No coverage data</h2>')
-                }
-
-                //TODO why does this not work if the quality tab is showing while we are trying to load the charts????
-
-                $('.spinner').hide();
+            // boring code to handle chart options
+            $('#turnHighlighterOn').click(function() {
+                highlighterOn = true;
+                $('#turnHighlighterOff').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnHighlighterOn').css({'cursor':'default', 'font-weight':'bold'});
+                drawChart();
+            });
+            $('#turnHighlighterOff').click(function() {
+                highlighterOn = false;
+                $('#turnHighlighterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turnHighlighterOff').css({'cursor':'default', 'font-weight':'bold'});
+                drawChart();
             });
 
+            $('#turnCursorOn').click(function() {
+                cursorOn = true;
+                $('#turnCursorOn').css({'cursor':'default', 'font-weight':'bold'});
+                $('#turnCursorOff').css({'cursor':'pointer', 'font-weight':'normal'});
+                drawChart();
+            });
+            $('#turnCursorOff').click(function() {
+                cursorOn = false;
+                $('#turnCursorOff').css({'cursor':'default', 'font-weight':'bold'});
+                $('#turnCursorOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                drawChart();
+            });
+
+            $('#turnLogOn').click(function() {
+                logOn = true;
+                $('#turnLogOn').css({'cursor':'default', 'font-weight':'bold'});
+                $('#turnLogOff').css({'cursor':'pointer', 'font-weight':'normal'});
+                drawChart();
+            });
+            $('#turnLogOff').click(function() {
+                logOn = false;
+                $('#turnLogOff').css({'cursor':'default', 'font-weight':'bold'});
+                $('#turnLogOn').css({'cursor':'pointer', 'font-weight':'normal'});
+                drawChart();
+            });
+
+            $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
+                contigSetData = data;
+                drawChart();
+
+
+            });
+
+
+            var drawChart = function() {
+                $('#lengthGraphDiv').empty();
+
+                $('.spinner').show();
+
+                var allLengthValues;
+                var renderer;
+
+                if (logOn) {
+                    // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
+                    allLengthValues = contigSetData.contigSetList.map(function(a) {
+                        return a.lengthvalues.map(function(b) {
+                            return [
+                                b[0], b[1] + 0.1
+                            ];
+                        });
+                    });
+                    renderer = $.jqplot.LogAxisRenderer;
+                } else {
+                    allLengthValues = contigSetData.contigSetList.map(function(a) {
+                        return a.lengthvalues;
+                    });
+                    renderer = $.jqplot.LinearAxisRenderer;
+                }
+
+                $.jqplot('lengthGraphDiv',
+                        allLengthValues,
+                        {
+                            title: 'length histogram',
+                            seriesDefaults:{
+                                showMarker: false
+                            },
+                            axes:{
+                                xaxis:{
+                                    label:'Length (bases)',
+                                    pad: 0
+                                },
+                                yaxis:{
+                                    label:'Frequency',
+                                    pad : 0,
+                                    renderer: renderer
+
+                                }
+                            },
+                            highlighter: {
+                                show: highlighterOn,
+                                sizeAdjust: 7.5
+                            },
+                            cursor: {
+                                show: cursorOn,
+                                tooltipLocation:'sw',
+                                followMouse : true,
+                                showVerticalLine: true,
+                                showHorizontalLine: true
+                            }
+                        }
+                );
+                $('.spinner').hide();
+
+            }
 
         });
     </script>
@@ -188,6 +194,7 @@
         <div class="bheadr"></div>
 
         <h2>Contig Set charts</h2>
+
     </div>        <!-- .block_head ends -->
 
 
@@ -209,11 +216,20 @@
 
         <div class="sidebar_content" id="sb1_raw">
 
-            <p>Length graph will go here</p>
+            <p>Highlighter : <span id='turnHighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnHighlighterOff'>off</span>
+            </p>
 
-            <div id="lengthGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
+            <p>Cursor : <span id='turnCursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnCursorOff'>off</span>
+            </p>
+
+            <p>Scale : <span id='turnLogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnLogOff'>linear</span>
+            </p>
+
+            <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+            </h2>
+
+            <div id="lengthGraphDiv" style="height: 800px; width: 1000px;">
+
             </div>
         </div>        <!-- .sidebar_content ends -->
 
