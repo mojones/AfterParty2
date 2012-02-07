@@ -25,8 +25,6 @@
     %{-- adminus stuff --}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.img.preload.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.visualize.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.tablesorter.min.jsvis')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'facebox.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.select_skin.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'ajaxupload.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.filestyle.mini.js')}"></script>
