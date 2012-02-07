@@ -42,6 +42,14 @@
         }
         return result;
     }
+    function zip4(arrayA, arrayB, arrayC, arrayD) {
+        var length = Math.min(arrayA.length, arrayB.length, arrayC.length, arrayD.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+            result.push([arrayA[n], arrayB[n], arrayC[n], arrayD[n]]);
+        }
+        return result;
+    }
 
     // show and hide data series when asked to
     function toggleSeries(index) {
@@ -116,7 +124,7 @@
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         var allValues = window.seriesList.map(function(a) {
-            return zip3(a[window.scatterXField], a[window.scatterYField], a.id);
+            return zip4(a[window.scatterXField], a[window.scatterYField], a.id, a.topBlast);
         });
 
         var colourList = window.seriesList.map(function(a) {
@@ -162,9 +170,11 @@
                     },
                     highlighter: {
                         show: window.scatterhighlighterOn,
+                        tooltipLocation:'ne',
                         sizeAdjust: 7.5,
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
-                        tooltipFormatString : '%.2f',
+                        yvalues: 3,
+                        formatString : window.scatterXField + ': %.2f<br/>' + window.scatterYField + ': %.2f<br/>id: %d<br/>blast: %s',
                         useAxesFormatters: false
                     },
                     cursor: {
@@ -505,11 +515,11 @@
 
         <div id='scatterplotContainer'>
             <p>Mouseover :
-                <span id='turnscatterhighlighterOn' style="font-weight: bold;" >hightlight</span> |
+                <span id='turnscatterhighlighterOn' style="font-weight: bold;">hightlight</span> |
                 <span style="cursor: pointer; " id='turnscatterhighlighterOff'>zoom</span>(
                 <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
                 <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
-                &nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;
 
 
             &nbsp;&nbsp;&nbsp;

@@ -18,7 +18,7 @@ class BlastHit {
     }
 
     static mapping = {
-        sort bitscore:'desc'
+       // sort bitscore:'desc'
         contig (index:'blasthit_contig')
     }
 

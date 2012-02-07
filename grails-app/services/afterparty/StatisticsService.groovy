@@ -112,8 +112,8 @@ class StatisticsService {
         def cs = criteria.get({
             eq('id', id)
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
-            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
+            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println "got $cs"
         println "got contigs : " + (System.currentTimeMillis() - start)
@@ -125,8 +125,9 @@ class StatisticsService {
                 length: contigs*.length(),
                 quality: contigs*.averageQuality(),
                 coverage: contigs*.averageCoverage(),
-                gc: contigs*.gc()
-//                topBlast: topBlasts
+                gc: contigs*.gc(),
+                topBlast: contigs.collect({
+                    it.blastHits.size() > 0 ? it.blastHits.toArray()[0].description : 'no blast hit'})
         ]
         println "built return : " + (System.currentTimeMillis() - start)
         return result
