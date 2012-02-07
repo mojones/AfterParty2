@@ -47,6 +47,22 @@ class ContigSetController {
     }
 
     def showContigSetsJSON = {
+        def contigSetListResult = []
+        params.idList.split(/,/).eachWithIndex { id, i ->
+            def cs = statisticsService.getContigStatsForContigSet(id.toLong())
+            cs.colour = statisticsService.boldAssemblyColours[i]
+            cs.contigSetId = id
+            contigSetListResult.add(cs)
+        }
+
+        render(contentType: "text/json") {
+            contigSetList = contigSetListResult
+        }
+
+    }
+
+
+    def showContigSetsStatsJSON = {
 
 
         def contigSetListResult = []

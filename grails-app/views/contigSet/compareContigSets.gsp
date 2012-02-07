@@ -1,176 +1,392 @@
 <%@ page import="afterparty.StatisticsService; afterparty.Study" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
-    <title>Viewing a set of contigs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="layout" content="main.gsp"/>
+<g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
+<title>Viewing a set of contigs</title>
 
-    %{--we need raphael to draw comparison graphs--}%
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>--}%
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>--}%
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>--}%
-    %{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>--}%
-
-
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.min.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
-    <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
+%{--we need raphael to draw comparison graphs--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>--}%
+%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>--}%
 
 
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.min.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
+<link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
 
 
 
-    <script type="text/javascript">
-
-        //         set up ajax compare assemblies
-        $(document).ready(function() {
-
-            // global variables that determine how the chart is drawn
-            window.highlighterOn = false;
-            window.cursorOn = false;
-            window.logOn = false;
-            window.scaledOn = false;
-
-            window.chartType = 'length';
-
-            // boring code to handle chart options
-
-            var setUpToggle = function(variableName) {
-                $('#turn' + variableName + 'On').click(function() {
-                    window[variableName + 'On'] = true;
-                    $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
-                    $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
-                    drawChart();
-                });
-                $('#turn' + variableName + 'Off').click(function() {
-                    window[variableName + 'On'] = false;
-                    $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
-                    $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
-                    drawChart();
-                });
-            };
-
-            setUpToggle('highlighter');
-            setUpToggle('cursor');
-            setUpToggle('log');
-            setUpToggle('scaled');
 
 
-            // handle chart type
-            $('#turnlengthOn').click(function() {
-                $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
-                window.chartType = 'length';
-                drawChart();
-            });
+<script type="text/javascript">
 
-            $('#turncoverageOn').click(function() {
-                $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
-                window.chartType = 'coverage';
-                drawChart();
-            });
+    function zip2(arrayA, arrayB) {
+        var length = Math.min(arrayA.length, arrayB.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+            result.push([arrayA[n], arrayB[n]]);
+        }
+        return result;
+    }
 
-            $('#turnqualityOn').click(function() {
-                $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
-                $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
-                window.chartType = 'quality';
-                drawChart();
-            });
+    function zip3(arrayA, arrayB, arrayC) {
+        var length = Math.min(arrayA.length, arrayB.length, arrayC.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+            result.push([arrayA[n], arrayB[n], arrayC[n]]);
+        }
+        return result;
+    }
 
-            $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
-                contigSetData = data;
-                drawChart();
+    // show and hide data series when asked to
+    function toggleSeries(index) {
+        $('#spinner').show();
+        window.series[index] = !window.series[index];
+        drawActiveChart();
+    }
 
-
-            });
-
-
-            var drawChart = function() {
-                $('#lengthGraphDiv').empty();
-
-                $('.spinner').show();
-
-                var allLengthValues;
-                var renderer;
-                var fieldName;
-
-                if (scaledOn) {
-                    fieldName = 'scaled' + window.chartType + 'values';
-                } else {
-                    fieldName = window.chartType + 'values';
-                }
-
-                if (logOn) {
-                    // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
-                    allLengthValues = contigSetData.contigSetList.map(function(a) {
-                        return a[fieldName].map(function(b) {
-                            return [
-                                b[0], b[1] + 0.1
-                            ];
-                        });
-                    });
-                    renderer = $.jqplot.LogAxisRenderer;
-                } else {
-                    console.log(fieldName);
-                    allLengthValues = contigSetData.contigSetList.map(function(a) {
-                        return a[fieldName];
-                    });
-                    renderer = $.jqplot.LinearAxisRenderer;
-                }
-
-                var colourList = contigSetData.contigSetList.map(function(a) {
-                    return a.colour;
-                });
-                console.log(colourList);
-
-
-                $.jqplot('lengthGraphDiv',
-                        allLengthValues,
-                        {
-                            seriesColors : colourList,
-                            title: window.chartType + ' histogram',
-                            seriesDefaults:{
-                                showMarker: false,
-                                lineWidth: 1
-                            },
-                            axes:{
-                                xaxis:{
-                                    label:window.chartType,
-                                    pad: 0
-                                },
-                                yaxis:{
-                                    label:'Frequency',
-                                    pad : 0,
-                                    renderer: renderer
-
-                                }
-                            },
-                            highlighter: {
-                                show: window.highlighterOn,
-                                sizeAdjust: 7.5
-                            },
-                            cursor: {
-                                show: cursorOn,
-                                tooltipLocation:'sw',
-                                followMouse : true,
-                                showVerticalLine: true,
-                                showHorizontalLine: true
-                            }
-                        }
-                );
-                $('.spinner').hide();
-
+    //rearrange the data series so that the one with the specified id is last i.e. on the top layer of the scatter plot
+    function moveToTop(id) {
+        $('#spinner').show();
+        var sortedDatasetList = contigSetRawData.contigSetList.sort(function(a, b) {
+            return b.id.length - a.id.length
+        });
+        // empty the dataset list
+        window.seriesList = [];
+        var currentDataset;
+        // first add all the other datasets
+        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
+            currentDataset = contigSetRawData.contigSetList[i];
+            if (currentDataset.contigSetId != id) {
+                window.seriesList.push(currentDataset);
             }
+        }
+
+        // now add the one we want
+        for (var j = 0; j < contigSetRawData.contigSetList.length; j++) {
+            currentDataset = contigSetRawData.contigSetList[j];
+            if (currentDataset.contigSetId == id) {
+                window.seriesList.push(currentDataset);
+            }
+        }
+        drawActiveChart();
+
+    }
+
+    drawActiveChart = function() {
+        $('#spinner').show();
+        if (window.activeChart == 'histogram') {
+            $('#histogramDiv').empty();
+            setTimeout('drawChart();', 10);
+        }
+
+        if (window.activeChart == 'scatterplot') {
+            $('#scatterplotDiv').empty();
+            setTimeout('drawScatterChart();', 10);
+        }
+    }
+
+    drawScatterChart = function() {
+        $('#scatterplotDiv').empty();
+        $('#spinner').show();
+
+        var allLengthValues;
+        var renderer;
+        var fieldName;
+
+        var allValues = window.seriesList.map(function(a) {
+            return zip2(a.length, a.quality);
+        });
+
+        var colourList = window.seriesList.map(function(a) {
+            return a.colour;
+        });
+        console.log(allValues);
+
+        var mySeriesOptions = [];
+        mySeriesOptions[0] = {markerOptions: {show : window.series[0]}};
+        mySeriesOptions[1] = {markerOptions: {show : window.series[1]}};
+        mySeriesOptions[2] = {markerOptions: {show : window.series[2]}};
+        mySeriesOptions[3] = {markerOptions: {show : window.series[3]}};
+        mySeriesOptions[4] = {markerOptions: {show : window.series[4]}};
+
+
+        scatterPlot = $.jqplot('scatterplotDiv',
+                allValues,
+                {
+                    seriesColors : colourList,
+                    title : ' my scatter plot',
+                    seriesDefaults:{
+                        showMarker: true,
+                        showLine: false,
+                        markerOptions : {
+                            shadow: false,
+                            lineWidth : 0,
+                            size : 5
+                        }
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label:'length',
+                            pad: 0
+                        },
+                        yaxis:{
+                            label:'quality',
+                            pad : 0
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.scatterhighlighterOn,
+                        sizeAdjust: 7.5,
+                        markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'})
+                    },
+                    cursor: {
+                        show: scattercursorOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom:true
+                    }
+                }
+        );
+        $('#spinner').hide();
+
+    }
+
+
+    drawChart = function() {
+        $('#histogramDiv').empty();
+        $('#spinner').show();
+
+        var allLengthValues;
+        var renderer;
+        var fieldName;
+
+        if (scaledOn) {
+            fieldName = 'scaled' + window.chartType + 'values';
+        } else {
+            fieldName = window.chartType + 'values';
+        }
+
+        if (logOn) {
+            // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
+            allLengthValues = contigSetData.contigSetList.map(function(a) {
+                return a[fieldName].map(function(b) {
+                    return [
+                        b[0], b[1] + 0.1
+                    ];
+                });
+            });
+            renderer = $.jqplot.LogAxisRenderer;
+        } else {
+            console.log(fieldName);
+            allLengthValues = contigSetData.contigSetList.map(function(a) {
+                return a[fieldName];
+            });
+            renderer = $.jqplot.LinearAxisRenderer;
+        }
+
+        var colourList = contigSetData.contigSetList.map(function(a) {
+            return a.colour;
+        });
+        console.log(colourList);
+
+//        TODO make this less hacky
+        var mySeriesOptions = [];
+        mySeriesOptions[0] = {showLine : window.series[0]};
+        mySeriesOptions[1] = {showLine : window.series[1]};
+        mySeriesOptions[2] = {showLine : window.series[2]};
+        mySeriesOptions[3] = {showLine : window.series[3]};
+        mySeriesOptions[4] = {showLine : window.series[4]};
+
+
+        histogramPlot = $.jqplot('histogramDiv',
+                allLengthValues,
+                {
+                    seriesColors : colourList,
+                    title: window.chartType + ' histogram',
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label:window.chartType,
+                            pad: 0
+                        },
+                        yaxis:{
+                            label:'Frequency',
+                            pad : 0,
+                            renderer: renderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5
+                    },
+                    cursor: {
+                        show: cursorOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true
+                    }
+                }
+        );
+        $('#spinner').hide();
+
+    }
+
+
+    //         set up ajax compare assemblies
+    $(document).ready(function() {
+
+
+        $('#saveSelected').click(function() {
+            var xmin = scatterPlot.axes.xaxis.min;
+            var xmax = scatterPlot.axes.xaxis.max;
+            var ymin = scatterPlot.axes.yaxis.min;
+            var ymax = scatterPlot.axes.yaxis.max;
+
+            console.log(xmin + ' to ' + xmax + ' , ' + ymin + ' to ' + ymax);
+            console.log(scatterPlot.data.size());
+        });
+
+        // start with all series toggled on
+        window.series = [];
+        window.series[0] = true;
+        window.series[1] = true;
+        window.series[2] = true;
+        window.series[3] = true;
+        window.series[4] = true;
+        window.series[5] = true;
+        window.series[6] = true;
+
+        // global variables that determine how the chart is drawn
+        window.highlighterOn = false;
+        window.cursorOn = false;
+        window.logOn = false;
+        window.scaledOn = false;
+
+        window.scatterhighlighterOn = false;
+        window.scattercursorOn = false;
+
+
+        window.chartType = 'length';
+
+        // boring code to handle chart options
+
+        var setUpToggle = function(variableName) {
+            $('#turn' + variableName + 'On').click(function() {
+                window[variableName + 'On'] = true;
+                $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+                drawActiveChart();
+            });
+            $('#turn' + variableName + 'Off').click(function() {
+                window[variableName + 'On'] = false;
+                $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
+                drawActiveChart();
+            });
+        };
+
+        setUpToggle('highlighter');
+        setUpToggle('cursor');
+        setUpToggle('log');
+        setUpToggle('scaled');
+
+        setUpToggle('scatterhighlighter');
+        setUpToggle('scattercursor');
+
+        $('#resetZoom').click(function() {
+            scatterPlot.resetZoom();
+        });
+
+
+        // handle chart type
+        $('#turnlengthOn').click(function() {
+            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'length';
+            setTimeout('drawChart();', 1);
+        });
+        $('#turncoverageOn').click(function() {
+            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'coverage';
+            setTimeout('drawChart();', 1);
+        });
+        $('#turnqualityOn').click(function() {
+            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'quality';
+            setTimeout('drawChart();', 1);
+        });
+
+        //show / hide the different chart types
+        $('#turnhistogramOn').click(function() {
+            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnhistogramOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#scatterplotContainer').hide();
+            $('#histogramContainer').show();
+            $('#histogramDiv').empty();
+            $('#spinner').show();
+            window.activeChart = 'histogram';
+            setTimeout('drawChart();', 1);
 
         });
-    </script>
+        $('#turnScatterOn').click(function() {
+            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnScatterOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#histogramContainer').hide();
+            $('#scatterplotContainer').show();
+            $('#scatterplotDiv').empty();
+            $('#spinner').show();
+            window.activeChart = 'scatterplot';
+
+            setTimeout('drawScatterChart();', 1);
+
+        })
+
+
+        // do the initial get and draw the first chart
+        $.get('/contigSet/showContigSetsStatsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
+            contigSetData = data;
+            drawChart();
+        });
+
+
+        // do the initial get and draw the first chart
+        $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
+            contigSetRawData = data;
+            window.seriesList = [];
+
+            // start off by sorting the data series so that the one with the fewest contigs is on top in the chart - this usually makes it easier to see
+            var sortedDatasetList = contigSetRawData.contigSetList.sort(function(a, b) {
+                return b.id.length - a.id.length
+            });
+            for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
+                window.seriesList[i] = sortedDatasetList[i];
+            }
+        });
+
+
+    });
+</script>
 </head>
 
 <body>
@@ -198,7 +414,11 @@
             <tbody>
             <g:each in="${contigSets}" var="contigSet" status="index">
                 <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
-                    <td>${contigSet.name}</td>
+                    <td>
+                        ${contigSet.name} &nbsp;&nbsp;
+                        <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
+                        <span style="cursor:pointer;" onclick="moveToTop(${contigSet.id});">move to top</span>
+                    </td>
                     <td>${contigSet.contigs.size()}</td>
                 </tr>
             </g:each>
@@ -213,7 +433,7 @@
 </div>
 
 
-<div class="block withsidebar">
+<div class="block">
 
     <div class="block_head">
         <div class="bheadl"></div>
@@ -228,21 +448,14 @@
 
     <div class="block_content">
 
-        <div class="sidebar">
-            <ul class="sidemenu">
-                <li><a href="#sb1_raw">Length</a></li>
-                <li><a href="#sb2_raw">Quality</a></li>
-                <li><a href="#sb3_raw">Coverage</a></li>
-                <li><a href="#sb4_raw">Scaled length</a></li>
-                <li><a href="#sb5_raw">Scaled quality</a></li>
-                <li><a href="#sb6_raw">Scaled coverage</a></li>
-            </ul>
+        <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span>
+        </p>
 
-            <p>Use the tabs to navigate between charts</p>
-        </div>        <!-- .sidebar ends -->
+        %{--TODO possibly replace this with spin.js so that the spinner doesn't freeze while we are drawing the chart--}%
+        <h2 id="spinner">Drawing chart, please wait...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+        </h2>
 
-        <div class="sidebar_content" id="sb1_raw">
-
+        <div id='histogramContainer'>
             <p>Highlighter : <span id='turnhighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnhighlighterOff'>off</span>
                 &nbsp;&nbsp;&nbsp;
 
@@ -260,60 +473,23 @@
             </p>
 
 
-            <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+            <div id="histogramDiv" style="height: 800px; width: 1000px;">
+
+            </div>
+        </div>
+
+        <div id='scatterplotContainer'>
+            <p>Highlighter : <span id='turnscatterhighlighterOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnscatterhighlighterOff'>off</span>
+                &nbsp;&nbsp;&nbsp;
+
+                Cursor : <span id='turnscattercursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnscattercursorOff'>off</span> (<span style="cursor: pointer;" id="resetZoom">click to reset</span>, <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
+            &nbsp;&nbsp;&nbsp;
+
+
+            <div id="scatterplotDiv" style="height: 800px; width: 1000px;">
             </h2>
-
-            <div id="lengthGraphDiv" style="height: 800px; width: 1000px;">
-
-            </div>
-        </div>        <!-- .sidebar_content ends -->
-
-
-        <div class="sidebar_content" id="sb2_raw">
-            <p>Quality graph will go here</p>
-
-            <div id="qualityGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
-            </div>
-        </div>        <!-- .sidebar_content ends -->
-
-
-        <div class="sidebar_content" id="sb3_raw">
-            <p>Coverage graph will go here</p>
-
-            <div id="coverageGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
             </div>
         </div>
-
-        <div class="sidebar_content" id="sb4_raw">
-            <p>Coverage graph will go here</p>
-
-            <div id="scaledLengthGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
-            </div>
-        </div>
-
-        <div class="sidebar_content" id="sb5_raw">
-            <p>Coverage graph will go here</p>
-
-            <div id="scaledQualityGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
-            </div>
-        </div>
-
-        <div class="sidebar_content" id="sb6_raw">
-            <p>Coverage graph will go here</p>
-
-            <div id="scaledCoverageGraphDiv" style="height: 1000px;">
-                <h2 class="spinner">Drawing graphs...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-                </h2>
-            </div>
-        </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>

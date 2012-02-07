@@ -9,7 +9,7 @@ class StatisticsService {
     def grailsApplication
 
     static paleAssemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
-    static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB']
+    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB']
 
 
     @Cacheable("myCache")

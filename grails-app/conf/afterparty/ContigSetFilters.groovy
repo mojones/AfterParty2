@@ -6,7 +6,7 @@ class ContigSetFilters {
 
     def filters = {
 
-        allContigSetsExist(controller: 'contigSet', action: '(compareContigSets|showContigSetsJSON)') {
+        allContigSetsExist(controller: 'contigSet', action: '(compareContigSets|showContigSetsStatsJSON)') {
             before = {
                 println "checking if contig set exists"
                 params.idList.split(/,/).each {
