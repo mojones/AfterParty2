@@ -96,8 +96,10 @@
         $('#spinner').show();
 
         var allLengthValues;
-        var renderer;
         var fieldName;
+
+        var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+        var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         var allValues = window.seriesList.map(function(a) {
             return zip2(a.length, a.quality);
@@ -134,11 +136,13 @@
                     axes:{
                         xaxis:{
                             label:'length',
-                            pad: 0
+                            pad: 0,
+                            renderer: xAxisRenderer
                         },
                         yaxis:{
                             label:'quality',
-                            pad : 0
+                            pad : 0,
+                            renderer : yAxisRenderer
 
                         }
                     },
@@ -175,7 +179,7 @@
         } else {
             fieldName = window.chartType + 'values';
         }
-
+        //TODO should this be window.logOn?
         if (logOn) {
             // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
             allLengthValues = contigSetData.contigSetList.map(function(a) {
@@ -280,6 +284,8 @@
 
         window.scatterhighlighterOn = false;
         window.scattercursorOn = false;
+        window.scaterylogOn = false;
+        window.scaterxlogOn = false;
 
 
         window.chartType = 'length';
@@ -308,6 +314,8 @@
 
         setUpToggle('scatterhighlighter');
         setUpToggle('scattercursor');
+        setUpToggle('scatterylog');
+        setUpToggle('scatterxlog');
 
         $('#resetZoom').click(function() {
             scatterPlot.resetZoom();
@@ -484,6 +492,10 @@
 
                 Cursor : <span id='turnscattercursorOn' style="cursor: pointer; ">on</span> | <span style="font-weight: bold;" id='turnscattercursorOff'>off</span> (<span style="cursor: pointer;" id="resetZoom">click to reset</span>, <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
             &nbsp;&nbsp;&nbsp;
+
+            Y axis : <span id='turnscatterylogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterylogOff'>linear</span>
+                &nbsp;&nbsp;&nbsp;
+                X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
 
 
             <div id="scatterplotDiv" style="height: 800px; width: 1000px;">
