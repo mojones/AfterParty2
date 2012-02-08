@@ -6,13 +6,6 @@
 <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
 <title>Viewing a set of contigs</title>
 
-%{--we need raphael to draw comparison graphs--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.raphael-min.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>--}%
-%{--<script type="text/javascript" src="${resource(dir: 'js', file: 'g.line.custom.js')}"></script>--}%
-
-
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
@@ -417,6 +410,7 @@
 
         });
 
+        $('#scatterplotContainer').hide();
 
         // do the initial get and draw the first chart
         $.get('/contigSet/showContigSetsStatsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
@@ -442,9 +436,55 @@
 
     });
 </script>
+
 </head>
 
 <body>
+
+<g:if test="${contigSets.size() == 1}">
+    <g:set var="contigSetInstance" value="${contigSets[0]}"/>
+%{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
+To make a bit of text editable we need to
+1. add the edit_in_place tag to it
+2. set the name attribute to be the name of the property that the text refers to --}%
+    <script type="text/javascript">
+        //         set up edit-in-place
+        $(document).ready(function() {
+            setUpEditInPlace(
+                    ${contigSetInstance.id},
+                    "<g:createLink controller="update" action="updateField"/>",
+                    'ContigSet'
+            );
+        });
+    </script>
+
+    <div class="block">
+
+        <div class="block_head">
+            <div class="bheadl"></div>
+
+            <div class="bheadr"></div>
+
+            <h2>Contig Set details <span style="font-size: small;">(click to edit)</span></h2>
+
+        </div>        <!-- .block_head ends -->
+
+        <div class="block_content">
+            <h3>Name</h3>
+
+            <p class="edit_in_place" name="name">${contigSetInstance.name}</p>
+
+            <h3>Description</h3>
+
+            <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
+
+        </div>        <!-- .block_content ends -->
+
+        <div class="bendl"></div>
+
+        <div class="bendr"></div>
+    </div>
+</g:if>
 
 <div class="block">
 
