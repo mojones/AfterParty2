@@ -266,7 +266,9 @@
                         tooltipLocation:'sw',
                         followMouse : true,
                         showVerticalLine: true,
-                        showHorizontalLine: true
+                        showHorizontalLine: true,
+                        zoom: true,
+                        constrainZoomTo : 'x'
                     }
                 }
         );
