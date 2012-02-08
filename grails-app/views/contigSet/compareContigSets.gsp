@@ -362,6 +362,9 @@
         $('#resetZoom').click(function() {
             scatterPlot.resetZoom();
         });
+        $('#resetHistogramZoom').click(function() {
+            histogramPlot.resetZoom();
+        });
 
 
         // handle chart type
@@ -597,9 +600,14 @@ To make a bit of text editable we need to
         </h2>
 
         <div id='histogramContainer'>
-            <p>Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> | <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span>
+            <p>Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> |
+                <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span>(
+                <span style="cursor: pointer;" id="resetHistogramZoom">click to reset</span>,
+                <span style="cursor: pointer;" id="saveHistgramSelected">click to save selected</span>)
 
-                &nbsp;&nbsp;&nbsp;
+            </p>
+
+            <p>
 
                 Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
                 &nbsp;&nbsp;&nbsp;
