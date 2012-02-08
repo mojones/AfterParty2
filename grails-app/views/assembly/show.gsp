@@ -19,37 +19,6 @@
                     'Assembly'
             );
 
-            $("#scatterplotForm").submit(function() {
-                $('#loadingScatterplotImage').show();
-                var xLabel = $('#x_label').val();
-                var yLabel = $('#y_label').val();
-                var cutoff = $('#cutoff').val();
-                if (cutoff == "") {
-                    cutoff = 0;
-                }
-                var colourBy = $('#contig_colour').val();
-                $('#scatterplotImage')
-                        .attr("src", "<g:createLink controller="assembly" action="scatterplotAjax"/>" + "?assemblyId=${assemblyInstance.id}&x=" + xLabel + "&y=" + yLabel + "&time=" + new Date().getTime() + "&cutoff=" + cutoff + "&colour=" + colourBy)
-                        .load(function() {
-                            $('#loadingScatterplotImage').hide();
-                        })
-                        ;
-                return false;
-            })
-
-            $("#histogramForm").submit(function() {
-                $('#loadingHistogramImage').show();
-                var xLabel = $('#histogramField').val();
-                var scale = $('#histogramScale').val()
-                $('#histogramImage')
-                        .attr("src", "<g:createLink controller="assembly" action="histogramAjax"/>" + "?assemblyId=${assemblyInstance.id}&x=" + xLabel + "&scale=" + scale + "&time=" + new Date().getTime())
-                        .load(function() {
-                            $('#loadingHistogramImage').hide();
-                        })
-                        ;
-                return false;
-            })
-
 
         });
 
@@ -142,6 +111,16 @@
                     <input type="submit" class="submit short" value="Upload"/>
                 </p>
             </g:form>
+
+            <g:form controller="contigSet" action="compareContigSets" method="get">
+
+
+                <g:hiddenField name="idList" value="${assemblyInstance.defaultContigSet.id}"/>
+
+                <p style="clear:none;">
+                    <input type="submit" class="submit mid" value="View contigs"/>
+                </p>
+            </g:form>
         </div>        <!-- .sidebar_content ends -->
 
 
@@ -181,110 +160,7 @@
 </div>
 
 
-<div class="block">
-    <div class="block_head">
-        <div class="bheadl"></div>
 
-        <div class="bheadr"></div>
-
-        <h2>Dataset charts</h2>
-        <ul class="tabs">
-            <li><a href="#tab1">Scatterplot</a></li>
-            <li><a href="#tab2">Histogram</a></li>
-        </ul>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content tab_content" id="tab1">
-
-        <h3>Scatterplot</h3>
-
-        <form id="scatterplotForm">
-            <input type="hidden" name="id" value="${assemblyInstance.id}"/>
-
-            <p>
-                Generate plot of
-
-                <select id="x_label" name="x">
-                    <option value="length">Length</option>
-                    <option value="quality">Quality</option>
-                    <option value="coverage">Coverage</option>
-                    <option value="gc">GC</option>
-                </select>
-
-                vs
-
-                <select id="y_label" name="y">
-                    <option value="length">Length</option>
-                    <option value="quality">Quality</option>
-                    <option value="coverage">Coverage</option>
-                    <option value="gc">GC</option>
-                </select>
-                <br/>
-                Colour contigs by
-                <select id="contig_colour" name="colour">
-                    <option value="none" selected="true">None</option>
-                    <option value="species">Species of top BLAST hit</option>
-                    <option value="phylum">Phylum of top BLAST hit</option>
-                </select>
-                with bitscore cutuff: <input type="text" id="cutoff"/>
-                <input type="submit" value="Load plot"/>
-                <img style="display: none;" src="${resource(dir: 'images', file: 'spinner.gif')}"
-                     id="loadingScatterplotImage"/>
-            </p>
-        </form>
-
-        <div id='scatterplot'>
-            <img id="scatterplotImage"/>
-        </div>
-
-    </div>        <!-- .block_content ends -->
-
-
-
-    <div class="block_content tab_content" id="tab2">
-
-        <h3>Histogram</h3>
-
-        <form id="histogramForm">
-            <p>
-                <input type="hidden" name="id" value="${assemblyInstance.id}"/>
-
-                Generate histogram of
-
-                <select id="histogramField" name="field">
-                    <option value="length">Length</option>
-                    <option value="quality">Quality</option>
-                    <option value="coverage">Coverage</option>
-                    <option value="gc">GC</option>
-                </select>
-
-                scale:
-
-                <select id="histogramScale" name="scale">
-                    <option value="lin" selected="true">linear</option>
-                    <option value="log">log</option>
-                </select>
-
-
-
-                <input type="submit" value="Load plot"/>
-                <img style="display: none;" src="${resource(dir: 'images', file: 'spinner.gif')}"
-                     id="loadingHistogramImage"/>
-            </p>
-        </form>
-
-        <div id='histogramplot'>
-            <img id="histogramImage"/>
-
-        </div>
-
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-
-</div>
 
 <g:if test="${contigs.size() > 10}">
 

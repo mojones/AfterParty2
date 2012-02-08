@@ -485,48 +485,48 @@ To make a bit of text editable we need to
         <div class="bendr"></div>
     </div>
 </g:if>
+<g:else>
+    <div class="block">
 
-<div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
 
-    <div class="block_head">
-        <div class="bheadl"></div>
+            <div class="bheadr"></div>
 
-        <div class="bheadr"></div>
+            <h2>Contig sets</h2>
 
-        <h2>Contig sets</h2>
+        </div>        <!-- .block_head ends -->
 
-    </div>        <!-- .block_head ends -->
+        <div class="block_content">
 
-    <div class="block_content">
-
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-            <thead>
-            <tr>
-                <th>Contig Set name</th>
-                <th>Number of Contigs</th>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${contigSets}" var="contigSet" status="index">
-                <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
-                    <td>
-                        ${contigSet.name} &nbsp;&nbsp;
-                        <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
-                        <span style="cursor:pointer;" onclick="moveToTop(${contigSet.id});">move to top</span>
-                    </td>
-                    <td>${contigSet.contigs.size()}</td>
+            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <thead>
+                <tr>
+                    <th>Contig Set name</th>
+                    <th>Number of Contigs</th>
                 </tr>
-            </g:each>
-            </tbody>
+                </thead>
+                <tbody>
+                <g:each in="${contigSets}" var="contigSet" status="index">
+                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
+                        <td>
+                            ${contigSet.name} &nbsp;&nbsp;
+                            <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
+                            <span style="cursor:pointer;" onclick="moveToTop(${contigSet.id});">move to top</span>
+                        </td>
+                        <td>${contigSet.contigs.size()}</td>
+                    </tr>
+                </g:each>
+                </tbody>
 
-        </table>
+            </table>
 
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
+        </div>        <!-- .block_content ends -->
+        <div class="bendl"></div>
 
-    <div class="bendr"></div>
-</div>
-
+        <div class="bendr"></div>
+    </div>
+</g:else>
 
 <div class="block">
 
