@@ -292,8 +292,26 @@
             var ymin = scatterPlot.axes.yaxis.min;
             var ymax = scatterPlot.axes.yaxis.max;
 
-            console.log(xmin + ' to ' + xmax + ' , ' + ymin + ' to ' + ymax);
-            console.log(scatterPlot.data.size());
+            var ids = [];
+            for (var i = 0; i < scatterPlot.data.length; i++) {
+                for (var j = 0; j < scatterPlot.data[i].length; j++) {
+                    var dataPoint = scatterPlot.data[i][j];
+                    if (dataPoint[0] >= xmin && dataPoint[0] <= xmax && dataPoint[1] >= ymin && dataPoint[1] <= ymax) {
+                        ids.push(dataPoint[2]);
+                    }
+                }
+            }
+            $.post(
+                    'createContigSetAJAX',
+                    {
+                        idList : ids.join(','),
+                        studyId : ${contigSets[0].study.id}
+                    },
+                    function(data) {
+                        window.location = '../study/${contigSets[0].study.id}';// + data;
+                    }
+            );
+
         });
 
         // start with all series toggled on
