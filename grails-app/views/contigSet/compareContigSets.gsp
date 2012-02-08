@@ -484,6 +484,50 @@ To make a bit of text editable we need to
 
         <div class="bendr"></div>
     </div>
+
+    <g:if test="${contigSetInstance.contigs.size() > 10}">
+
+        <div class="block">
+            <div class="block_head">
+                <div class="bheadl"></div>
+
+                <div class="bheadr"></div>
+
+                <h2>Contigs in this set</h2>
+            </div>        <!-- .block_head ends -->
+
+            <div class="block_content">
+                <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+
+                    <thead>
+                    <tr>
+
+                        <th>Contig ID</th>
+                        <th>Length</th>
+                        <th>Reads</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <g:each var="contig" in="${contigSetInstance.contigs.toArray()[0..10]}" status="index">
+
+                        <tr>
+                            <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
+                            <td>${contig.length()}</td>
+                            <td>${contig.reads.size()}</td>
+
+                        </tr>
+                    </g:each>
+                    </tbody>
+
+                </table>
+
+            </div>        <!-- .block_content ends -->
+            <div class="bendl"></div>
+
+            <div class="bendr"></div>
+        </div>
+    </g:if>
 </g:if>
 <g:else>
     <div class="block">
