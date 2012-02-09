@@ -43,29 +43,6 @@ class ReadsFileController {
 
 
     }
-    @Secured(['ROLE_USER'])
-    def runMira = {
-
-        def id = params.id
-        def studyId = session.studyId
-        println "id is $id"
-
-        BackgroundJob job = new BackgroundJob(
-                name: "Running MIRA on ${ReadsFile.get(id).name}",
-                progress: 'queued',
-                status: BackgroundJobStatus.QUEUED,
-                type: BackgroundJobType.ASSEMBLE,
-                study: Study.get(session.studyId)
-        )
-        job.save(flush: true)
-
-        runAsync {
-            miraService.runMira([id], job.id, studyId)
-        }
-
-        redirect(controller: 'backgroundJob', action: list)
-
-    }
 
     def download = {
         def read = ReadsFile.get(params.id)

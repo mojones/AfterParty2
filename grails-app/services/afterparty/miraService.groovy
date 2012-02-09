@@ -6,6 +6,8 @@ class miraService {
 
     def sessionFactory
 
+    def statisticsService
+
     def cleanUpGorm() {
         def session = sessionFactory.currentSession
         session.flush()
@@ -152,6 +154,7 @@ class miraService {
         a = a.merge()
         a.save(flush: true)
 //
+        statisticsService.createContigSetForAssembly(a.id)
         return a
 
     }
@@ -192,6 +195,7 @@ class miraService {
 
         // monitor stdout of the mira process and update the job to show which pass we are on
         p.in.eachLine({
+//            println it
             if (it.contains('Pass')) {
                 job.progress = it
                 job.save(flush: true)
@@ -199,13 +203,11 @@ class miraService {
         })
 
         File assemblyInfoFile = new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")
-        File contigsFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.padded.fasta")
-        File contigsQualityFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.padded.fasta.qual")
-        File contigsStatsFile = new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_contigstats.txt")
+        File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
 
         CompoundSample s = CompoundSample.get(compoundSampleId)
 
-        Assembly a = createAssemblyAndContigsFromMiraInfo(assemblyInfoFile, contigsFile, contigsQualityFile, contigsStatsFile, s)
+        Assembly a = createAssemblyAndContigsFromMiraInfo(assemblyInfoFile, aceFile, s)
 
         // update the job to show that we're finished and set the sink and source ids
         job.progress = 'finished'

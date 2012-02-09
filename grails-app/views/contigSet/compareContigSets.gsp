@@ -168,7 +168,9 @@
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
                         yvalues: 3,
                         formatString : window.scatterXField + ': %.2f<br/>' + window.scatterYField + ': %.2f<br/>id: %d<br/>blast: %s',
-                        useAxesFormatters: false
+                        useAxesFormatters: false,
+                        bringSeriesToFront: true
+
                     },
                     cursor: {
                         show: !scatterhighlighterOn,
@@ -259,7 +261,8 @@
                     },
                     highlighter: {
                         show: window.highlighterOn,
-                        sizeAdjust: 7.5
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
                     },
                     cursor: {
                         show: !window.highlighterOn,
@@ -296,6 +299,11 @@
                     }
                 }
             }
+
+            doCreate(ids);
+        });
+
+        var doCreate = function(idList) {
             $.post(
                     'createContigSetAJAX',
                     {
@@ -306,8 +314,7 @@
                         window.location = '../study/${contigSets[0].study.id}';// + data;
                     }
             );
-
-        });
+        };
 
         // start with all series toggled on
         window.series = [];
@@ -420,6 +427,7 @@
         // do the initial get and draw the first chart
         $.get('/contigSet/showContigSetsStatsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
             contigSetData = data;
+            window.activeChart = 'histogram';
             drawChart();
         });
 
@@ -601,9 +609,8 @@ To make a bit of text editable we need to
 
         <div id='histogramContainer'>
             <p>Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> |
-                <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span>(
-                <span style="cursor: pointer;" id="resetHistogramZoom">click to reset</span>,
-                <span style="cursor: pointer;" id="saveHistgramSelected">click to save selected</span>)
+                <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span> (
+                <span style="cursor: pointer;" id="resetHistogramZoom">click to reset</span>)
 
             </p>
 

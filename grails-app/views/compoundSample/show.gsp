@@ -141,7 +141,7 @@ To make a bit of text editable we need to
                 </thead>
                 <tbody>
                 <g:each in="${compoundSample.assemblies.sort()}" var="assembly" status="index">
-                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
+                    <tr>
                         <td><g:link controller="assembly" action="show" id="${assembly.id}">${assembly.name}</g:link></td>
                         <td>${assembly.contigs.size()}</td>
                         <td>${assembly.baseCount}</td>

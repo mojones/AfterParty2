@@ -130,8 +130,8 @@
                 </p>
 
                 <p>
-                    <g:form controller="readsFile" action="runMira">
-                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                    <g:form controller="run" action="runMira">
+                        <g:hiddenField name="id" value="${runInstance.id}"/>
                         <input type="submit" class="submit long" value="Assemble reads"/>
                     </g:form>
                 </p>
@@ -218,8 +218,8 @@
                 </p>
 
                 <p>
-                    <g:form controller="readsFile" action="runMira">
-                        <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
+                    <g:form controller="run" action="runMira">
+                        <g:hiddenField name="id" value="${runInstance.id}"/>
                         <input type="submit" class="submit long" value="Assemble reads"/>
                     </g:form>
                 </p>

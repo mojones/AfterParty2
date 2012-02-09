@@ -51,6 +51,7 @@ class ReadsFileFilters {
             before = {
                 println "checking if readsFile is owned by user"
                 ReadsFile r = ReadsFile.get(params.id)
+                println "run is $r.run"
                 if (r.run.experiment.sample.compoundSample.study.user.id != springSecurityService.principal.id) {
                     flash.error = "ReadsFile doesn't belong to you"
                     redirect(controller: 'sample', action: 'show', id: r.run.experiment.sample.id)
