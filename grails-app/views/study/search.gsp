@@ -148,7 +148,7 @@
 
                         <tbody>
                         <g:each var="contig" in="${searchResultContigs}" status="index">
-
+                               %{--comment--}%
                             <tr>
                                 <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
                                 <td>${contig.assembly.name}</td>
