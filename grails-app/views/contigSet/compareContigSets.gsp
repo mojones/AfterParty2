@@ -55,6 +55,7 @@
         window.scatterXField = fieldName;
         $('.scatterx').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#scatterx' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+        $('.scatterplotOptions').hide();
         drawActiveChart();
     }
 
@@ -62,6 +63,7 @@
         window.scatterYField = fieldName;
         $('.scattery').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#scattery' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+        $('.scatterplotOptions').hide();
         drawActiveChart();
     }
 
@@ -201,6 +203,8 @@
             window.location = '../contig/show/' + data[2];
         });
         $('#spinner').hide();
+        $('.scatterplotOptions').show();
+
 
     }
 
@@ -455,12 +459,14 @@
                 window[variableName + 'On'] = true;
                 $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
                 $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+                $('.scatterplotOptions').hide();
                 drawActiveChart();
             });
             $('#turn' + variableName + 'Off').click(function() {
                 window[variableName + 'On'] = false;
                 $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
                 $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
+                $('.scatterplotOptions').hide();
                 drawActiveChart();
             });
         };
@@ -775,7 +781,7 @@ To make a bit of text editable we need to
         </div>
 
         <div id='scatterplotContainer'>
-            <p>Mouseover :
+            <p class='scatterplotOptions'>Mouseover :
                 <span id='turnscatterhighlighterOn' style="font-weight: bold;">hightlight</span> |
                 <span style="cursor: pointer; " id='turnscatterhighlighterOff'>zoom</span>(
                 <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
@@ -790,7 +796,7 @@ To make a bit of text editable we need to
                 X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
             </p>
 
-            <p>
+            <p class='scatterplotOptions'>
                 X axis :
                 <span class="scatterx" id="scatterxlength" style="font-weight: bold;" onclick="setScatterX('length');">length</span> |
                 <span class="scatterx" id="scatterxquality" style="cursor: pointer; " onclick="setScatterX('quality');">quality</span> |
@@ -799,7 +805,7 @@ To make a bit of text editable we need to
 
             </p>
 
-            <p>
+            <p class='scatterplotOptions'>
                 Y axis :
                 <span class="scattery" id="scatterylength" style="font-weight: bold;" onclick="setScatterY('length');">length</span> |
                 <span class="scattery" id="scatteryquality" style="cursor: pointer; " onclick="setScatterY('quality');">quality</span> |
