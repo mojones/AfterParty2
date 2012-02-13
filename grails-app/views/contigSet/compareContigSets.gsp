@@ -104,6 +104,12 @@
             $('#scatterplotDiv').empty();
             setTimeout('drawScatterChart();', 10);
         }
+
+        if (window.activeChart == 'cumulative') {
+            $('#cumulativeDiv').empty();
+            setTimeout('drawCumulativeChart();', 10);
+        }
+
     }
 
     drawScatterChart = function() {
@@ -126,12 +132,17 @@
         console.log(allValues);
 
         var mySeriesOptions = [];
-        mySeriesOptions[0] = {markerOptions: {show : window.series[0]}};
-        mySeriesOptions[1] = {markerOptions: {show : window.series[1]}};
-        mySeriesOptions[2] = {markerOptions: {show : window.series[2]}};
-        mySeriesOptions[3] = {markerOptions: {show : window.series[3]}};
-        mySeriesOptions[4] = {markerOptions: {show : window.series[4]}};
-
+        for (var i = 0; i < window.seriesList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        markerOptions: {
+                            show : window.series[i]
+                        },
+                        label : window.seriesList[i].label
+                    }
+            );
+        }
+        console.log(mySeriesOptions);
 
         scatterPlot = $.jqplot('scatterplotDiv',
                 allValues,
@@ -179,6 +190,9 @@
                         showVerticalLine: true,
                         showHorizontalLine: true,
                         zoom:true
+                    },
+                    legend:{
+                        show: true
                     }
                 }
         );
@@ -228,14 +242,18 @@
         });
         console.log(colourList);
 
-//        TODO make this less hacky
         var mySeriesOptions = [];
-        mySeriesOptions[0] = {showLine : window.series[0]};
-        mySeriesOptions[1] = {showLine : window.series[1]};
-        mySeriesOptions[2] = {showLine : window.series[2]};
-        mySeriesOptions[3] = {showLine : window.series[3]};
-        mySeriesOptions[4] = {showLine : window.series[4]};
-
+        for (var i = 0; i < contigSetData.contigSetList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        lineOptions: {
+                            show : window.series[i]
+                        },
+                        label : contigSetData.contigSetList[i].id
+                    }
+            );
+        }
+        console.log(mySeriesOptions);
 
         histogramPlot = $.jqplot('histogramDiv',
                 allLengthValues,
@@ -272,6 +290,93 @@
                         showHorizontalLine: true,
                         zoom: true,
                         constrainZoomTo : 'x'
+                    } ,
+                    legend:{
+                        show: true
+                    }
+                }
+        );
+        $('#spinner').hide();
+
+    }
+    drawCumulativeChart = function() {
+        $('#cumulativeDiv').empty();
+        $('#spinner').show();
+
+        var allValues = contigSetRawData.contigSetList.map(function(dataset) {
+            var lengths = dataset.length.sort(function(a, b) {
+                return b - a
+            });
+            var returnValue = [];
+            var cumulativeTotal = 0;
+            for (var i = 0; i < lengths.length; i++) {
+                var l = lengths[i];
+                cumulativeTotal += l;
+                returnValue.push([i, cumulativeTotal]);
+            }
+            console.log(returnValue);
+            return returnValue;
+        });
+        var renderer;
+        var fieldName;
+
+        var colourList = contigSetData.contigSetList.map(function(a) {
+            return a.colour;
+        });
+        console.log(colourList);
+
+        var mySeriesOptions = [];
+        for (var i = 0; i < window.seriesList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        lineOptions: {
+                            show : window.series[i]
+                        },
+                        label : window.seriesList[i].label
+
+                    }
+            );
+        }
+        console.log(mySeriesOptions);
+
+        cumulativePlot = $.jqplot('cumulativeDiv',
+                allValues,
+                {
+                    seriesColors : colourList,
+                    title: 'cumulative contig lengths',
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label: 'Contigs ranked by length',
+                            pad: 0
+                        },
+                        yaxis:{
+                            label:'Cumulative contig length',
+                            pad : 0,
+                            renderer: renderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    cursor: {
+                        show: !window.highlighterOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom: true,
+                        constrainZoomTo : 'x'
+                    },
+                    legend:{
+                        show: true
                     }
                 }
         );
@@ -372,6 +477,9 @@
         $('#resetHistogramZoom').click(function() {
             histogramPlot.resetZoom();
         });
+        $('#resetCumulativeZoom').click(function() {
+            cumulativePlot.resetZoom();
+        });
 
 
         // handle chart type
@@ -400,7 +508,9 @@
         //show / hide the different chart types
         $('#turnhistogramOn').click(function() {
             $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
             $('#turnhistogramOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#cumulativeContainer').hide();
             $('#scatterplotContainer').hide();
             $('#histogramContainer').show();
             $('#histogramDiv').empty();
@@ -411,8 +521,10 @@
         });
         $('#turnScatterOn').click(function() {
             $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
             $('#turnScatterOn').css({'cursor':'default', 'font-weight':'bold'});
             $('#histogramContainer').hide();
+            $('#cumulativeContainer').hide();
             $('#scatterplotContainer').show();
             $('#scatterplotDiv').empty();
             $('#spinner').show();
@@ -421,8 +533,22 @@
             setTimeout('drawScatterChart();', 1);
 
         });
+        $('#turncumulativeOn').click(function() {
+            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#histogramContainer').hide();
+            $('#scatterplotContainer').hide();
+            $('#cumulativeContainer').show();
+
+            window.activeChart = 'cumulative';
+
+            setTimeout('drawCumulativeChart();', 1);
+
+        });
 
         $('#scatterplotContainer').hide();
+        $('#cumulativeContainer').hide();
 
         // do the initial get and draw the first chart
         $.get('/contigSet/showContigSetsStatsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
@@ -498,7 +624,7 @@ To make a bit of text editable we need to
         <div class="bendr"></div>
     </div>
 
-    <g:if test="${contigSetInstance.contigs.size() > 10}">
+    <g:if test="${contigSetInstance.contigs.size() > 4}">
 
         <div class="block">
             <div class="block_head">
@@ -522,7 +648,7 @@ To make a bit of text editable we need to
                     </thead>
 
                     <tbody>
-                    <g:each var="contig" in="${contigSetInstance.contigs.toArray()[0..10]}" status="index">
+                    <g:each var="contig" in="${contigSetInstance.contigs.toArray()[0..5]}" status="index">
 
                         <tr>
                             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
@@ -559,13 +685,15 @@ To make a bit of text editable we need to
             <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
                 <thead>
                 <tr>
+                    <th>Colour</th>
                     <th>Contig Set name</th>
                     <th>Number of Contigs</th>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${contigSets}" var="contigSet" status="index">
-                    <tr style="background-color: ${StatisticsService.paleAssemblyColours[index]}">
+                    <tr>
+                        <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
                         <td>
                             ${contigSet.name} &nbsp;&nbsp;
                             <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
@@ -600,7 +728,7 @@ To make a bit of text editable we need to
 
     <div class="block_content">
 
-        <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span>
+        <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span> | <span style="cursor: pointer; " id='turncumulativeOn'>cumulative length</span>
         </p>
 
         %{--TODO possibly replace this with spin.js so that the spinner doesn't freeze while we are drawing the chart--}%
@@ -628,6 +756,18 @@ To make a bit of text editable we need to
 
 
             <div id="histogramDiv" style="height: 800px; width: 1000px;">
+
+            </div>
+        </div>
+
+        <div id='cumulativeContainer'>
+            <p>Mouseover : <span id='turncumulativehighlighterOn' style="font-weight: bold;">highlight</span> |
+                <span style="cursor: pointer; " id='turncumulativehighlighterOff'>zoom</span> (
+                <span style="cursor: pointer;" id="resetCumulativeZoom">click to reset</span>)
+
+            </p>
+
+            <div id="cumulativeDiv" style="height: 800px; width: 1000px;">
 
             </div>
         </div>

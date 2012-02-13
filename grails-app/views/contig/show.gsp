@@ -60,7 +60,7 @@
 
                 drawing.drawTitle('BLAST hits vs uniprot');
                 for (var i = 0; i < data.blastHits.length; i++) {
-                    var hit = data.blastHits[0];
+                    var hit = data.blastHits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
                     var blastRect = drawing.drawBar(hit.start, hit.stop, 10, hitColour, hit.description);
                     blastRect.hover(

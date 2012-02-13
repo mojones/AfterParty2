@@ -12,7 +12,7 @@ class Contig {
 
     // tell the searchable plugin that the blast hits are to be treated as a componenet of the contig for searching purposes
     static searchable = {
-        except = ['id', 'reads']
+        except = ['id', 'reads', 'quality']
         blastHits component: true
         searchAssemblyId: accessor: 'property'
     }
@@ -27,9 +27,28 @@ class Contig {
     }
 
 
+    static transients = ['topBlastHit', 'topBlastBitscore']
 
 
     static hasMany = [blastHits: BlastHit, reads: Read]
+
+    String getTopBlastHit(){
+        if (this.blastHits && this.blastHits.size() > 0){
+            return this.blastHits.toArray().sort({-it.bitscore})[0].description
+        }
+        else{
+            return null
+        }
+    }
+
+    String getTopBlastBitscore(){
+        if (this.blastHits && this.blastHits.size() > 0){
+            return this.blastHits.toArray().sort({-it.bitscore})[0].bitscore
+        }
+        else{
+            return null
+        }
+    }
 
     // TODO change this
     def topBlastHitMatching(String query) {

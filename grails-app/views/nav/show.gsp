@@ -2,6 +2,7 @@
     <b>Navigation</b>
     <g:if test="${study}">
         <ul>
+            <li><g:link controller="study" action="show" id="${study.id}">go to study</g:link> </li>
             <li><a href="#"><b>Compound Samples</b></a></li>
             <g:each in="${study.compoundSamples}" var="compoundSample">
                 <li>

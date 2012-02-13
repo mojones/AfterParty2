@@ -6,7 +6,6 @@
         <webroots>
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/jquery-ui-1.8.15/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/jquery-1.6/web-app" relative="/" />
-          <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/grails-app/views" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/google-visualization-0.4.1/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/google-visualization-0.4.1/grails-app/views" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/mail-1.0-SNAPSHOT/web-app" relative="/" />
@@ -16,6 +15,7 @@
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/famfamfam-1.0.1/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/console-1.0.1/web-app" relative="/" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/console-1.0.1/grails-app/views" relative="/" />
+          <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/grails-app/views" relative="/" />
         </webroots>
         <sourceRoots />
       </configuration>
@@ -76,14 +76,14 @@
       <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/mail-1.0-SNAPSHOT/target/test-classes" />
       <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/mail-1.0-SNAPSHOT/web-app/plugins" />
     </content>
-    <content url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT">
-      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/src/groovy" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/grails-app/controllers" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/grails-app/services" isTestSource="false" />
-      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/target/classes" />
-      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/target/test-classes" />
-      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/web-app/plugins" />
+    <content url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3">
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/grails-app/services" isTestSource="false" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/target/classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/target/test-classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/web-app/plugins" />
     </content>
     <content url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/spring-security-core-1.1.2">
       <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/spring-security-core-1.1.2/src/java" isTestSource="false" />
@@ -123,18 +123,18 @@
       <library name="Grails User Library (AfterParty-grailsPlugins)">
         <CLASSES>
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/tomcat-1.3.7/lib" />
-          <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/lib" />
+          <root url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/lib" />
           <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.ehcache/ehcache-web/jars/ehcache-web-2.0.3.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework.security/org.springframework.security.web/jars/org.springframework.security.web-3.0.4.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework.security/org.springframework.security.core/jars/org.springframework.security.core-3.0.4.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/javax.activation/activation/jars/activation-1.1.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/javax.mail/mail/jars/mail-1.4.3.jar!/" />
-          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework/spring-test/jars/spring-test-3.0.6.RELEASE.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/dumbster/dumbster/jars/dumbster-1.6.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.springframework/spring-test/jars/spring-test-3.1.0.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6-SNAPSHOT/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/searchable-0.6.3/lib" recursive="false" />
         <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/AfterParty/plugins/tomcat-1.3.7/lib" recursive="false" />
       </library>
     </orderEntry>

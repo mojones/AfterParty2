@@ -95,8 +95,8 @@ log4j = {
             'org.hibernate',
             'net.sf.ehcache.hibernate'
 
-
-
+//    debug 'org.codehaus.groovy.grails.plugins.searchable'
+//    debug 'org.compass'
     warn 'org.mortbay.log'
 
     warn 'grails.plugin.springcache'

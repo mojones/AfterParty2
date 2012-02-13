@@ -16,6 +16,9 @@ class ContigSetFilters {
                         redirect(controller: 'study', action: 'listPublished')
                         return false
                     }
+                    else{
+                        session.studyId = cs.study.id
+                    }
                 }
 
             }

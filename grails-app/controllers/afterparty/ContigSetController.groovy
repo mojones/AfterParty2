@@ -11,17 +11,19 @@ class ContigSetController {
     def compareContigSetsFromCheckbox = {
 
         //which contigsets are we looking at?
-        def contigSetListResult = []
+        def ids = []
         params.entrySet().findAll({it.key.startsWith('check_')}).each {
             Integer contigSetId = it.key.split(/_/)[1].toInteger()
-            contigSetListResult.add(ContigSet.get(contigSetId))
+            ids.add(contigSetId)
         }
-        render(view: 'compareContigSets', model: [contigSets: contigSetListResult])
+        //render(view: 'compareContigSets', model: [contigSets: contigSetListResult])
+        redirect(action: compareContigSets, params:['idList': ids.join(',')])
+        return false
     }
 
     def compareContigSets = {
         def contigSetListResult = []
-        params.idList.split(/,/).each {
+        params.idList.split(/,/).sort().each {
             contigSetListResult.add(ContigSet.get(it.toLong()))
         }
         [contigSets: contigSetListResult]
@@ -48,10 +50,12 @@ class ContigSetController {
 
     def showContigSetsJSON = {
         def contigSetListResult = []
-        params.idList.split(/,/).eachWithIndex { id, i ->
+        params.idList.split(/,/).sort().eachWithIndex { id, i ->
             def cs = statisticsService.getContigStatsForContigSet(id.toLong())
             cs.colour = statisticsService.boldAssemblyColours[i]
+
             cs.contigSetId = id
+            cs.label = ContigSet.get(id).name
             contigSetListResult.add(cs)
         }
 
@@ -64,7 +68,7 @@ class ContigSetController {
     def createContigSetAJAX = {
 
         Set ids = []
-        params.idList.split(/,/).each{
+        params.idList.split(/,/).sort().each{
             ids.add(it)
         }
         ContigSet c = new ContigSet(name: "${ids.size()} contigs", description: "automatically generated contig set from chart", study: Study.get(params.studyId))

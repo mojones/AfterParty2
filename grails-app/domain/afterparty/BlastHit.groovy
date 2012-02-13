@@ -10,7 +10,7 @@ class BlastHit {
 
     // mark this class as NOT a searchable root, so that it doesn't get returned in searches - instead, we want to always return the contig
     static searchable = {
-//        root false
+    except = ['start', 'stop']
     }
 
     static constraints = {

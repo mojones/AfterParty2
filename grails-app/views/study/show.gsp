@@ -104,7 +104,7 @@ To make a bit of text editable we need to
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${studyInstance.compoundSamples}" var="s">
+                <g:each in="${studyInstance.compoundSamples.sort({it.name}) }" var="s">
                     <tr>
                         <td><g:link controller="compoundSample" action="show" id="${s.id}">${s.name}</g:link></td>
                     </tr>
@@ -145,7 +145,7 @@ To make a bit of text editable we need to
                 </thead>
                 <tbody>
 
-                <g:each in="${studyInstance.contigSets}" var="contigSet" status="index">
+                <g:each in="${studyInstance.contigSets.sort({it.name})}" var="contigSet" status="index">
                     <tr>
                         <td>
                             <g:checkBox name="check_${contigSet.id}" value="${false}"/> ${contigSet.name}</td>

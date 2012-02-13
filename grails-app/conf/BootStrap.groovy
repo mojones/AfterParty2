@@ -168,7 +168,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
+//                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',
