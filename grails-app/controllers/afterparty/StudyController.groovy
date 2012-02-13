@@ -96,7 +96,7 @@ class StudyController {
             return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: false]
         }
         try {
-
+            // comment
             List assemblies = []
             //which assemblies are we looking at?
             params.entrySet().findAll({it.key.startsWith('check_')}).each {
