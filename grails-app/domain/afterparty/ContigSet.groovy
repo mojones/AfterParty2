@@ -17,11 +17,11 @@ class ContigSet {
         description type: 'text'
     }
 
-        def isPublished(){
+    def isPublished() {
         return this.study.isPublished()
     }
 
-    def isOwnedBy(def user){
-         return this.study.isOwnedBy(user)
+    def isOwnedBy(def user) {
+        return this.study.isOwnedBy(user)
     }
 }

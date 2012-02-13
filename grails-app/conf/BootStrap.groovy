@@ -58,7 +58,8 @@ class BootStrap {
                         description: 'cDNA from three life-stages of the filarial nematode Litomosoides sigmodontis were obtained and sequenced using 454 FLX and Titanium chemistries. These reads are being used to generate a protein set that will be used for annotating the litomsoides sigmodontis genome, and to act as a reference transcriptome for further transcriptome studies using short read RNA-seq.',
                         published: true,
                         user: normalUser
-                ).save()
+                )
+                litoStudy.save()
 
                 CompoundSample lSig = new CompoundSample(
                         name: 'Litomosoides sigmodontis'

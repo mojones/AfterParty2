@@ -9,6 +9,17 @@
 
     <title>Search contigs</title>
 
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.check:button').toggle(function() {
+                $('input:checkbox').attr('checked', 'checked');
+                $(this).val('uncheck all')
+            }, function() {
+                $('input:checkbox').removeAttr('checked');
+                $(this).val('check all');
+            })
+        })
+    </script>
 </head>
 
 <body>
@@ -37,6 +48,7 @@
                     <span class="note">*boolean operators allowed</span>
                 </p>
 
+                <input type="button" class="check" value="check all"/>
 
                 <p><label>Search assembly:</label> <br/>
 
@@ -122,18 +134,13 @@
             <div class="block_content">
                 <g:if test="${haveResults}">
 
-                    <g:each var="assembly" in="${searchedAssemblies}" status="index">
-                        <p class="assemblyNameBar">${assembly.name}</p>
-
-                    </g:each>
-                    <br/><br/><br/><br/>
-
-                    <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                                        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 
                         <thead>
                         <tr>
 
                             <th>Contig ID</th>
+                            <th>Assembly</th>
                             <th>Top Hit description</th>
                             <th>Top Hit bitscore</th>
                         </tr>
@@ -144,6 +151,7 @@
 
                             <tr>
                                 <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
+                                <td>${contig.assembly.name}</td>
                                 <td>${contig.topBlastHitMatching(params.q).description}</td>
                                 <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
 
