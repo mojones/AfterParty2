@@ -142,7 +142,7 @@
                         <tbody>
                         <g:each var="contig" in="${searchResultContigs}" status="index">
 
-                            <tr style="background-color: ${assemblyToColour.get(contig.assembly)}">
+                            <tr>
                                 <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
                                 <td>${contig.topBlastHitMatching(params.q).description}</td>
                                 <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
