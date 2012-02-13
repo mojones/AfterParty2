@@ -119,7 +119,7 @@ class StudyController {
             println searchResult.contigs
             // we will return a lot of data to render the search results...
             return [
-                    assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
+//                    assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
                     searchedAssemblies: assemblies,         // the list of assemblies that was involved in the search
                     searchResultContigs: searchResult.contigs,         // the list of results, as full Contig domain objects
                     searchResult: searchResult.rawSearch,                    // the result object that contains the query, offset, etc
