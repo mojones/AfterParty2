@@ -409,14 +409,16 @@
         });
 
         var doCreate = function(idList) {
+            var name = prompt("Enter a name for the new contig set", "");
             $.post(
                     'createContigSetAJAX',
                     {
-                        idList : ids.join(','),
-                        studyId : ${contigSets[0].study.id}
+                        idList : idList.join(','),
+                        studyId : ${contigSets[0].study.id},
+                        setName: name
                     },
                     function(data) {
-                        window.location = '../study/${contigSets[0].study.id}';// + data;
+                        window.location = '../contigSet/compareContigSets/?idList=  ' + data;  // redirect to view the new contig set
                     }
             );
         };

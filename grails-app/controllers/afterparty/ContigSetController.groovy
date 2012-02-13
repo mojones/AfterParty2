@@ -66,14 +66,15 @@ class ContigSetController {
     }
 
     def createContigSetAJAX = {
-
+        println "creating contigset with $params.setName"
         Set ids = []
         params.idList.split(/,/).sort().each{
             ids.add(it)
         }
-        ContigSet c = new ContigSet(name: "${ids.size()} contigs", description: "automatically generated contig set from chart", study: Study.get(params.studyId))
+        ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set from chart", study: Study.get(params.studyId))
         ids.each {c.addToContigs(Contig.get(it.toLong()))}
         c.save()
+        println "rendering $c.id"
         render(c.id)
     }
 
