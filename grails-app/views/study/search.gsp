@@ -123,7 +123,7 @@
                 <g:if test="${haveResults}">
 
                     <g:each var="assembly" in="${searchedAssemblies}" status="index">
-                        <p style="background-color: ${assemblyToColour.get(assembly)}" class="assemblyNameBar">${assembly.name}</p>
+                        <p class="assemblyNameBar">${assembly.name}</p>
 
                     </g:each>
                     <br/><br/><br/><br/>

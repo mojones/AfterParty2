@@ -105,11 +105,10 @@ class StudyController {
             }
 
             // set up colours for assemblies
-            def assemblyToColour = [:]
-            assemblies.eachWithIndex { assembly, index ->
-                assemblyToColour.put(assembly, StatisticsService.paleAssemblyColours.get(index))
-            }
-
+            //            def assemblyToColour = [:]
+            //            assemblies.eachWithIndex { assembly, index ->
+            //                assemblyToColour.put(assembly, StatisticsService.paleAssemblyColours.get(index))
+            //            }
 
 
             Integer offset = params.offset ? params.offset.toInteger() : 0
@@ -126,8 +125,8 @@ class StudyController {
                     searchResult: searchResult.rawSearch,                    // the result object that contains the query, offset, etc
                     assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
                     studyInstance: study, // the study that we are looking at
-                    showResults: true ,                                          // tell the gsp to show the results
-                    finalQueryString : query    // so that we can pass it on in case we want to create a contig set
+                    showResults: true,                                          // tell the gsp to show the results
+                    finalQueryString: query    // so that we can pass it on in case we want to create a contig set
             ]
 
 
@@ -194,7 +193,6 @@ class StudyController {
         [studyInstance: studyInstance, isOwner: studyInstance.user.id == userId]
 
     }
-
 
 
 }
