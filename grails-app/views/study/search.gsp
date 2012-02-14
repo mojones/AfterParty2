@@ -25,6 +25,85 @@
 <body>
 <div>
 
+    <g:if test="${showResults}">
+        <g:set var="haveQuery" value="${params.q?.trim()}"/>
+        <g:set var="haveResults" value="${searchResult && searchResult?.results}"/>
+
+
+        <div class="block">
+            <div class="block_head">
+                <div class="bheadl"></div>
+
+                <div class="bheadr"></div>
+                <g:if test="${haveResults}">
+
+                    <h2>
+                        Showing ${searchResult.offset + 1} - ${searchResult.results.size() + searchResult.offset} of ${searchResult.total} results for ${params.q}
+
+                    </h2>
+                </g:if><g:else>
+                <h2>
+                    No results for "${params.q}"
+
+                </h2>
+            </g:else>
+            </div>        <!-- .block_head ends -->
+
+            <div class="block_content">
+                <g:if test="${haveResults}">
+
+                    <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+
+                        <thead>
+                        <tr>
+
+                            <th>Contig ID</th>
+                            <th>Assembly</th>
+                            <th>Top Hit description</th>
+                            <th>Top Hit bitscore</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <g:each var="contig" in="${searchResultContigs}" status="index">
+                        %{--comment--}%
+                            <tr>
+                                <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
+                                <td>${contig.assembly.name}</td>
+                                <td>${contig.topBlastHitMatching(params.q).description}</td>
+                                <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
+
+                            </tr>
+                        </g:each>
+                        </tbody>
+
+                    </table>
+
+                    <g:set var="totalPages" value="${Math.ceil(searchResult.total / searchResult.max)}"/>
+                    <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
+                    <g:else>
+
+                        <div class="pagination left">
+                            <g:paginate controller="study" action="search" params="${params}" total="${searchResult.total}" prev="&lt; previous" next="next &gt;"/>
+                        </div>        <!-- .pagination ends -->
+
+                    </g:else>
+
+                </g:if>
+                <g:form controller="contigSet" action="createFromSearch" method="get">
+                    <g:hiddenField name="q" value="${finalQueryString}"/>
+                    <g:hiddenField name="studyId" value="${studyInstance.id}"/>
+                    <input type="submit" class="submit long" value="Save as contigSet"/>
+                </g:form>
+            </div>        <!-- .block_content ends -->
+            <div class="bendl"></div>
+
+            <div class="bendr"></div>
+
+        </div>
+    </g:if>
+
+
     <div class="block">
 
         <div class="block_head">
@@ -105,85 +184,6 @@
         <div class="bendr"></div>
 
     </div>
-
-
-    <g:if test="${showResults}">
-        <g:set var="haveQuery" value="${params.q?.trim()}"/>
-        <g:set var="haveResults" value="${searchResult && searchResult?.results}"/>
-
-
-        <div class="block">
-            <div class="block_head">
-                <div class="bheadl"></div>
-
-                <div class="bheadr"></div>
-                <g:if test="${haveResults}">
-
-                    <h2>
-                        Showing ${searchResult.offset + 1} - ${searchResult.results.size() + searchResult.offset} of ${searchResult.total} results for ${params.q}
-
-                    </h2>
-                </g:if><g:else>
-                <h2>
-                    No results for "${params.q}"
-
-                </h2>
-            </g:else>
-            </div>        <!-- .block_head ends -->
-
-            <div class="block_content">
-                <g:if test="${haveResults}">
-
-                                        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-
-                        <thead>
-                        <tr>
-
-                            <th>Contig ID</th>
-                            <th>Assembly</th>
-                            <th>Top Hit description</th>
-                            <th>Top Hit bitscore</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <g:each var="contig" in="${searchResultContigs}" status="index">
-                               %{--comment--}%
-                            <tr>
-                                <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-                                <td>${contig.assembly.name}</td>
-                                <td>${contig.topBlastHitMatching(params.q).description}</td>
-                                <td>${contig.topBlastHitMatching(params.q).bitscore}</td>
-
-                            </tr>
-                        </g:each>
-                        </tbody>
-
-                    </table>
-
-                    <g:set var="totalPages" value="${Math.ceil(searchResult.total / searchResult.max)}"/>
-                    <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
-                    <g:else>
-
-                        <div class="pagination left">
-                            <g:paginate controller="study" action="search" params="${params}" total="${searchResult.total}" prev="&lt; previous" next="next &gt;"/>
-                        </div>        <!-- .pagination ends -->
-
-                    </g:else>
-
-                </g:if>
-                <g:form controller="contigSet" action="createFromSearch" method="get">
-                    <g:hiddenField name="q" value="${finalQueryString}"/>
-                    <g:hiddenField name="studyId" value="${studyInstance.id}"/>
-                    <input type="submit" class="submit long" value="Save as contigSet"/>
-                </g:form>
-            </div>        <!-- .block_content ends -->
-            <div class="bendl"></div>
-
-            <div class="bendr"></div>
-
-        </div>
-    </g:if>
 
 </body>
 </html>
