@@ -60,8 +60,17 @@
             });
             var textPosition = ((start * this.pixelsPerBase) + (stop * this.pixelsPerBase)) / 2;
             var textYPosition = this.yPos + (height / 2);
+            var textColour;
+
+            if ($.inArray(colour, ['black', 'teal', 'olive', 'navy', 'blue', 'green', 'maroon']) > -1){
+                textColour = 'white';
+            }
+            else{
+                textColour = 'black';
+            }
             var title = this.paper.text(textPosition, textYPosition, text).attr({
-                'font-size': (height * 0.9)
+                'font-size': (height * 0.9),
+                'fill' : textColour
             })
             this.yPos = this.yPos + (height * 1.5); //the spacing between bars
             return bar;
