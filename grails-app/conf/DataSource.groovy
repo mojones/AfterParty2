@@ -16,21 +16,21 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
-                        loggingSql = false
+            loggingSql = false
         }
     }
 
     development_rebuild {
         dataSource {
             dbCreate = "create" // one of 'create', 'create-drop','update'
-//            loggingSql = true
+            //            loggingSql = true
         }
     }
 
     big_test {
         dataSource {
             dbCreate = "create" // one of 'create', 'create-drop','update'
-//            loggingSql = true
+            //            loggingSql = true
         }
     }
 

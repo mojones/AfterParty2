@@ -450,7 +450,7 @@
         window.chartType = 'length';
 
         window.scatterXField = 'length';
-        window.scatterYField = 'quality';
+        window.scatterYField = 'coverage';
 
         // boring code to handle chart options
 

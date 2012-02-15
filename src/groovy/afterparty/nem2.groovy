@@ -12,6 +12,9 @@ def sqlData = Sql.newInstance("jdbc:postgresql://localhost:5432/nembase4", 'mysu
 Study.findAllByName('Nembase').each {
     it.delete()
 }
+
+println "deleted old study"
+
 Study nembaseStudy = new Study(
         name: 'Nembase',
         description: 'many species imported from nembase',
@@ -21,6 +24,7 @@ Study nembaseStudy = new Study(
 
 sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
     if (true) {
+//    if ( i < 10) {
         def speciesName = speciesRow.species
         def speciesId = speciesRow.spec_id
 
@@ -37,26 +41,43 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
         cs.addToAssemblies(a)
         a.save()
 
+        def libraryId2sample = [:]
+
+        sqlData.rows("select * from lib where organism=$speciesName").eachWithIndex {libraryRow, j ->
+            if (true) {
+                def sampleName = libraryRow.name
+                def sampleDescription = libraryRow.description
+                def libraryId = libraryRow.lib_id
+                def s = new Sample()
+                s.name = sampleName
+                s.description = sampleDescription
+                cs.addToSamples(s)
+                libraryId2sample.put(libraryId, s)
+                println "\tfound a library $sampleDescription"
+            }
+        }
 
 
         println "getting contigs for $speciesName"
         Integer contigsAdded = 0
 
-        sqlData.rows("select distinct(cluster.clus_id), cluster.consensus from cluster where substr(clus_id, 0, 4) = $speciesId").eachWithIndex {clusterRow, i2 ->
+        sqlData.rows("select cluster.clus_id, cluster.contig, cluster.consensus from cluster where substr(clus_id, 0, 4) = $speciesId").eachWithIndex {clusterRow, i2 ->
             if (true) {
+
                 def clusterId = clusterRow.clus_id
+                def contigId = clusterRow.contig
                 def consensus = clusterRow.consensus
 //                println "\tfound a cluster $clusterId with $consensus"
 
                 def c = new Contig()
-                c.name = clusterId
+                c.name = clusterId + '_' + contigId
                 c.sequence = consensus
                 c.quality = '0 ' * consensus.length()
                 c.searchAssemblyId = a.id
 
                 a.addToContigs(c)
 
-                sqlData.rows("select * from est, est_seq, lib where est.clus_id=$clusterId and est.est_id = est_seq.est_id and est.library=lib.lib_id").eachWithIndex {estRow, i3 ->
+                sqlData.rows("select * from est, est_seq, lib where est.clus_id=$clusterId and est.contig=$contigId and est.est_id = est_seq.est_id and est.library=lib.lib_id").eachWithIndex {estRow, i3 ->
                     def estStart = estRow.q_start
                     def estStop = estRow.q_end
                     def estSequence = estRow.sequence
@@ -69,10 +90,11 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     r.sequence = estSequence
                     r.start = estStart
                     r.stop = estStop
+                    r.sampleSource = libraryId2sample.get(estLibrary)
                     c.addToReads(r)
                 }
 
-                sqlData.rows("select * from blast where clus_id=$clusterId").eachWithIndex {blastRow, i4 ->
+                sqlData.rows("select * from blast where clus_id=$clusterId and contig=$contigId").eachWithIndex {blastRow, i4 ->
                     def blastAcc = blastRow.id
                     String blastDescription = blastRow.description
                     def blastBitscore = blastRow.score
@@ -99,15 +121,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
 
         statisticsService.createContigSetForAssembly(a.id)
         nembaseStudy.save(flush: true)
-//        sqlData.rows("select * from lib where organism=$speciesName").eachWithIndex {libraryRow, j ->
-        //            if (j == 1) {
-        //                def sampleName = libraryRow.name
-        //                def sampleDescription = libraryRow.description
-        //                def libraryId = libraryRow.lib_id
-        //                println "\tfound a library: $sampleDescription"
-        //
-        //            }
-        //        }
+
     }
 
 }

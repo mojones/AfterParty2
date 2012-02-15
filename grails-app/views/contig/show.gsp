@@ -62,7 +62,7 @@
                 for (var i = 0; i < data.blastHits.length; i++) {
                     var hit = data.blastHits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    var blastRect = drawing.drawBar(hit.start, hit.stop, 10, hitColour, hit.description);
+                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
                     blastRect.hover(
                             function(event) {
                                 this.attr({stroke: 'black', 'stroke-width' : '5'});
@@ -76,12 +76,24 @@
                     );
                 }
                 drawing.drawSpacer(50);
+
                 drawing.drawTitle('Reads');
+
+                for (var i = 0; i < data.readColours.length; i++) {
+                    var colourMap = data.readColours[i];
+                    drawing.drawColouredTitle(colourMap.source, colourMap.colour);
+                }
+
+
                 for (var i = 0; i < data.reads.length; i++) {
                     var read = data.reads[i];
-                    var readTooltip = read.name + ' : ' + read.start + ' - ' + read.stop;
+                    var readSource;
+                    if (read.sampleSource) {
+                        readSource = read.sampleSource;
+                    }
+                    var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
 
-                    var readRect = drawing.drawBar(read.start, read.stop, 2, 'black', readTooltip);
+                    var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
                 }
                 drawing.end();
                 $('#spinner').hide();
@@ -96,7 +108,8 @@
 
 
         <div id="coffeescript_annotation">
-            <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"></h2>
+            <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
+            </h2>
         </div>
     </div>        <!-- .block_content ends -->
 
@@ -118,7 +131,6 @@
 
     <div class="block_content">
         <h3>Read count : ${contigInstance.reads.size()}</h3>
-
 
 
         <h3>Sequence</h3>

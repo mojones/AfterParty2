@@ -1,13 +1,12 @@
 package afterparty
 
-import org.compass.core.engine.SearchEngineQueryParseException
-
 class ContigController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def searchableService
     def contigAnnotationService
+    def statisticsService
 
     def index = {
         redirect(action: "list", params: params)
@@ -29,12 +28,46 @@ class ContigController {
 
     def showJSON = {
         def contigInstance = Contig.get(params.id)
+        def readCollection = contigInstance.reads.findAll({it.start > 0}).sort({it.start}).collect({
+            [
+                    name: it.name,
+                    start: it.start,
+                    stop: it.stop,
+                    sampleSource: it.sampleSource
+            ]
+        })
+
+        // assemble a source -> colour map
+        Set readSources = readCollection.collect({it.sampleSource}).unique()
+        def source2colour = [:]
+        def description2colour = []
+        readSources.eachWithIndex { source, i ->
+            source2colour.put(source, StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()])
+            description2colour.add(
+                    [
+                            'source': source.name,
+                            'colour': StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
+                    ]
+            )
+
+        }
+
+        // attach the correct colour to each read
+        readCollection.each {
+            it.colour = source2colour.get(it.sampleSource)
+        }
+
+
+
+
+
         render(contentType: "text/json") {
             length = contigInstance.length()
             quality = contigInstance.quality.split(' ')
             coverage = contigInstance.coverage()
             blastHits = contigInstance.blastHits.sort({-it.bitscore})
-            reads = contigInstance.reads.sort({it.start})   // sort the reads by start position so they pile up nicely
+            reads = readCollection   // sort the reads by start position so they pile up nicely
+            readColours = description2colour
         }
     }
 

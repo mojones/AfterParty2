@@ -7,7 +7,12 @@ class Read {
     Integer start
     Integer stop
 
+    Sample sampleSource
+    Assembly assemblySource
+
     static constraints = {
+        sampleSource(nullable: true)
+        assemblySource(nullable: true)
     }
 
     static mapping = {

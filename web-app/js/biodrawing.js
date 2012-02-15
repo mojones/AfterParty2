@@ -49,7 +49,7 @@
             });
             return this.yPos = this.yPos + height + 20;
         };
-        BioDrawing.prototype.drawBar = function(start, stop, height, colour, description) {
+        BioDrawing.prototype.drawBar = function(start, stop, height, colour, description, text) {
             var bar, width;
             width = (stop * this.pixelsPerBase) - (start * this.pixelsPerBase);
             bar = this.paper.rect((start * this.pixelsPerBase) + this.padding, this.yPos, width, height).attr({
@@ -58,13 +58,27 @@
                 'title': description,
                 'cursor': 'pointer'
             });
-            this.yPos = this.yPos + (height * 2); //the spacing between bars is twice the height
+            var textPosition = ((start * this.pixelsPerBase) + (stop * this.pixelsPerBase)) / 2;
+            var textYPosition = this.yPos + (height / 2);
+            var title = this.paper.text(textPosition, textYPosition, text).attr({
+                'font-size': (height * 0.9)
+            })
+            this.yPos = this.yPos + (height * 1.5); //the spacing between bars
             return bar;
         };
         BioDrawing.prototype.drawTitle = function(text) {
             var title;
             title = this.paper.text(this.drawingWidth / 2, this.yPos, text).attr({
                 'font-size': 14
+            });
+            this.yPos = this.yPos + 20;
+            return title;
+        };
+        BioDrawing.prototype.drawColouredTitle = function(text, colour) {
+            var title;
+            title = this.paper.text(this.drawingWidth / 2, this.yPos, text).attr({
+                'font-size': 14,
+                'fill' : colour
             });
             this.yPos = this.yPos + 20;
             return title;
