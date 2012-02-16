@@ -1,6 +1,7 @@
 package afterparty
 
 import grails.plugins.springsecurity.Secured
+import grails.plugin.springcache.annotations.CacheFlush
 
 class AssemblyController {
 
@@ -47,6 +48,7 @@ class AssemblyController {
         redirect(controller: 'backgroundJob', action: 'list')
     }
 
+    @CacheFlush("myCache")
     @Secured(['ROLE_USER'])
     def uploadAce = {
         def f = request.getFile('aceFile')
@@ -100,7 +102,7 @@ class AssemblyController {
 
     }
 
-
+    @CacheFlush("myCache")
     @Secured(['ROLE_USER'])
     def uploadContigs = {
         def f = request.getFile('myFile')
@@ -125,37 +127,38 @@ class AssemblyController {
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
 
-//            def sql = new Sql(dataSource)
-            //            def contigSetsToDelete = []
-            //
-            //            // get list of contig sets to delete
-            //            sql.eachRow("select distinct contig_set_contigs_id as cid from contig_set_contig where contig_id in (select id from contig where assembly_id = $assemblyId)") {
-            //                contigSetsToDelete.add(it.cid)
-            //            }
-            //            println contigSetsToDelete
-            //
-            //            // first delete the contigset->contig mappings
-            //            sql.execute("delete from contig_set_contig where contig_id in (select id from contig where assembly_id = $assemblyId)")
-            //
-            //            // now delete the contig sets themselves
-            //            contigSetsToDelete.each {csid ->
-            //                sql.execute("delete from contig_set where id=$csid")
-            //            }
-            //
-            //            // now we can go ahead and delete the contigs
             job2.progress = "deleting old contigs"
             job2.save(flush: true)
-            //
-            //
-            //            Contig.executeUpdate("delete Contig where assembly_id = $assemblyId")
+
 
             Assembly assembly = Assembly.get(assemblyId)
+            assembly.defaultContigSet?.delete()
             assembly.defaultContigSet = null
             assembly.save(flush: true)
 
-            assembly.contigs.each {
-                it.delete()
+            println "deleting individual contigs"
+
+            def contigSets = assembly.compoundSample.study.contigSets
+
+            def assemblyContigs = assembly.contigs.toArray()
+
+            assemblyContigs.each { contig ->
+                println "deleting $contig"
+                assembly.removeFromContigs(contig)
+                contigSets.each { set ->
+//                    println "\t checking contigset $set"
+                    if (set.contigs.contains(contig)) {
+//                        println "\t\tremoving $contig from $set"
+                        set.removeFromContigs(contig)
+                        set.save()
+                    }
+                }
+                contig.delete()
             }
+            println "done deleting individual contigs"
+            assembly.save(flush: true)
+            println "re-saved assembly"
+
 
             def contigs = miraService.parseFasta(f.inputStream)
             println "got some contigs: ${contigs.size()}"
@@ -168,7 +171,9 @@ class AssemblyController {
                 contig.searchAssemblyId = assemblyId
                 assembly.addToContigs(contig)
                 created++
-                if (created % 1000 == 0) {
+                if (created % 10 == 0) {
+
+                    println "uploaded $created of ${contigs.size()}"
                     job2.progress = "uploaded $created of ${contigs.size()}"
                     job2.save(flush: true)
 

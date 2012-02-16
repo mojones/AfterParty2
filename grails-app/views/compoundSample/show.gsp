@@ -34,7 +34,6 @@ To make a bit of text editable we need to
         </script>
     </g:if>
 
-
 </head>
 
 <body>
@@ -155,11 +154,21 @@ To make a bit of text editable we need to
         <g:else>
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
         </g:else>
-        <g:form controller="contigSet" action="compareContigSets" method="get">
-            <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it?.defaultContigSet?.id}).join(',')}"/>
-            <input type="submit" class="submit long" value="Compare assemblies"/>
-        </g:form>
+        <p>
+            <g:form controller="contigSet" action="compareContigSets" method="get">
+                <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it?.defaultContigSet?.id}).join(',')}"/>
+                <input type="submit" class="submit long" value="Compare assemblies"/>
+            </g:form>
+        </p>
+
+        <p>
+            <g:form controller="assembly" action="makeHybridAssembly" method="get">
+                <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it.id}).join(',')}"/>
+                <input type="submit" class="submit long" value="Merge assemblies"/>
+            </g:form>
+        </p>
     </div>        <!-- .block_content ends -->
+
     <div class="bendl"></div>
 
     <div class="bendr"></div>
