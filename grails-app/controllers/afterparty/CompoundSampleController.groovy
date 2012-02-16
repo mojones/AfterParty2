@@ -20,8 +20,9 @@ class CompoundSampleController {
         def newSample = new Sample(name: 'sample name', description: 'sample description')
         compoundSampleInstance.addToSamples(newSample)
         compoundSampleInstance.save()
+
         flash.success = "added a new sample"
-        redirect(action: show, id: compoundSampleInstance.id)
+        redirect(controller: 'sample', action: show, id: newSample.id)
     }
 
     @Secured(['ROLE_USER'])
@@ -30,8 +31,9 @@ class CompoundSampleController {
         def newAssembly = new Assembly(name: 'assembly name', description: 'assembly description')
         compoundSampleInstance.addToAssemblies(newAssembly)
         compoundSampleInstance.save()
+        newAssembly.save(flush:true)
         flash.success = "added a new assembly"
-        redirect(action: show, id: compoundSampleInstance.id)
+        redirect(controller: 'assembly', action: show, id: newAssembly.id)
     }
 
 }

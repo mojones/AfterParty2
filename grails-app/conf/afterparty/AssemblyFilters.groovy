@@ -22,7 +22,7 @@ class AssemblyFilters {
 
         assemblyExists(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|download|runBlast|scatterplotAjax|histogramAjax|show)') {
             before = {
-                println "checking if assembly exists"
+                println "checking if assembly with id ${params.id} exists"
                 Assembly a = Assembly.get(params.id)
                 if (!a) {
                     flash.error = "Assembly doesn't exist"

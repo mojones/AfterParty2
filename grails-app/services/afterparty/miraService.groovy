@@ -14,19 +14,11 @@ class miraService {
         session.clear()
     }
 
-    Assembly createAssemblyAndContigsFromMiraInfo(File miraInfoFile, File aceFile, CompoundSample s) {
+
+    def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
 
         def added = 0
         def startTime = System.currentTimeMillis()
-
-        // open up the assembly info file and create an Assembly to hold it
-        Assembly a = new Assembly(description: miraInfoFile.text, name: "assembly from ${miraInfoFile.name} ")
-        // attach the assembly to the appropriate study
-        s.addToAssemblies(a)
-        a.save(flush: true)
-        println "created assembly"
-
-
 
         def currentContigName
         def id2Start = [:]
@@ -202,12 +194,18 @@ class miraService {
             }
         })
 
-        File assemblyInfoFile = new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")
         File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
 
         CompoundSample s = CompoundSample.get(compoundSampleId)
 
-        Assembly a = createAssemblyAndContigsFromMiraInfo(assemblyInfoFile, aceFile, s)
+        Assembly a = new Assembly(
+                name: 'automatic assembly using mira',
+                description: (new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")).text
+
+        )
+        a.save()
+        s.addToAssemblies(a)
+        attachContigsFromMiraInfo(aceFile, a)
 
         // update the job to show that we're finished and set the sink and source ids
         job.progress = 'finished'

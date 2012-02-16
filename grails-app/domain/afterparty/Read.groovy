@@ -7,7 +7,10 @@ class Read {
     Integer start
     Integer stop
 
+    // if the input sequences that make up the contig are reads then they have a sample source
     Sample sampleSource
+
+    // if the input sequences that make up the contigs are other contigs - i.e. we are doing a hybrid assembly - they have an assembly source
     Assembly assemblySource
 
     static constraints = {

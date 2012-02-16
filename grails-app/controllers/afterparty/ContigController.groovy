@@ -38,7 +38,7 @@ class ContigController {
         })
 
         // assemble a source -> colour map
-        Set readSources = readCollection.collect({it.sampleSource}).unique()
+        Set readSources = readCollection.collect({it.sampleSource}).findAll({it != null}).unique()
         def source2colour = [:]
         def description2colour = []
         readSources.eachWithIndex { source, i ->
@@ -54,7 +54,12 @@ class ContigController {
 
         // attach the correct colour to each read
         readCollection.each {
-            it.colour = source2colour.get(it.sampleSource)
+            if (source2colour.containsKey(it.sampleSource)){
+                it.colour = source2colour.get(it.sampleSource)
+            }
+            else{
+                it.colour = 'black'
+            }
         }
 
 

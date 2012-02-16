@@ -48,6 +48,60 @@ class AssemblyController {
     }
 
     @Secured(['ROLE_USER'])
+    def uploadAce = {
+        def f = request.getFile('aceFile')
+
+
+        println "uploading ACE file called ${f.name}"
+        def assemblyId = params.id.toInteger()
+
+
+
+        BackgroundJob job = new BackgroundJob(
+                name: 'uploading ACE file',
+                progress: 'queued',
+                study: Assembly.get(assemblyId).compoundSample.study,
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.UPLOAD_CONTIGS)
+        job.save(flush: true)
+
+
+        runAsync {
+            BackgroundJob job2 = BackgroundJob.get(job.id)
+            job2.status = BackgroundJobStatus.RUNNING
+            job2.save(flush: true)
+
+            job2.progress = "deleting old contigs"
+            job2.save(flush: true)
+
+            Assembly assembly = Assembly.get(assemblyId)
+            assembly.defaultContigSet = null
+            assembly.save(flush: true)
+
+            assembly.contigs.each {
+                it.delete()
+            }
+
+            miraService.attachContigsFromMiraInfo(f.inputStream, assembly)
+
+            assembly.save(flush: true)
+            job2.progress = "creating contig set"
+            job2.save(flush: true)
+
+            statisticsService.createContigSetForAssembly(assembly.id)
+
+
+
+            job2.progress = 'finished'
+            job2.status = BackgroundJobStatus.FINISHED
+        }
+
+        redirect(controller: 'backgroundJob', action: 'list')
+
+    }
+
+
+    @Secured(['ROLE_USER'])
     def uploadContigs = {
         def f = request.getFile('myFile')
 

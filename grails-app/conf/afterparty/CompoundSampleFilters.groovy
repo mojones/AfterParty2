@@ -8,7 +8,7 @@ class CompoundSampleFilters {
     def filters = {
         compoundSampleExists(controller: 'compoundSample', action: '(show|createSample|createAssembly|showAssembliesJSON)') {
             before = {
-                println "checking if compound sample exists"
+                println "checking if compound sample with id ${params.id} exists"
                 CompoundSample s = CompoundSample.get(params.id)
                 if (!s) {
                     flash.error = "Compound sample doesn't exist"

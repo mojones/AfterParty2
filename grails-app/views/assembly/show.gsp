@@ -112,15 +112,31 @@
                 </p>
             </g:form>
 
-            <g:form controller="contigSet" action="compareContigSets" method="get">
-
-
-                <g:hiddenField name="idList" value="${assemblyInstance.defaultContigSet.id}"/>
+            <h2>Upload ACE</h2>
+            <g:form action="uploadAce" method="post" enctype="multipart/form-data">
+                <p class="fileupload" style="clear:none;">
+                    <label>.ace file to upload:</label><br/>
+                    <input type="file" name="aceFile"/>
+                    <span id="uploadmsg">ACE format only</span>
+                </p>
+                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
 
                 <p style="clear:none;">
-                    <input type="submit" class="submit mid" value="View contigs"/>
+                    <input type="submit" class="submit short" value="Upload"/>
                 </p>
             </g:form>
+
+
+            <g:if test="${assemblyInstance.defaultContigSet}">
+                <g:form controller="contigSet" action="compareContigSets" method="get">
+
+                    <g:hiddenField name="idList" value="${assemblyInstance.defaultContigSet.id}"/>
+
+                    <p style="clear:none;">
+                        <input type="submit" class="submit mid" value="View contigs"/>
+                    </p>
+                </g:form>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
 
