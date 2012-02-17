@@ -69,9 +69,11 @@ class ContigSetController {
                 if (cumulativeLength > n50Target && !cs.n50Contig) {
                     cs.n50Contig = numberContigsSeen
                     cs.n50Total = cumulativeLength
+                    cs.n50length = contigLength
                 }
 
                 if (cumulativeLength > n90Target && !cs.n90Contig) {
+                    cs.n90Length = contigLength
                     cs.n90Contig = numberContigsSeen
                     cs.n90Total = cumulativeLength
                 }

@@ -329,7 +329,7 @@
             for (var i = 0; i < lengths.length; i++) {
                 var l = lengths[i];
                 cumulativeTotal += l;
-                returnValue.push([i, cumulativeTotal]);
+                returnValue.push([i, cumulativeTotal, l]);
             }
             return returnValue;
         });
@@ -454,7 +454,10 @@
                     highlighter: {
                         show: window.highlighterOn,
                         sizeAdjust: 7.5,
-                        bringSeriesToFront: true
+                        bringSeriesToFront: true,
+                        yvalues: 2,
+                        formatString : 'rank : %d<br/>cumulative length : %d<br/>contig length: %d<br/>',
+                        useAxesFormatters: false
                     },
                     cursor: {
                         show: !window.highlighterOn,
