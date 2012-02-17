@@ -32,7 +32,7 @@ class BackgroundJobController {
     }
 
     def list = {
-//  don't do anything here - just render the list view - all the work is done by the listAjax method
+     //  don't do anything here - just render the list view - all the work is done by the listAjax method
         [studyId : params.studyId]
     }
 

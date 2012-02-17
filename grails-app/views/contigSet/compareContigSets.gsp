@@ -10,9 +10,16 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.pointLabels.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
 
-
+<style type="text/css">
+.jqplot-point-label {
+    padding: 1px 3px;
+    background-color: #eeeeee;
+    font-size: 12px;
+}
+</style>
 
 
 
@@ -195,6 +202,9 @@
                     },
                     legend:{
                         show: true
+                    },
+                    grid: {
+                        background: '#ffffff'
                     }
                 }
         );
@@ -297,6 +307,9 @@
                     } ,
                     legend:{
                         show: true
+                    },
+                    grid: {
+                        background: '#ffffff'
                     }
                 }
         );
@@ -318,19 +331,21 @@
                 cumulativeTotal += l;
                 returnValue.push([i, cumulativeTotal]);
             }
-            console.log(returnValue);
             return returnValue;
         });
+
+
         var renderer;
         var fieldName;
 
         var colourList = contigSetData.contigSetList.map(function(a) {
             return a.colour;
         });
-        console.log(colourList);
 
         var mySeriesOptions = [];
         for (var i = 0; i < window.seriesList.length; i++) {
+
+
             mySeriesOptions.push(
                     {
                         lineOptions: {
@@ -340,8 +355,79 @@
 
                     }
             );
+
+
         }
-        console.log(mySeriesOptions);
+
+        // go through the list of contig sets again and add a new series to hold n50values
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+            allValues.push([
+                [contigSetRawData.contigSetList[i].n50Contig, contigSetRawData.contigSetList[i].n50Total, 'n50']
+            ]);
+
+            mySeriesOptions.push(
+                    {
+                        showMarker: true,
+                        showLabel : false,
+                        showLine : false,
+                        pointLabels: {
+                            show:true,
+                            ypadding : 5,
+                            xpadding : 5,
+                            location : 'nw'
+                        }
+                    }
+            );
+        }
+
+        // go through the list of contig sets again and add a new series to hold n90values
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+            allValues.push([
+                [contigSetRawData.contigSetList[i].n90Contig, contigSetRawData.contigSetList[i].n90Total, 'n90']
+//                [contigSetRawData.contigSetList[i].smallContig, contigSetRawData.contigSetList[i].smallTotal, 'small contigs']
+            ]);
+
+            mySeriesOptions.push(
+                    {
+                        showMarker: true,
+                        showLabel : false,
+                        showLine : false,
+                        pointLabels: {
+                            show:true,
+                            ypadding : 5,
+                            xpadding : 5,
+                            location : 'ne'
+                        }
+                    }
+            );
+        }
+
+   // go through the list of contig sets again and add a new series to hold small contig values
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+            allValues.push([
+                [contigSetRawData.contigSetList[i].smallContig, contigSetRawData.contigSetList[i].smallTotal, 'contigs < 500bp']
+            ]);
+
+            mySeriesOptions.push(
+                    {
+                        showMarker: true,
+                        showLabel : false,
+                        showLine : false,
+                        pointLabels: {
+                            show:true,
+                            ypadding : 5,
+                            xpadding : 5,
+                            location : 'se'
+                        }
+                    }
+            );
+        }
+
+
+        console.log(allValues);
 
         cumulativePlot = $.jqplot('cumulativeDiv',
                 allValues,
@@ -380,7 +466,11 @@
                         constrainZoomTo : 'x'
                     },
                     legend:{
-                        show: true
+                        show: true,
+                        location: 'nw'
+                    },
+                    grid: {
+                        background: '#ffffff'
                     }
                 }
         );

@@ -1,7 +1,7 @@
 package afterparty
 
-import grails.plugins.springsecurity.Secured
 import grails.plugin.springcache.annotations.CacheFlush
+import grails.plugins.springsecurity.Secured
 
 class AssemblyController {
 
@@ -14,6 +14,14 @@ class AssemblyController {
     def miraService
     def springSecurityService
     def dataSource
+
+    def makeHybridAssembly = {
+        def ids = []
+        params.idList.split(/,/).sort().each {
+            ids.add(it.toLong())
+        }
+        render "merging assemblies " + ids
+    }
 
     @Secured(['ROLE_USER'])
     def uploadBlastAnnotation = {

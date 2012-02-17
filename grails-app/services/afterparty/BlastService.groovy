@@ -1,7 +1,6 @@
 package afterparty
 
 import javax.xml.parsers.SAXParserFactory
-
 import org.xml.sax.InputSource
 
 class BlastService {
@@ -14,12 +13,12 @@ class BlastService {
     def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
 
 //        input.eachLine {
-//            println "BLAST: $it"
-//        }
-//
+        //            println "BLAST: $it"
+        //        }
+        //
         def session = sessionFactory.openStatelessSession()
 
-        def handler = new RecordsHandler(jobId : backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)
+        def handler = new RecordsHandler(jobId: backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)
         def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
@@ -52,16 +51,16 @@ class BlastService {
 
             if (n < 10 * 1000) {
 
-                def p = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/blastx -db /home/martin/Downloads/uniprot_sprot.fasta -outfmt 5 -window_size 0 -num_threads 6 -max_target_seqs 10".split(" "))
-                p.redirectErrorStream(true)
-                p = p.start()
+                def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/blastx -db /home/martin/Downloads/uniprot_sprot.fasta -outfmt 5 -window_size 0 -num_threads 6 -max_target_seqs 10".split(" "))
+                blastProcess.redirectErrorStream(true)
+                blastProcess = blastProcess.start()
 
 
-                def writer = new PrintWriter(new BufferedOutputStream(p.out))
+                def writer = new PrintWriter(new BufferedOutputStream(blastProcess.out))
                 writer.println(">${contig.name}\n${contig.sequence}")
                 writer.close()
 
-                addBlastHitsFromInput(p.in, job.id, assembly.id)
+                addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
 
             }
             n++

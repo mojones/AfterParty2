@@ -17,7 +17,7 @@ class ContigSetController {
             ids.add(contigSetId)
         }
         //render(view: 'compareContigSets', model: [contigSets: contigSetListResult])
-        redirect(action: compareContigSets, params:['idList': ids.join(',')])
+        redirect(action: compareContigSets, params: ['idList': ids.join(',')])
         return false
     }
 
@@ -56,6 +56,33 @@ class ContigSetController {
 
             cs.contigSetId = id
             cs.label = ContigSet.get(id).name
+
+            int cumulativeLength = 0
+            int n50Target = cs.length.sum() / 2
+            int n90Target = (cs.length.sum() / 100) * 90
+            int numberContigsSeen = 0
+
+            for (contigLength in cs.length.sort().reverse()) {
+                numberContigsSeen++
+                cumulativeLength += contigLength
+
+                if (cumulativeLength > n50Target && !cs.n50Contig) {
+                    cs.n50Contig = numberContigsSeen
+                    cs.n50Total = cumulativeLength
+                }
+
+                if (cumulativeLength > n90Target && !cs.n90Contig) {
+                    cs.n90Contig = numberContigsSeen
+                    cs.n90Total = cumulativeLength
+                }
+
+                if (contigLength < 500 && !cs.smallContig) {
+                    cs.smallContig = numberContigsSeen
+                    cs.smallTotal = cumulativeLength
+                }
+            }
+
+
             contigSetListResult.add(cs)
         }
 
@@ -68,7 +95,7 @@ class ContigSetController {
     def createContigSetAJAX = {
         println "creating contigset with $params.setName"
         Set ids = []
-        params.idList.split(/,/).sort().each{
+        params.idList.split(/,/).sort().each {
             ids.add(it)
         }
         ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set from chart", study: Study.get(params.studyId))
