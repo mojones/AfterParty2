@@ -404,7 +404,7 @@
             );
         }
 
-   // go through the list of contig sets again and add a new series to hold small contig values
+        // go through the list of contig sets again and add a new series to hold small contig values
         for (var i = 0; i < window.seriesList.length; i++) {
 
             allValues.push([
@@ -717,7 +717,25 @@ To make a bit of text editable we need to
             <h3>Description</h3>
 
             <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
+            <g:if test="${isOwner}">
+                <p>
+                    <g:form action="buildBlastDatabase" method="get">
+                        <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                        <input type="submit" class="submit long" value="Make BLASTable"/>
+                    </g:form>
+                </p>
+            </g:if>
 
+            <g:if test="${contigSetInstance.blastHeaderFile}">
+
+                <g:form action="blastAgainstContigSet" method="get">
+                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                    <p><textarea rows="5" cols="80" name="inputSequence"></textarea></p>
+
+                    <p><input type="submit" class="submit long" value="Search contig set"/></p>
+                </g:form>
+
+            </g:if>
         </div>        <!-- .block_content ends -->
 
         <div class="bendl"></div>

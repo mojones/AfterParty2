@@ -38,6 +38,8 @@ class miraService {
 
         def session = sessionFactory.openStatelessSession()
 
+        a.save(flush:true)
+
         aceFile.eachLine { line ->
 
             if (line.startsWith(/CO /)) {

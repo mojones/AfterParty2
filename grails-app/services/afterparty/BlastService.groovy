@@ -18,7 +18,7 @@ class BlastService {
         //
         def session = sessionFactory.openStatelessSession()
 
-        def handler = new RecordsHandler(jobId: backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)
+        def handler = new BlastXmlResultAnnotationHandler(jobId: backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)
         def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)

@@ -90,10 +90,9 @@
                     var readSource;
                     if (read.sampleSource) {
                         readSource = read.sampleSource;
+                        var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
+                        var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
                     }
-                    var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
-
-                    var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
                 }
                 drawing.end();
                 $('#spinner').hide();

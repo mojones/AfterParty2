@@ -1,11 +1,97 @@
 package afterparty
 
+import javax.xml.parsers.SAXParserFactory
+import org.xml.sax.InputSource
+
 class ContigSetController {
 
     def statisticsService
     def searchService
+    def springSecurityService
 
     def index = { }
+
+    def blastAgainstContigSet = {
+        println "blasting against contig set ${params.id}"
+        println "sequence is ${params.inputSequence}"
+
+        ContigSet cs = ContigSet.get(params.id)
+
+        //write out blast files
+        File temporaryBlastDirectory = File.createTempFile('blastDir', '')
+        temporaryBlastDirectory.delete()
+        temporaryBlastDirectory.mkdir()
+        (new File(temporaryBlastDirectory, 'blast.nhr')).append(cs.blastHeaderFile)
+        (new File(temporaryBlastDirectory, 'blast.nin')).append(cs.blastIndexFile)
+        (new File(temporaryBlastDirectory, 'blast.nsq')).append(cs.blastSequenceFile)
+
+        println "temp blast directory is ${temporaryBlastDirectory.absolutePath}"
+
+        def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/blastn -outfmt 5 -db ${temporaryBlastDirectory.absolutePath}/blast".split(" "))
+        blastProcess.redirectErrorStream(true)
+        blastProcess = blastProcess.start()
+
+
+        def writer = new PrintWriter(new BufferedOutputStream(blastProcess.out))
+        writer.println(">mySearch\n${params.inputSequence}")
+        writer.close()
+
+        def blastResults = []
+
+        def handler = new BlastXmlResultHandler(blastResults: blastResults)
+        def reader = SAXParserFactory.newInstance().newSAXParser().XMLReader
+        reader.setContentHandler(handler)
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+
+//        blastProcess.in.eachLine {println it}
+        reader.parse(new InputSource(blastProcess.in))
+
+        blastResults.each{
+            Contig c = Contig.get(it.contigId)
+            it.contigName = c.name
+            it.assemblyName = c.assembly.name
+            it.compoundSampleName = c.assembly.compoundSample.name
+        }
+
+        def fullResult = [
+                hits: blastResults,
+                query: params.inputSequence
+        ]
+
+        [
+                resultsJSON: fullResult.encodeAsJSON(),
+                results: blastResults
+        ]
+
+    }
+
+    def buildBlastDatabase = {
+        def contigSetId = params.id
+        println "building blast database for $contigSetId"
+        ContigSet cs = ContigSet.get(contigSetId)
+        File contigsFastaFile = File.createTempFile('contigs', '.fasta')
+        println "temporary file is ${contigsFastaFile.absolutePath} ${contigsFastaFile.name}"
+        cs.contigs.each {
+            contigsFastaFile.append(">" + it.id + "\n" + it.sequence + "\n")
+        }
+        println "running formatblasdb"
+
+        println("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type 'fasta' -dbtype 'nucl'".split(" "))
+        def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl".split(" "))
+        blastProcess.redirectErrorStream(true)
+        blastProcess = blastProcess.start()
+        blastProcess.in.eachLine({
+            println "blast : $it"
+        })
+
+        cs.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
+        cs.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
+        cs.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
+
+        cs.save()
+        redirect(action: compareContigSets, params : [idList: contigSetId])
+
+    }
 
 
     def compareContigSetsFromCheckbox = {
@@ -26,7 +112,9 @@ class ContigSetController {
         params.idList.split(/,/).sort().each {
             contigSetListResult.add(ContigSet.get(it.toLong()))
         }
-        [contigSets: contigSetListResult]
+        def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
+
+        [contigSets: contigSetListResult, isOwner: contigSetListResult[0].study.user.id == userId]
     }
 
     def createFromSearch = {
