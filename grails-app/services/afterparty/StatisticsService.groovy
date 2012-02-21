@@ -10,7 +10,7 @@ class StatisticsService {
 
     static paleAssemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
 //    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB', '#8A2BE2', '#DC143C']
-    public static boldAssemblyColours = ['aqua', 'black', 'lime','blue', 'fuchsia', 'grey', 'green',  'maroon', 'navy', 'olive', 'purple', 'red',  'teal', 'yellow']
+    public static boldAssemblyColours = ['aqua', 'black', 'lime', 'blue', 'fuchsia', 'grey', 'green', 'maroon', 'navy', 'olive', 'purple', 'red', 'teal', 'yellow']
 
 
     @Cacheable("myCache")
@@ -18,6 +18,11 @@ class StatisticsService {
 
         println "getting assembly stats for $id"
         def start = System.currentTimeMillis()
+
+        if (!Assembly.get(id).defaultContigSet) {
+            createContigSetForAssembly(id)
+        }
+
         def criteria = Assembly.createCriteria()
         def a = criteria.get({
             eq('id', id)
@@ -27,14 +32,10 @@ class StatisticsService {
         })
         println "got raw assembly object : " + (System.currentTimeMillis() - start)
 
-        def cs = new ContigSet(name: a.name, description: "automatically created contigSet for assembly $a.name", study: a.compoundSample.study)
-        a.contigs.each {cs.addToContigs(it)}
-        println "created contig set : " + (System.currentTimeMillis() - start)
 
-        cs.save(flush: true)
         println "saved contig set : " + (System.currentTimeMillis() - start)
 
-        def assemblyStats = grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(cs.id)
+        def assemblyStats = grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(a.defaultContigSet.id)
 
 
 
@@ -128,7 +129,8 @@ class StatisticsService {
                 coverage: contigs*.averageCoverage(),
                 gc: contigs*.gc(),
                 topBlast: contigs.collect({
-                    it.blastHits.size() > 0 ? it.blastHits.toArray()[0].description : 'no blast hit'})
+                    it.blastHits.size() > 0 ? it.blastHits.toArray()[0].description : 'no blast hit'
+                })
         ]
         println "built return : " + (System.currentTimeMillis() - start)
         return result
@@ -229,6 +231,11 @@ class StatisticsService {
         )
         a.contigs.each {
             cs.addToContigs(it)
+        }
+        if (a.defaultContigSet) {
+            println "deleting old contig set"
+            def currentDefaultContigSet = a.defaultContigSet
+            currentDefaultContigSet.delete()
         }
         a.defaultContigSet = cs
         cs.save(flush: true)

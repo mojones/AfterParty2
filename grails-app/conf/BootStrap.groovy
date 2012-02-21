@@ -152,8 +152,8 @@ class BootStrap {
                 lSig.addToAssemblies(a)
 
                 miraService.attachContigsFromMiraInfo(
-                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
-//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
+//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
+                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
                         a
                 )
 
