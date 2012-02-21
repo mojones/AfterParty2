@@ -217,6 +217,63 @@ class StatisticsService {
 
     }
 
+    def createContigSetForCompoundSample(Long id) {
+
+        CompoundSample c = CompoundSample.get(id)
+
+        def cs = new ContigSet(
+                name: "all contigs in assemblies for $c.name",
+                description: "all contigs in assemblies for $c.name",
+                study: c.study,
+                type: ContigSetType.COMPOUND_SAMPLE
+        )
+
+        c.assemblies.each { assembly ->
+            assembly.defaultContigSet.contigs.each { contig ->
+                cs.addToContigs(contig)
+            }
+        }
+
+        if (c.defaultContigSet) {
+            println "deleting old contig set"
+            def currentDefaultContigSet = c.defaultContigSet
+            currentDefaultContigSet.delete()
+        }
+        c.defaultContigSet = cs
+        cs.save(flush: true)
+
+        createContigSetForStudy(c.study.id)
+    }
+
+    def createContigSetForStudy(Long id) {
+
+        Study s = Study.get(id)
+
+        def cs = new ContigSet(
+                name: "all contigs in assemblies for study $s.name",
+                description: "all contigs in assemblies for $s.name",
+                study: s,
+                type: ContigSetType.STUDY
+        )
+
+        s.compoundSamples.each { compoundSample ->
+            compoundSample.assemblies.each { assembly ->
+                assembly.defaultContigSet.contigs.each { contig ->
+                    cs.addToContigs(contig)
+                }
+            }
+        }
+
+
+        if (s.defaultContigSet) {
+            println "deleting old contig set"
+            def currentDefaultContigSet = s.defaultContigSet
+            currentDefaultContigSet.delete()
+        }
+        s.defaultContigSet = cs
+        cs.save(flush: true)
+    }
+
     def createContigSetForAssembly(Long id) {
         def criteria = Assembly.createCriteria()
         def a = criteria.get({
@@ -227,7 +284,8 @@ class StatisticsService {
         def cs = new ContigSet(
                 name: "$a.name",
                 description: "automatically generated contig set for $a.name",
-                study: a.compoundSample.study
+                study: a.compoundSample.study,
+                type: ContigSetType.ASSEMBLY
         )
         a.contigs.each {
             cs.addToContigs(it)
@@ -239,6 +297,9 @@ class StatisticsService {
         }
         a.defaultContigSet = cs
         cs.save(flush: true)
+
+        // now update the compound sample that owns this assembly
+        createContigSetForCompoundSample(a.compoundSample.id)
 
     }
 }

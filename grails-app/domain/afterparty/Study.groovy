@@ -6,9 +6,12 @@ class Study {
     String description
     Boolean published
 
+    ContigSet defaultContigSet
+
     static constraints = {
         name(maxSize: 1000)
         description(maxSize: 10000, nullable: true)
+        defaultContigSet(nullable: true)
     }
 
     static hasMany = [compoundSamples: CompoundSample, contigSets : ContigSet]

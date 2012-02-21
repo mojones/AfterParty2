@@ -20,7 +20,37 @@ To make a bit of text editable we need to
                         "<g:createLink controller="update" action="updateField"/>",
                         'Study'
                 );
+
+
+                $(':checkbox').change(function() {
+                    updateButton();
+                });
+                $('#showContigSetsButton').hide();
+
+
             });
+
+            function showOnly(class) {
+                $(class).show(300);
+                $('.compoundSampleRow:not(' + class + ')').hide(300);
+            }
+
+            function updateButton() {
+                if ($("input:checked").length == 0) {
+                    $('#showContigSetsButton').hide();
+                    $('#noneSelectedMessage').show();
+                }
+                if ($("input:checked").length == 1) {
+                    $('#showContigSetsButton').show();
+                    $('#noneSelectedMessage').hide();
+                    $('#showContigSetsButton').val('Compare contig sets');
+                }
+                if ($("input:checked").length > 1) {
+                    $('#showContigSetsButton').show();
+                    $('#noneSelectedMessage').hide();
+                    $('#showContigSetsButton').val('View contig set details');
+                }
+            }
         </script>
     </g:if>
 
@@ -122,6 +152,7 @@ To make a bit of text editable we need to
     <div class="bendr"></div>
 </div>
 
+
 <div class="block">
 
     <div class="block_head">
@@ -130,6 +161,20 @@ To make a bit of text editable we need to
         <div class="bheadr"></div>
 
         <h2>Contig sets</h2>
+
+        <ul>
+            <li>Show only:</li>
+            <li>
+                <a href="#" onclick="showOnly('.ASSEMBLY');">Assemblies</a>
+            </li>
+            <li>
+                <a href="#" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</a>
+            </li>
+
+            <li>
+                <a href="#" onclick="showOnly('.USER_CREATED');">User created</a>
+            </li>
+        </ul>
 
     </div>        <!-- .block_head ends -->
 
@@ -146,7 +191,7 @@ To make a bit of text editable we need to
                 <tbody>
 
                 <g:each in="${studyInstance.contigSets.sort({it.name})}" var="contigSet" status="index">
-                    <tr>
+                    <tr class='compoundSampleRow ${contigSet.type}'>
                         <td>
                             <g:checkBox name="check_${contigSet.id}" value="${false}"/> ${contigSet.name}</td>
                         <td>${contigSet.contigs.size()}</td>
@@ -155,7 +200,8 @@ To make a bit of text editable we need to
                 </tbody>
 
             </table>
-            <input type="submit" class="submit long" value="Compare contig sets"/>
+            <p id="noneSelectedMessage">Select some contig sets to view/compare them</p>
+            <input id="showContigSetsButton" type="submit" class="submit long" value="select contig set"/>
         </g:form>
 
     </div>        <!-- .block_content ends -->

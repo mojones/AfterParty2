@@ -20,4 +20,8 @@ enum ReadsFileStatus {
     RAW, TRIMMED
 }
 
+enum ContigSetType {
+    STUDY, COMPOUND_SAMPLE, ASSEMBLY, USER
+}
+
 

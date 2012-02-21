@@ -8,6 +8,8 @@ class ContigSet {
     byte[] blastIndexFile
     byte[] blastSequenceFile
 
+    ContigSetType type
+
 
     static hasMany = [contigs: Contig]
 

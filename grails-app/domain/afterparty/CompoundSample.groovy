@@ -5,12 +5,15 @@ class CompoundSample {
 
     String name
 
+    ContigSet defaultContigSet
+
     static hasMany = [samples : Sample, assemblies : Assembly]
 
     static belongsTo = [study : Study]
 
     static constraints = {
         name(maxSize: 1000)
+        defaultContigSet(nullable: true)
     }
 
     def isPublished(){

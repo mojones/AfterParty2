@@ -152,25 +152,26 @@ class ContigSetController {
             int numberContigsSeen = 0
 
             for (contigLength in cs.length.sort().reverse()) {
-                numberContigsSeen++
+
                 cumulativeLength += contigLength
 
-                if (cumulativeLength > n50Target && !cs.n50Contig) {
+                if (cumulativeLength >= n50Target && !cs.n50Contig) {
                     cs.n50Contig = numberContigsSeen
                     cs.n50Total = cumulativeLength
                     cs.n50length = contigLength
                 }
 
-                if (cumulativeLength > n90Target && !cs.n90Contig) {
+                if (cumulativeLength >= n90Target && !cs.n90Contig) {
                     cs.n90Length = contigLength
                     cs.n90Contig = numberContigsSeen
                     cs.n90Total = cumulativeLength
                 }
 
-                if (contigLength < 500 && !cs.smallContig) {
+                if (contigLength <= 500 && !cs.smallContig) {
                     cs.smallContig = numberContigsSeen
                     cs.smallTotal = cumulativeLength
                 }
+                numberContigsSeen++
             }
 
 
