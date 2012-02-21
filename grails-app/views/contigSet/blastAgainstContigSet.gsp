@@ -136,6 +136,8 @@
 
         </table>
 
+        <p><input type="submit" class="submit long" value="Save as contig set" onclick="doCreate(${results*.contigId}, ${studyId})"/></p>
+
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>

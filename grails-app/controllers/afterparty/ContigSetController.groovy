@@ -60,7 +60,8 @@ class ContigSetController {
 
         [
                 resultsJSON: fullResult.encodeAsJSON(),
-                results: blastResults
+                results: blastResults,
+                studyId: cs.study.id
         ]
 
     }
@@ -188,7 +189,7 @@ class ContigSetController {
         params.idList.split(/,/).sort().each {
             ids.add(it)
         }
-        ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set from chart", study: Study.get(params.studyId))
+        ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set", study: Study.get(params.studyId))
         ids.each {c.addToContigs(Contig.get(it.toLong()))}
         c.save()
         println "rendering $c.id"

@@ -502,23 +502,9 @@
                 }
             }
 
-            doCreate(ids);
+            doCreate(ids, ${contigSets[0].study.id});
         });
 
-        var doCreate = function(idList) {
-            var name = prompt("Enter a name for the new contig set", "");
-            $.post(
-                    'createContigSetAJAX',
-                    {
-                        idList : idList.join(','),
-                        studyId : ${contigSets[0].study.id},
-                        setName: name
-                    },
-                    function(data) {
-                        window.location = '../contigSet/compareContigSets/?idList=  ' + data;  // redirect to view the new contig set
-                    }
-            );
-        };
 
         // start with all series toggled on
         window.series = [];

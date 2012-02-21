@@ -1,3 +1,19 @@
+function doCreate(idList, studyId) {
+    var name = prompt("Enter a name for the new contig set", "");
+    $.post(
+            'createContigSetAJAX',
+            {
+                idList : idList.join(','),
+                studyId : studyId,
+                setName: name
+            },
+            function(data) {
+                window.location = '../contigSet/compareContigSets/?idList=  ' + data;  // redirect to view the new contig set
+            }
+    );
+}
+
+
 // function to periodically update the progress of jobs running in the background
 function updateJobStatus() {
 
