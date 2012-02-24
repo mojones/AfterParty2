@@ -471,7 +471,7 @@
                     },
                     legend:{
                         show: true,
-                        location: 'nw'
+                        location: 'se'
                     },
                     grid: {
                         background: '#ffffff'

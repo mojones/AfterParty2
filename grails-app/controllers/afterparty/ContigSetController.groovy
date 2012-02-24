@@ -52,7 +52,7 @@ class ContigSetController {
             ]
 
             contigs.each { contig ->
-//                println "looking at contig $contig"
+                println "looking at contig $contig"
                 def (id, quality, coverage) = contig.key.split(/_/)
                 def sequence = contig.value
                 cs.id.push(id)
@@ -60,7 +60,7 @@ class ContigSetController {
                 cs.quality.push(quality.toFloat())
                 cs.coverage.push(coverage.toFloat())
                 cs.topBlast.push(id)
-                cs.gc.push(sequence.findAll({it == 'G' || it == 'C'}).size() / sequence.length())
+                cs.gc.push(sequence.toLowerCase().findAll({it == 'g' || it == 'c'}).size() / sequence.toLowerCase().findAll({it != 'n'}).size())
             }
 
             cs.colour = StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
