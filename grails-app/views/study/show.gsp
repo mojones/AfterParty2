@@ -6,53 +6,61 @@
     <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
 
-%{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
+    %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
 To make a bit of text editable we need to
 1. add the edit_in_place tag to it
 2. set the name attribute to be the name of the property that the text refers to --}%
-    <g:if test="${isOwner}">
-        <script type="text/javascript">
+    <script type="text/javascript">
 
-            //         set up edit-in-place
-            $(document).ready(function() {
-                setUpEditInPlace(
-                        ${studyInstance.id},
-                        "<g:createLink controller="update" action="updateField"/>",
-                        'Study'
-                );
+        //         set up edit-in-place
+        $(document).ready(function() {
 
 
-                $(':checkbox').change(function() {
-                    updateButton();
-                });
-                $('#showContigSetsButton').hide();
+            <g:if test="${isOwner}">
+            setUpEditInPlace(
+                    ${studyInstance.id},
+                    "<g:createLink controller="update" action="updateField"/>",
+                    'Study'
+            );
 
+            </g:if>
 
+            $(':checkbox').change(function() {
+                updateButton();
             });
 
-            function showOnly(class) {
-                $(class).show(300);
-                $('.compoundSampleRow:not(' + class + ')').hide(300);
-            }
+            $('#showContigSetsButton').hide();
 
-            function updateButton() {
-                if ($("input:checked").length == 0) {
-                    $('#showContigSetsButton').hide();
-                    $('#noneSelectedMessage').show();
-                }
-                if ($("input:checked").length == 1) {
-                    $('#showContigSetsButton').show();
-                    $('#noneSelectedMessage').hide();
-                    $('#showContigSetsButton').val('Compare contig sets');
-                }
-                if ($("input:checked").length > 1) {
-                    $('#showContigSetsButton').show();
-                    $('#noneSelectedMessage').hide();
-                    $('#showContigSetsButton').val('View contig set details');
-                }
+            updateButton()
+            $('tr:odd').css('background-color', '#F0F0F0');
+
+
+        });
+
+        function showOnly(myClass) {
+            $('.compoundSampleRow:not(' + myClass + ')').hide();
+            $(myClass).show();
+            $('tr:odd').css('background-color', '#F0F0F0');
+            return false;
+        }
+
+        function updateButton() {
+            if ($("input:checked").length == 0) {
+                $('#showContigSetsButton').hide();
+                $('#noneSelectedMessage').show();
             }
-        </script>
-    </g:if>
+            if ($("input:checked").length == 1) {
+                $('#showContigSetsButton').show();
+                $('#noneSelectedMessage').hide();
+                $('#showContigSetsButton').val('view contig set');
+            }
+            if ($("input:checked").length > 1) {
+                $('#showContigSetsButton').show();
+                $('#noneSelectedMessage').hide();
+                $('#showContigSetsButton').val('compare contig sets');
+            }
+        }
+    </script>
 
 </head>
 
@@ -165,14 +173,16 @@ To make a bit of text editable we need to
         <ul>
             <li>Show only:</li>
             <li>
-                <a href="#" onclick="showOnly('.ASSEMBLY');">Assemblies</a>
+                <span class="clickable" onclick="showOnly('.compoundSampleRow');">All contig sets</span>
             </li>
             <li>
-                <a href="#" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</a>
+                <span class="clickable" onclick="showOnly('.ASSEMBLY');">Assemblies</span>
             </li>
-
             <li>
-                <a href="#" onclick="showOnly('.USER_CREATED');">User created</a>
+                <span class="clickable" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</span>
+            </li>
+            <li>
+                <span class="clickable" onclick="showOnly('.USER_CREATED');">User created</span>
             </li>
         </ul>
 
@@ -193,13 +203,14 @@ To make a bit of text editable we need to
                 <g:each in="${studyInstance.contigSets.sort({it.name})}" var="contigSet" status="index">
                     <tr class='compoundSampleRow ${contigSet.type}'>
                         <td>
-                            <g:checkBox name="check_${contigSet.id}" value="${false}"/> ${contigSet.name}</td>
+                            <g:checkBox name="check_${contigSet.id}" value="${false}" class="checkbox"/> ${contigSet.name}</td>
                         <td>${contigSet.contigs.size()}</td>
                     </tr>
                 </g:each>
                 </tbody>
 
             </table>
+
             <p id="noneSelectedMessage">Select some contig sets to view/compare them</p>
             <input id="showContigSetsButton" type="submit" class="submit long" value="select contig set"/>
         </g:form>

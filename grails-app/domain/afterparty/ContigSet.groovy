@@ -18,9 +18,6 @@ class ContigSet {
 
 
     static constraints = {
-        blastHeaderFile(nullable: true)
-        blastIndexFile(nullable: true)
-        blastSequenceFile(nullable: true)
     }
 
     static mapping = {

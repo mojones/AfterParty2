@@ -7,6 +7,7 @@ class StatisticsService {
     static transactional = true
 
     def grailsApplication
+    def blastService
 
     static paleAssemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
 //    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB', '#8A2BE2', '#DC143C']
@@ -26,7 +27,7 @@ class StatisticsService {
         def criteria = Assembly.createCriteria()
         def a = criteria.get({
             eq('id', id)
-            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
 //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
             //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
@@ -104,23 +105,22 @@ class StatisticsService {
         ]
     }
 
+
+
     @Cacheable("myCache")
     def getContigStatsForContigSet(Long id) {
         println "starting getContigStatsForContig"
         def start = System.currentTimeMillis()
 
-//        Assembly a = Assembly.findById(id, [fetch: [contigs: 'eager']])
         def criteria = ContigSet.createCriteria()
         def cs = criteria.get({
             eq('id', id)
-            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
         })
         println "got $cs"
         println "got contigs : " + (System.currentTimeMillis() - start)
 
-//
         def contigs = cs.contigs
         def result = [
                 id: contigs*.id,
@@ -240,6 +240,7 @@ class StatisticsService {
             currentDefaultContigSet.delete()
         }
         c.defaultContigSet = cs
+        blastService.attachBlastDatabaseToContigSet(cs)
         cs.save(flush: true)
 
         createContigSetForStudy(c.study.id)
@@ -271,6 +272,7 @@ class StatisticsService {
             currentDefaultContigSet.delete()
         }
         s.defaultContigSet = cs
+        blastService.attachBlastDatabaseToContigSet(cs)
         cs.save(flush: true)
     }
 
@@ -296,6 +298,8 @@ class StatisticsService {
             currentDefaultContigSet.delete()
         }
         a.defaultContigSet = cs
+
+        blastService.attachBlastDatabaseToContigSet(cs)
         cs.save(flush: true)
 
         // now update the compound sample that owns this assembly

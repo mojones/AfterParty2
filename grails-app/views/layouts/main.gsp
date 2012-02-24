@@ -59,26 +59,13 @@
 
             <ul id="nav">
 
-                <g:include controller="nav" action="show"/>
+                <g:if test="${session.studyId}">
+                    <g:include controller="nav" action="show"/>
+                </g:if>
 
                 <sec:ifLoggedIn>
                     <g:include controller="nav" action="showStudies"/>
                 </sec:ifLoggedIn>
-
-                %{--<li><a href="#"><b>Search</b></a>--}%
-                    %{--<g:if test="${session.studyId}">--}%
-                        %{--<ul>--}%
-                            %{--<li><b><g:link controller="assembly" action="search">Contigs</g:link></b></li>--}%
-                        %{--</ul>--}%
-                    %{--</g:if>--}%
-                    %{--<g:else>--}%
-                        %{--<ul>--}%
-                            %{--<li>--}%
-                                %{--<g:link controller="study"><b>Select a study...</b></g:link>--}%
-                            %{--</li>--}%
-                        %{--</ul>--}%
-                    %{--</g:else>--}%
-                %{--</li>--}%
 
             </ul>
             <sec:ifLoggedIn>

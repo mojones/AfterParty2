@@ -718,7 +718,7 @@ To make a bit of text editable we need to
                     <g:hiddenField name="id" value="${contigSetInstance.id}"/>
                     <p><textarea rows="5" cols="80" name="inputSequence"></textarea></p>
 
-                    <p><input type="submit" class="submit long" value="Search contig set"/></p>
+                    <p><input type="submit" class="submit long" value="BLAST vs contig set"/></p>
                 </g:form>
 
             </g:if>
