@@ -429,7 +429,6 @@
 
 
         console.log("options : " + mySeriesOptions);
-        tempOptions = mySeriesOptions;
 
         cumulativePlot = $.jqplot('cumulativeDiv',
                 allValues,
