@@ -52,7 +52,7 @@ class ContigSetController {
             ]
 
             contigs.each { contig ->
-                println "looking at contig $contig"
+//                println "looking at contig $contig"
                 def (id, quality, coverage) = contig.key.split(/_/)
                 def sequence = contig.value
                 cs.id.push(id)
