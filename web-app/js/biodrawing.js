@@ -7,7 +7,7 @@
         BioDrawing.prototype.paperWidth = 0;
         BioDrawing.prototype.drawingWidth = 0;
         BioDrawing.prototype.yPos = 0;
-        BioDrawing.prototype.padding = 10;
+        BioDrawing.prototype.padding = 20;
         BioDrawing.prototype.pixelsPerBase = 10;
         BioDrawing.prototype.paper = '';
         BioDrawing.prototype.start = function(paperWidth, containerId) {

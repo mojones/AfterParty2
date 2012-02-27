@@ -42,7 +42,7 @@
 
             var drawContig = function(data) {
 
-                var paperWidth = $('#coffeescript_annotation').width() - 20;
+                var paperWidth = $('#coffeescript_annotation').width() - 40;
                 var drawing = new BioDrawing();
                 drawing.start(paperWidth, 'coffeescript_annotation');
                 drawing.drawSpacer(50);

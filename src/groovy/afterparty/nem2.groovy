@@ -90,7 +90,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     r.sequence = estSequence
                     r.start = estStart
                     r.stop = estStop
-                    r.sampleSource = libraryId2sample.get(estLibrary)
+                    r.source = libraryId2sample.get(estLibrary)?.name ?: 'no name'
                     c.addToReads(r)
                 }
 
