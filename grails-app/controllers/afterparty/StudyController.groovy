@@ -147,7 +147,6 @@ class StudyController {
         studyInstance.addToCompoundSamples(newCompoundSample)
         studyInstance.save()
         newCompoundSample.save(flush: true)
-        statisticsService.createContigSetForCompoundSample(newCompoundSample.id)
         flash.success = "added a new compound sample"
         redirect(controller: 'compoundSample', action: show, id: newCompoundSample.id)
     }

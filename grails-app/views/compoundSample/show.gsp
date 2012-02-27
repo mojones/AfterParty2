@@ -168,12 +168,14 @@ To make a bit of text editable we need to
             </g:form>
         </p>
 
-        <p>
-            <g:form controller="contigSet" action="compareContigSets" method="get">
-                <g:hiddenField name="idList" value="${compoundSample.defaultContigSet.id}"/>
-                <input type="submit" class="submit long" value="View contigs"/>
-            </g:form>
-        </p>
+        <g:if test="${compoundSample.defaultContigSet}">
+            <p>
+                <g:form controller="contigSet" action="compareContigSets" method="get">
+                    <g:hiddenField name="idList" value="${compoundSample.defaultContigSet.id}"/>
+                    <input type="submit" class="submit long" value="View contigs"/>
+                </g:form>
+            </p>
+        </g:if>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
