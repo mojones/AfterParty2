@@ -110,7 +110,7 @@ class miraService {
                 r.start = start
                 r.sequence = outputString.toString()
                 r.stop = start + currentReadString.size() - deletedBases
-                r.assemblySource = a
+                r.source = a.name
                 r.contig = currentContig
 //                currentContig.addToReads(r)
                 session.insert(r)

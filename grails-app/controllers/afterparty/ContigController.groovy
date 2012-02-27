@@ -33,21 +33,19 @@ class ContigController {
                     name: it.name,
                     start: it.start,
                     stop: it.stop,
-                    sampleSource: it.sampleSource,
-                    assemblySource : it.assemblySource
+                    source: it.source
             ]
         })
 
         // assemble a source -> colour map
-        Set readSources = readCollection.collect({it.sampleSource}).findAll({it != null}).unique()
-        readSources.addAll(readCollection.collect({it.assemblySource}).findAll({it != null}).unique())
+        Set readSources = readCollection.collect({it.source}).unique()
         def source2colour = [:]
         def description2colour = []
         readSources.eachWithIndex { source, i ->
             source2colour.put(source, StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()])
             description2colour.add(
                     [
-                            'source': source.name,
+                            'source': source,
                             'colour': StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
                     ]
             )
@@ -56,15 +54,7 @@ class ContigController {
 
         // attach the correct colour to each read
         readCollection.each {
-            if (source2colour.containsKey(it.sampleSource)){
-                it.colour = source2colour.get(it.sampleSource)
-            }
-            if (source2colour.containsKey(it.assemblySource)){
-                it.colour = source2colour.get(it.assemblySource)
-            }
-            else{
-                it.colour = 'black'
-            }
+            it.colour = source2colour.get(it.source)
         }
 
 

@@ -7,11 +7,7 @@ class Read {
     Integer start
     Integer stop
 
-    // if the input sequences that make up the contig are reads then they have a sample source
-    Sample sampleSource
-
-    // if the input sequences that make up the contigs are other contigs - i.e. we are doing a hybrid assembly - they have an assembly source
-    Assembly assemblySource
+    String source
 
     static constraints = {
         sampleSource(nullable: true)
@@ -21,10 +17,10 @@ class Read {
     static mapping = {
         sequence type: 'text'
         sort "start"
-        contig (index:'read_contig')
+        contig(index: 'read_contig')
 
     }
 
-    static belongsTo = [contig : Contig]
+    static belongsTo = [contig: Contig]
 
 }
