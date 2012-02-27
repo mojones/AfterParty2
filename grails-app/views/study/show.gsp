@@ -176,13 +176,16 @@ To make a bit of text editable we need to
                 <span class="clickable" onclick="showOnly('.compoundSampleRow');">All contig sets</span>
             </li>
             <li>
+                <span class="clickable" onclick="showOnly('.STUDY');">Study</span>
+            </li>
+            <li>
                 <span class="clickable" onclick="showOnly('.ASSEMBLY');">Assemblies</span>
             </li>
             <li>
                 <span class="clickable" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</span>
             </li>
             <li>
-                <span class="clickable" onclick="showOnly('.USER_CREATED');">User created</span>
+                <span class="clickable" onclick="showOnly('.USER');">User created</span>
             </li>
         </ul>
 

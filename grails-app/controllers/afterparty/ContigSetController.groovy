@@ -8,6 +8,7 @@ class ContigSetController {
     def statisticsService
     def searchService
     def springSecurityService
+    def blastService
 
     def miraService
 
@@ -335,8 +336,11 @@ class ContigSetController {
         params.idList.split(/,/).sort().each {
             ids.add(it)
         }
-        ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set", study: Study.get(params.studyId))
-        ids.each {c.addToContigs(Contig.get(it.toLong()))}
+        ContigSet c = new ContigSet(name: params.setName, description: "automatically generated contig set", study: Study.get(params.studyId), type: ContigSetType.USER)
+        ids.each {
+            c.addToContigs(Contig.get(it.toLong()))
+        }
+        blastService.attachBlastDatabaseToContigSet(c)
         c.save()
         println "rendering $c.id"
         render(c.id)
