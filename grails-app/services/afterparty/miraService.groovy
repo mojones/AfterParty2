@@ -61,6 +61,7 @@ class miraService {
                 currentContig.searchAssemblyId = a.id
                 currentContig.quality = 'qqq'
                 currentContig.sequence = 'sss'
+
                 a.addToContigs(currentContig)
                 session.insert(currentContig)
             }
@@ -109,6 +110,7 @@ class miraService {
                 r.start = start
                 r.sequence = outputString.toString()
                 r.stop = start + currentReadString.size() - deletedBases
+                r.assemblySource = a
                 r.contig = currentContig
 //                currentContig.addToReads(r)
                 session.insert(r)

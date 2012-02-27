@@ -93,6 +93,11 @@
                         var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
                         var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
                     }
+                    if (read.assemblySource) {
+                        readSource = read.assemblySource;
+                        var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
+                        var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
+                    }
                 }
                 drawing.end();
                 $('#spinner').hide();
