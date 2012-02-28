@@ -43,11 +43,15 @@
         }
         return result;
     }
-    function zip4(arrayA, arrayB, arrayC, arrayD) {
+
+    function zip4WithFilter(arrayA, arrayB, arrayC, arrayD, filterFunction) {
         var length = Math.min(arrayA.length, arrayB.length, arrayC.length, arrayD.length);
         var result = [];
         for (var n = 0; n < length; n++) {
-            result.push([arrayA[n], arrayB[n], arrayC[n], arrayD[n]]);
+
+            if (filterFunction(n)) {
+                result.push([arrayA[n], arrayB[n], arrayC[n], arrayD[n]]);
+            }
         }
         return result;
     }
@@ -133,13 +137,16 @@
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         var allValues = window.seriesList.map(function(a) {
-            return zip4(a[window.scatterXField], a[window.scatterYField], a.id, a.topBlast);
+            return zip4WithFilter(a[window.scatterXField], a[window.scatterYField], a.id, a.topBlast, function(n) {
+                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
+            });
         });
+
 
         var colourList = window.seriesList.map(function(a) {
             return a.colour;
         });
-        console.log(allValues);
+//        console.log(allValues);
 
         var mySeriesOptions = [];
         for (var i = 0; i < window.seriesList.length; i++) {
@@ -160,7 +167,7 @@
                     }
             );
         }
-        console.log(mySeriesOptions);
+//        console.log(mySeriesOptions);
 
         scatterPlot = $.jqplot('scatterplotDiv',
                 allValues,
@@ -241,7 +248,6 @@
         } else {
             fieldName = window.chartType + 'values';
         }
-        //TODO should this be window.logOn?
         if (logOn) {
             // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
             allLengthValues = contigSetData.contigSetList.map(function(a) {
@@ -253,7 +259,8 @@
             });
             renderer = $.jqplot.LogAxisRenderer;
         } else {
-            console.log(fieldName);
+//            console.log(fieldName);
+
             allLengthValues = contigSetData.contigSetList.map(function(a) {
                 return a[fieldName];
             });
@@ -263,7 +270,7 @@
         var colourList = contigSetData.contigSetList.map(function(a) {
             return a.colour;
         });
-        console.log(colourList);
+//        console.log(colourList);
 
         var mySeriesOptions = [];
         for (var i = 0; i < contigSetData.contigSetList.length; i++) {
@@ -276,9 +283,9 @@
                     }
             );
         }
-        console.log(mySeriesOptions);
+//        console.log(mySeriesOptions);
 
-        console.log('values : ' + allLengthValues);
+//        console.log('values : ' + allLengthValues);
         histogramPlot = $.jqplot('histogramDiv',
                 allLengthValues,
                 {
@@ -437,7 +444,7 @@
         }
 
 
-        console.log("options : " + mySeriesOptions);
+//        console.log("options : " + mySeriesOptions);
 
         cumulativePlot = $.jqplot('cumulativeDiv',
                 allValues,
@@ -523,6 +530,9 @@
 
         window.scatterXField = 'length';
         window.scatterYField = 'coverage';
+
+        window.minSeqLength = 0;
+        window.minSeqCoverage = 0;
 
         // boring code to handle chart options
 
@@ -715,6 +725,14 @@
         <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span> | <span style="cursor: pointer; " id='turncumulativeOn'>cumulative length</span>
         </p>
 
+        <p>
+            Minimum sequence length: <input type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
+        drawActiveChart();">
+            <br/>
+            Minimum sequence coverage: <input type="text" id="minimumSequenceCoverage"/> <input type="submit" value="filter" onclick="window.minSeqCoverage = ($('#minimumSequenceCoverage').val());
+        drawActiveChart();">
+        </p>
+
         %{--TODO possibly replace this with spin.js so that the spinner doesn't freeze while we are drawing the chart--}%
         <h2 id="spinner">Drawing chart, please wait...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
         </h2>
@@ -766,9 +784,9 @@
 
             trendlines : <span id='turnscattertrendOff' style="font-weight: bold;">off</span> | <span id='turnscattertrendOn' style="cursor: pointer;">on</span>
 
-            &nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;
 
-            Y axis : <span id='turnscatterylogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterylogOff'>linear</span>
+                Y axis : <span id='turnscatterylogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterylogOff'>linear</span>
                 &nbsp;&nbsp;&nbsp;
                 X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
             </p>

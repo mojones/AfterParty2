@@ -23,7 +23,6 @@ class ContigSetController {
     * squash all individual contig info in scatterplot tooltip
     * add n50 contig length to datapoint label
     * histograms on the side of the scatterplot
-    * trend line
     * cumulative curves without N's
     * low coverage filter
     *
@@ -143,8 +142,8 @@ class ContigSetController {
             // build a histogram of quality and a scaled histogram of length
             statsResult.qualityvalues = []
             statsResult.scaledqualityvalues = []
-            Integer logMaxQuality = Math.log10(overallMaxQuality)
-            Integer stepSizeQuality = [10 ** (logMaxQuality - 2), 1].max()
+
+            Integer stepSizeQuality = 1
             println "quality stepSize is $stepSizeQuality"
             Integer numberOfStepsQuality = (overallMaxQuality / stepSizeQuality) + 1
 
