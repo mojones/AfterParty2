@@ -17,6 +17,18 @@ class ContigSetController {
 
     def standaloneComparison = {}
 
+    /*
+    * TODO
+    *
+    * squash all individual contig info in scatterplot tooltip
+    * add n50 contig length to datapoint label
+    * histograms on the side of the scatterplot
+    * trend line
+    * cumulative curves without N's
+    * low coverage filter
+    *
+    * */
+
     def uploadContigsStandalone = {
 
         def contigSetRawResult = []
