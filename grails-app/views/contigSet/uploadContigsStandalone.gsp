@@ -44,13 +44,13 @@
         return result;
     }
 
-    function zip4WithFilter(arrayA, arrayB, arrayC, arrayD, filterFunction) {
-        var length = Math.min(arrayA.length, arrayB.length, arrayC.length, arrayD.length);
+    function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
+        var length = Math.min(arrayA.length, arrayB.length);
         var result = [];
         for (var n = 0; n < length; n++) {
 
             if (filterFunction(n)) {
-                result.push([arrayA[n], arrayB[n], arrayC[n], arrayD[n]]);
+                result.push([arrayA[n], arrayB[n], idArray[n], lengthArray[n], qualityArray[n], coverageArray[n], gcArray[n], topBlastArray[n]]);
             }
         }
         return result;
@@ -137,7 +137,7 @@
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         var allValues = window.seriesList.map(function(a) {
-            return zip4WithFilter(a[window.scatterXField], a[window.scatterYField], a.id, a.topBlast, function(n) {
+            return zipAllWithFilter(a[window.scatterXField], a[window.scatterYField], a.id, a.length, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
                 return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
             });
         });
@@ -202,8 +202,8 @@
                         tooltipLocation:'ne',
                         sizeAdjust: 7.5,
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
-                        yvalues: 3,
-                        formatString : window.scatterXField + ': %.2f<br/>' + window.scatterYField + ': %.2f<br/>id: %d<br/>blast: %s',
+                        yvalues: 8,
+                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
                         useAxesFormatters: false,
                         bringSeriesToFront: true
 
