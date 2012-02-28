@@ -337,22 +337,59 @@
         $('#cumulativeDiv').empty();
         $('#spinner').show();
 
+        var n50values = [];
+        var n90values = [];
+
         var allValues = contigSetRawData.contigSetList.map(function(dataset) {
-            var lengths = dataset.length.sort(function(a, b) {
-                return b - a
-            });
+            var lengths = dataset.length.filter(
+                    function(element) {
+                        return (element >= window.minSeqLength);
+                    }).sort(function(a, b) {
+                        return b - a
+                    });
+
+            var lengthsSum = 0;
+            for (var i = 0; i < lengths.length; i++) {
+                lengthsSum += lengths[i];
+            }
+
+            var n50Target = lengthsSum / 2
+            var n90Target = (lengthsSum / 100) * 90
+
+            console.log('n50 is ' + n50Target)
+            console.log('n90 is ' + n90Target)
+
+            var seenn50 = false;
+            var seenn90 = false;
+
             var returnValue = [];
             var cumulativeTotal = 0;
             for (var i = 0; i < lengths.length; i++) {
                 var l = lengths[i];
-                if (l >= window.minSeqLength) {
-                    cumulativeTotal += l;
-                    returnValue.push([i, cumulativeTotal, l]);
+                cumulativeTotal += l;
+                returnValue.push([i, cumulativeTotal, l]);
+                if (cumulativeTotal >= n50Target && !seenn50){
+                    n50values.push({
+                        contigNumber : i,
+                        contigLength : l,
+                        totalLength : cumulativeTotal
+                    });
+                    seenn50 = true;
+                }
+
+                if (cumulativeTotal >= n90Target && !seenn90){
+                    n90values.push({
+                        contigNumber : i,
+                        contigLength : l,
+                        totalLength : cumulativeTotal
+                    });
+                    seenn90 = true;
                 }
             }
             return returnValue;
         });
 
+        console.log(n50values);
 
         var renderer;
         var fieldName;
@@ -382,7 +419,7 @@
         for (var i = 0; i < window.seriesList.length; i++) {
 
             allValues.push([
-                [contigSetRawData.contigSetList[i].n50Contig, contigSetRawData.contigSetList[i].n50Total, 'n50']
+                [n50values[i].contigNumber, n50values[i].totalLength, 'n50 length : ' + n50values[i].contigLength]
             ]);
 
             mySeriesOptions.push(
@@ -404,8 +441,7 @@
         for (var i = 0; i < window.seriesList.length; i++) {
 
             allValues.push([
-                [contigSetRawData.contigSetList[i].n90Contig, contigSetRawData.contigSetList[i].n90Total, 'n90']
-//                [contigSetRawData.contigSetList[i].smallContig, contigSetRawData.contigSetList[i].smallTotal, 'small contigs']
+                [n90values[i].contigNumber, n90values[i].totalLength, 'n90 length : ' + n90values[i].contigLength]
             ]);
 
             mySeriesOptions.push(
@@ -423,30 +459,6 @@
             );
         }
 
-        // go through the list of contig sets again and add a new series to hold small contig values
-        for (var i = 0; i < window.seriesList.length; i++) {
-
-            allValues.push([
-                [contigSetRawData.contigSetList[i].smallContig, contigSetRawData.contigSetList[i].smallTotal, 'contigs < 2000bp']
-            ]);
-
-            mySeriesOptions.push(
-                    {
-                        showMarker: window.series[i],
-                        showLabel : false,
-                        showLine : false,
-                        pointLabels: {
-                            show:window.series[i],
-                            ypadding : 5,
-                            xpadding : 5,
-                            location : 'se'
-                        }
-                    }
-            );
-        }
-
-
-//        console.log("options : " + mySeriesOptions);
 
         cumulativePlot = $.jqplot('cumulativeDiv',
                 allValues,
