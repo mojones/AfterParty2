@@ -949,7 +949,7 @@
 
             <table >
                 <tr>
-                    <td style="border: none;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/></td>
+                    <td style="border: none; margin-left: 10px;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/></td>
                     <td style="border: none;"></td>
                 </tr>
                 <tr>
