@@ -11,6 +11,7 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.cursor.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.pointLabels.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.trendline.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
 
 <style type="text/css">
@@ -147,7 +148,15 @@
                         markerOptions: {
                             show : window.series[i]
                         },
-                        label : window.seriesList[i].label
+                        label : window.seriesList[i].label,
+                        trendline: {
+                            show: window.scattertrendOn,         // show the trend line
+                            color: colourList[i],   // CSS color spec for the trend line.
+                            label: '',          // label for the trend line.
+                            type: 'linear',     // 'linear', 'exponential' or 'exp'
+                            shadow: false,       // show the trend line shadow.
+                            lineWidth: 1.5     // width of the trend line.
+                        }
                     }
             );
         }
@@ -507,6 +516,7 @@
         window.scatterhighlighterOn = true;
         window.scaterylogOn = false;
         window.scaterxlogOn = false;
+        window.scattertrendOn = false;
 
 
         window.chartType = 'length';
@@ -538,6 +548,7 @@
         setUpToggle('scaled');
 
         setUpToggle('scatterhighlighter');
+        setUpToggle('scattertrend');
         setUpToggle('scatterylog');
         setUpToggle('scatterxlog');
 
@@ -753,6 +764,7 @@
                 <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
             &nbsp;&nbsp;&nbsp;
 
+            trendlines : <span id='turnscattertrendOff' style="font-weight: bold;">off</span> | <span id='turnscattertrendOn' style="cursor: pointer;">on</span>
 
             &nbsp;&nbsp;&nbsp;
 
