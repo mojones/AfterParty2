@@ -12,6 +12,8 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.logAxisRenderer.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.pointLabels.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.trendline.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.canvasAxisLabelRenderer.js')}"></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.canvasTextRenderer.js')}"></script>
 <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>
 
 <style type="text/css">
@@ -128,6 +130,8 @@
 
     drawScatterChart = function() {
         $('#scatterplotDiv').empty();
+        $('#topHistogramDiv').empty();
+        $('#sideHistogramDiv').empty();
         $('#spinner').show();
 
         var allLengthValues;
@@ -139,7 +143,7 @@
         var realXField = window.scatterXField;
         var realYField = window.scatterYField;
 
-        if (window.scatterXField == 'length' && window.cumulativefilternOn){
+        if (window.scatterXField == 'length' && window.cumulativefilternOn) {
             realXField = 'lengthWithoutN'
         }
 
@@ -148,10 +152,10 @@
         }
 
         var allValues = window.seriesList.map(function(a) {
-                return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
-                    return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
-                });
+            return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
+                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
             });
+        });
 
 
         var colourList = window.seriesList.map(function(a) {
@@ -184,7 +188,6 @@
                 allValues,
                 {
                     seriesColors : colourList,
-                    title : ' my scatter plot',
                     seriesDefaults:{
                         showMarker: true,
                         showLine: false,
@@ -199,12 +202,15 @@
                         xaxis:{
                             label: window.scatterXField,
                             pad: 0,
-                            renderer: xAxisRenderer
+                            renderer: xAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+
                         },
                         yaxis:{
                             label:window.scatterYField,
                             pad : 0,
-                            renderer : yAxisRenderer
+                            renderer : yAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 
                         }
                     },
@@ -239,6 +245,101 @@
         $('#scatterplotDiv').bind('jqplotDataClick', function (ev, seriesIndex, pointIndex, data) {
             window.location = '../contig/show/' + data[2];
         });
+
+        //now draw histogram above scatter plot
+
+        var topHistogramXaxisRenderer;
+
+        var topHistogramData = contigSetData.contigSetList.map(function(a) {
+            return a[window.scatterXField + 'values'];
+        });
+        topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+
+        topHistogramPlot = $.jqplot('topHistogramDiv',
+                topHistogramData,
+                {
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    axes:{
+                        xaxis:{
+                            pad: 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            min : scatterPlot.axes.xaxis.min,
+                            max : scatterPlot.axes.xaxis.max,
+                            renderer : topHistogramXaxisRenderer,
+                            numberTicks : scatterPlot.axes.xaxis.numberTicks
+
+                        },
+                        yaxis:{
+                            label: 'frequency',
+                            pad : 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        )
+
+
+        //now draw histogram beside scatter plot
+
+        var sideHistogramYaxisRenderer;
+
+        var sideHistogramData = contigSetData.contigSetList.map(function(a) {
+            return a[window.scatterYField + 'values'].map(function(b) {
+                var pair = [b[1], b[0]];
+                return pair;
+            });
+        });
+        sideHistogramYaxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+
+        sideHistogramPlot = $.jqplot('sideHistogramDiv',
+                sideHistogramData,
+                {   sortData : false,
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    axes:{
+                        xaxis:{
+                            pad: 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            label: 'frequency'
+                        },
+                        yaxis:{
+                            pad : 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            min : scatterPlot.axes.yaxis.min,
+                            max : scatterPlot.axes.yaxis.max,
+                            renderer : sideHistogramYaxisRenderer,
+                            numberTicks : scatterPlot.axes.yaxis.numberTicks
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        )
+
+
         $('#spinner').hide();
         $('.scatterplotOptions').show();
 
@@ -672,6 +773,7 @@
         $('#scatterplotContainer').hide();
         $('#cumulativeContainer').hide();
 
+        maximums = ${maximums};
 
         contigSetData = {contigSetList : ${contigSetDataJSON}};
         window.activeChart = 'histogram';
@@ -845,16 +947,25 @@
 
             </p>
 
+            <table >
+                <tr>
+                    <td style="border: none;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/></td>
+                    <td style="border: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border: none;"><div id="scatterplotDiv" style="height: 800px; width: 800px;"/></td>
+                    <td style="border: none;"><div id="sideHistogramDiv" style="height: 800px; width: 200px;"/></td>
+                </tr>
+            </table>
 
-            <div id="scatterplotDiv" style="height: 800px; width: 1000px;">
-            </h2>
-            </div>
+        </h2>
         </div>
+    </div>
 
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
+</div>        <!-- .block_content ends -->
+<div class="bendl"></div>
 
-    <div class="bendr"></div>
+<div class="bendr"></div>
 </div>
 
 </body>

@@ -21,7 +21,6 @@ class ContigSetController {
     * TODO
     *
     * histograms on the side of the scatterplot
-    * cumulative curves without N's
     *
     * */
 
@@ -91,6 +90,11 @@ class ContigSetController {
         Integer overallMaxQuality = contigSetRawResult.collect({it.quality.max()}).max()
         Integer overallMaxCoverage = contigSetRawResult.collect({it.coverage.max()}).max()
 
+        Integer overallMaxGc = contigSetRawResult.collect({it.gc.max()}).max() * 100
+        Integer overallMinGc = contigSetRawResult.collect({it.gc.min()}).min() * 100
+
+        def maximums = [length: overallMaxLength, quality : overallMaxQuality, coverage : overallMaxCoverage]
+
         contigSetRawResult.each { assembly ->
 
             def statsResult = [:]
@@ -110,6 +114,7 @@ class ContigSetController {
                 def count = assembly.length.findAll({it >= floor && it < ceiling}).size()
                 statsResult.lengthvalues.add([floor, count])
                 statsResult.scaledlengthvalues.add([floor, (1000 * (count / assembly.length.size())).toInteger()])
+                maximums.length = floor + stepSizeLength
 //                println "counted length for $floor (max is $overallMaxLength)"
             }
 
@@ -148,16 +153,28 @@ class ContigSetController {
 
             }
 
+            // build a histogram of gc and a scaled histogram of gc
+            statsResult.gcvalues = []
+            statsResult.scaledgcvalues = []
+
+            ((overallMinGc - 1)..(overallMaxGc + 1)).each {
+                def floor = it / 100
+                def ceiling = (it + 1) / 100
+                def count = assembly.gc.findAll({it >= floor && it < ceiling}).size()
+                statsResult.gcvalues.add([floor, count])
+                statsResult.scaledgcvalues.add([floor, (1000 * (count / assembly.gc.size())).toInteger()])
+                println "counted ${count} gc between $floor and $ceiling"
+
+            }
+
             contigSetStatsResult.push(statsResult)
         }
-
-        def somedata = contigSetRawResult.encodeAsJSON()
-        true;
 
         [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
-                contigSetDataJSON: contigSetStatsResult.encodeAsJSON()
+                contigSetDataJSON: contigSetStatsResult.encodeAsJSON(),
+                maximums : maximums.encodeAsJSON()
         ]
     }
 
