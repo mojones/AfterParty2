@@ -345,8 +345,10 @@
             var cumulativeTotal = 0;
             for (var i = 0; i < lengths.length; i++) {
                 var l = lengths[i];
-                cumulativeTotal += l;
-                returnValue.push([i, cumulativeTotal, l]);
+                if (l >= window.minSeqLength) {
+                    cumulativeTotal += l;
+                    returnValue.push([i, cumulativeTotal, l]);
+                }
             }
             return returnValue;
         });

@@ -20,11 +20,9 @@ class ContigSetController {
     /*
     * TODO
     *
-    * squash all individual contig info in scatterplot tooltip
     * add n50 contig length to datapoint label
     * histograms on the side of the scatterplot
     * cumulative curves without N's
-    * low coverage filter
     *
     * */
 
