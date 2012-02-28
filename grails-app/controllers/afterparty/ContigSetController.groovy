@@ -20,7 +20,6 @@ class ContigSetController {
     /*
     * TODO
     *
-    * add n50 contig length to datapoint label
     * histograms on the side of the scatterplot
     * cumulative curves without N's
     *
@@ -55,6 +54,7 @@ class ContigSetController {
             def cs = [
                     id: [],
                     length: [],
+                    lengthWithoutN: [],
                     quality: [],
                     coverage: [],
                     topBlast: [],
@@ -67,47 +67,23 @@ class ContigSetController {
                 def sequence = contig.value
                 cs.id.push(id)
                 cs.length.push(sequence.length().toFloat())
+                cs.lengthWithoutN.push(sequence.toUpperCase().replaceAll(/N/, '').length().toFloat())
                 cs.quality.push(quality.toFloat())
                 cs.coverage.push(coverage.toFloat())
                 cs.topBlast.push(id)
                 cs.gc.push(sequence.toLowerCase().findAll({it == 'g' || it == 'c'}).size() / sequence.toLowerCase().findAll({it != 'n'}).size())
             }
 
+            cs.length.eachWithIndex {element, index ->
+                if (element != cs.lengthWithoutN[index]){
+                    println "with n : $element - without n : ${cs.lengthWithoutN[index]}"
+                }
+            }
+
             cs.colour = StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
 
             cs.label = f.originalFilename
             cs.size = contigs.size()
-
-            int cumulativeLength = 0
-            int n50Target = cs.length.sum() / 2
-            int n90Target = (cs.length.sum() / 100) * 90
-            int numberContigsSeen = 0
-
-            for (contigLength in cs.length.sort().reverse()) {
-
-                cumulativeLength += contigLength
-
-                if (cumulativeLength >= n50Target && !cs.n50Contig) {
-                    cs.n50Contig = numberContigsSeen
-                    cs.n50Total = cumulativeLength
-                    cs.n50length = contigLength
-                }
-
-                if (cumulativeLength >= n90Target && !cs.n90Contig) {
-                    cs.n90Length = contigLength
-                    cs.n90Contig = numberContigsSeen
-                    cs.n90Total = cumulativeLength
-                }
-
-                if (contigLength <= 2000 && !cs.smallContig) {
-                    cs.smallContig = numberContigsSeen
-                    cs.smallTotal = cumulativeLength
-                }
-                numberContigsSeen++
-            }
-            println "calculated n50"
-
-
             contigSetRawResult.add(cs)
         }
 
@@ -134,7 +110,7 @@ class ContigSetController {
                 def count = assembly.length.findAll({it >= floor && it < ceiling}).size()
                 statsResult.lengthvalues.add([floor, count])
                 statsResult.scaledlengthvalues.add([floor, (1000 * (count / assembly.length.size())).toInteger()])
-                println "counted length for $floor (max is $overallMaxLength)"
+//                println "counted length for $floor (max is $overallMaxLength)"
             }
 
             // build a histogram of quality and a scaled histogram of length
@@ -151,7 +127,7 @@ class ContigSetController {
                 def count = assembly.quality.findAll({it >= floor && it < ceiling}).size()
                 statsResult.qualityvalues.add([floor, count])
                 statsResult.scaledqualityvalues.add([floor, (1000 * (count / assembly.quality.size())).toInteger()])
-                println "counted quality for $floor (max is $overallMaxQuality)"
+//                println "counted quality for $floor (max is $overallMaxQuality)"
 
             }
 
@@ -168,15 +144,15 @@ class ContigSetController {
                 def count = assembly.coverage.findAll({it >= floor && it < ceiling}).size()
                 statsResult.coveragevalues.add([floor, count])
                 statsResult.scaledcoveragevalues.add([floor, (1000 * (count / assembly.coverage.size())).toInteger()])
-                println "counted coverage for $floor (max is $overallMaxCoverage)"
+//                println "counted coverage for $floor (max is $overallMaxCoverage)"
 
             }
 
             contigSetStatsResult.push(statsResult)
         }
 
-
-
+        def somedata = contigSetRawResult.encodeAsJSON()
+        true;
 
         [
                 contigSets: contigSetRawResult,

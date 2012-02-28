@@ -44,13 +44,13 @@
         return result;
     }
 
-    function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
+    function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, lengthWithoutNArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
         var length = Math.min(arrayA.length, arrayB.length);
         var result = [];
         for (var n = 0; n < length; n++) {
 
             if (filterFunction(n)) {
-                result.push([arrayA[n], arrayB[n], idArray[n], lengthArray[n], qualityArray[n], coverageArray[n], gcArray[n], topBlastArray[n]]);
+                result.push([arrayA[n], arrayB[n], idArray[n], lengthArray[n],lengthWithoutNArray[n], qualityArray[n], coverageArray[n], gcArray[n], topBlastArray[n]]);
             }
         }
         return result;
@@ -136,11 +136,22 @@
         var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
+        var realXField = window.scatterXField;
+        var realYField = window.scatterYField;
+
+        if (window.scatterXField == 'length' && window.cumulativefilternOn){
+            realXField = 'lengthWithoutN'
+        }
+
+        if (window.scatterYField == 'length' && window.cumulativefilternOn) {
+            realYField = 'lengthWithoutN'
+        }
+
         var allValues = window.seriesList.map(function(a) {
-            return zipAllWithFilter(a[window.scatterXField], a[window.scatterYField], a.id, a.length, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
-                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
+                return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
+                    return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
+                });
             });
-        });
 
 
         var colourList = window.seriesList.map(function(a) {
@@ -202,8 +213,8 @@
                         tooltipLocation:'ne',
                         sizeAdjust: 7.5,
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
-                        yvalues: 8,
-                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
+                        yvalues: 9,
+                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
                         useAxesFormatters: false,
                         bringSeriesToFront: true
 
@@ -341,7 +352,10 @@
         var n90values = [];
 
         var allValues = contigSetRawData.contigSetList.map(function(dataset) {
-            var lengths = dataset.length.filter(
+
+            var lengthField = window.cumulativefilternOn ? 'lengthWithoutN' : 'length';
+            console.log('field will be : ' + lengthField);
+            var lengths = dataset[lengthField].filter(
                     function(element) {
                         return (element >= window.minSeqLength);
                     }).sort(function(a, b) {
@@ -368,7 +382,7 @@
                 var l = lengths[i];
                 cumulativeTotal += l;
                 returnValue.push([i, cumulativeTotal, l]);
-                if (cumulativeTotal >= n50Target && !seenn50){
+                if (cumulativeTotal >= n50Target && !seenn50) {
                     n50values.push({
                         contigNumber : i,
                         contigLength : l,
@@ -377,7 +391,7 @@
                     seenn50 = true;
                 }
 
-                if (cumulativeTotal >= n90Target && !seenn90){
+                if (cumulativeTotal >= n90Target && !seenn90) {
                     n90values.push({
                         contigNumber : i,
                         contigLength : l,
@@ -576,6 +590,9 @@
         setUpToggle('scatterylog');
         setUpToggle('scatterxlog');
 
+
+        setUpToggle('cumulativefiltern');
+
         $('#resetZoom').click(function() {
             scatterPlot.resetZoom();
         });
@@ -747,6 +764,10 @@
         drawActiveChart();">
         </p>
 
+        <p>Exclude Ns from length : <span id='turncumulativefilternOff' style="font-weight: bold;">no</span> |
+            <span style="cursor: pointer; " id='turncumulativefilternOn'>yes</span>
+        </p>
+
         %{--TODO possibly replace this with spin.js so that the spinner doesn't freeze while we are drawing the chart--}%
         <h2 id="spinner">Drawing chart, please wait...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
         </h2>
@@ -782,6 +803,7 @@
                 <span style="cursor: pointer;" id="resetCumulativeZoom">click to reset</span>)
 
             </p>
+
 
             <div id="cumulativeDiv" style="height: 800px; width: 1000px;">
 
