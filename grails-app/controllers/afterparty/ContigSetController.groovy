@@ -1,6 +1,7 @@
 package afterparty
 
 import javax.xml.parsers.SAXParserFactory
+import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.xml.sax.InputSource
 
 class ContigSetController {
@@ -170,13 +171,21 @@ class ContigSetController {
 
         }
 
-
-
-        [
+        def templateString = g.render(template: 'uploadContigsStandalone', model: [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
                 contigSetDataJSON: contigSetStatsResult.encodeAsJSON()
-        ]
+        ])
+
+
+
+        File tempFileDirectory = ApplicationHolder.application.parentContext.getResource("standalonePages").file
+//        File tempFileDirectory = new File((String) g.resource(dir: 'standalonePages', absolute: 'true'))
+        println "temp directory is $tempFileDirectory.absolutePath"
+        File output = File.createTempFile('standalone', '.html', tempFileDirectory)
+        println "output file is $output.absolutePath"
+        output.append(templateString)
+        redirect(uri: "/standalonePages/$output.name")
     }
 
     //todo - use multiple contig sets in a blast search (actually multiple blast searches) - use backgroundjob to track progress
