@@ -1,0 +1,974 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="layout" content="main.gsp"/>
+
+<title>Viewing a set of contigs</title>
+
+<script type="text/javascript" src="/js/jquery.jqplot.js"></script>
+<script type="text/javascript" src="/js/jqplot.highlighter.js"></script>
+<script type="text/javascript" src="/js/jqplot.cursor.js"></script>
+<script type="text/javascript" src="/js/jqplot.logAxisRenderer.js"></script>
+<script type="text/javascript" src="/js/jqplot.pointLabels.js"></script>
+<script type="text/javascript" src="/js/jqplot.trendline.js"></script>
+<script type="text/javascript" src="/js/jqplot.canvasAxisLabelRenderer.js"></script>
+<script type="text/javascript" src="/js/jqplot.canvasTextRenderer.js"></script>
+<link rel="stylesheet" href="/js/jquery.jqplot.css"/>
+
+<style type="text/css">
+.jqplot-point-label {
+    padding: 1px 3px;
+    background-color: #eeeeee;
+    font-size: 12px;
+}
+</style>
+
+
+
+<script type="text/javascript">
+
+    function zip2(arrayA, arrayB) {
+        var length = Math.min(arrayA.length, arrayB.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+            result.push([arrayA[n], arrayB[n]]);
+        }
+        return result;
+    }
+
+    function zip3(arrayA, arrayB, arrayC) {
+        var length = Math.min(arrayA.length, arrayB.length, arrayC.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+            result.push([arrayA[n], arrayB[n], arrayC[n]]);
+        }
+        return result;
+    }
+
+    function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, lengthWithoutNArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
+        var length = Math.min(arrayA.length, arrayB.length);
+        var result = [];
+        for (var n = 0; n < length; n++) {
+
+            if (filterFunction(n)) {
+                result.push([arrayA[n], arrayB[n], idArray[n], lengthArray[n],lengthWithoutNArray[n], qualityArray[n], coverageArray[n], gcArray[n], topBlastArray[n]]);
+            }
+        }
+        return result;
+    }
+
+    // show and hide data series when asked to
+    function toggleSeries(index) {
+        $('#spinner').show();
+        window.series[index] = !window.series[index];
+        drawActiveChart();
+    }
+
+    function setScatterX(fieldName) {
+        window.scatterXField = fieldName;
+        $('.scatterx').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#scatterx' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+        $('.scatterplotOptions').hide();
+        drawActiveChart();
+    }
+
+    function setScatterY(fieldName) {
+        window.scatterYField = fieldName;
+        $('.scattery').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#scattery' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+        $('.scatterplotOptions').hide();
+        drawActiveChart();
+    }
+
+    //rearrange the data series so that the one with the specified id is last i.e. on the top layer of the scatter plot
+    function moveToTop(id) {
+        $('#spinner').show();
+        var sortedDatasetList = contigSetRawData.contigSetList.sort(function(a, b) {
+            return b.id.length - a.id.length
+        });
+        // empty the dataset list
+        window.seriesList = [];
+        var currentDataset;
+        // first add all the other datasets
+        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
+            currentDataset = contigSetRawData.contigSetList[i];
+            if (currentDataset.contigSetId != id) {
+                window.seriesList.push(currentDataset);
+            }
+        }
+
+        // now add the one we want
+        for (var j = 0; j < contigSetRawData.contigSetList.length; j++) {
+            currentDataset = contigSetRawData.contigSetList[j];
+            if (currentDataset.contigSetId == id) {
+                window.seriesList.push(currentDataset);
+            }
+        }
+        drawActiveChart();
+
+    }
+
+    drawActiveChart = function() {
+        $('#spinner').show();
+        if (window.activeChart == 'histogram') {
+            $('#histogramDiv').empty();
+            setTimeout('drawChart();', 10);
+        }
+
+        if (window.activeChart == 'scatterplot') {
+            $('#scatterplotDiv').empty();
+            setTimeout('drawScatterChart();', 10);
+        }
+
+        if (window.activeChart == 'cumulative') {
+            $('#cumulativeDiv').empty();
+            setTimeout('drawCumulativeChart();', 10);
+        }
+
+    }
+
+    drawScatterChart = function() {
+        $('#scatterplotDiv').empty();
+        $('#topHistogramDiv').empty();
+        $('#sideHistogramDiv').empty();
+        $('#spinner').show();
+
+        var allLengthValues;
+        var fieldName;
+
+        var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+        var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+        var realXField = window.scatterXField;
+        var realYField = window.scatterYField;
+
+        if (window.scatterXField == 'length' && window.cumulativefilternOn) {
+            realXField = 'lengthWithoutN'
+        }
+
+        if (window.scatterYField == 'length' && window.cumulativefilternOn) {
+            realYField = 'lengthWithoutN'
+        }
+
+        var allValues = window.seriesList.map(function(a) {
+            return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
+                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
+            });
+        });
+
+
+        var colourList = window.seriesList.map(function(a) {
+            return a.colour;
+        });
+//        console.log(allValues);
+
+        var mySeriesOptions = [];
+        for (var i = 0; i < window.seriesList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        markerOptions: {
+                            show : window.series[i]
+                        },
+                        label : window.seriesList[i].label,
+                        trendline: {
+                            show: window.scattertrendOn,         // show the trend line
+                            color: colourList[i],   // CSS color spec for the trend line.
+                            label: '',          // label for the trend line.
+                            type: 'linear',     // 'linear', 'exponential' or 'exp'
+                            shadow: false,       // show the trend line shadow.
+                            lineWidth: 1.5     // width of the trend line.
+                        }
+                    }
+            );
+        }
+//        console.log(mySeriesOptions);
+
+        scatterPlot = $.jqplot('scatterplotDiv',
+                allValues,
+                {
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: true,
+                        showLine: false,
+                        markerOptions : {
+                            shadow: false,
+                            lineWidth : 0,
+                            size : 5
+                        }
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label: window.scatterXField,
+                            pad: 0,
+                            renderer: xAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+
+                        },
+                        yaxis:{
+                            label:window.scatterYField,
+                            pad : 0,
+                            renderer : yAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.scatterhighlighterOn,
+                        tooltipLocation:'ne',
+                        sizeAdjust: 7.5,
+                        markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
+                        yvalues: 9,
+                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
+                        useAxesFormatters: false,
+                        bringSeriesToFront: true
+
+                    },
+                    cursor: {
+                        show: !scatterhighlighterOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom:true
+                    },
+                    legend:{
+                        show: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        );
+
+        $('#scatterplotDiv').bind('jqplotDataClick', function (ev, seriesIndex, pointIndex, data) {
+            window.location = '../contig/show/' + data[2];
+        });
+
+        //now draw histogram above scatter plot
+
+        var topHistogramXaxisRenderer;
+
+        var topHistogramData = contigSetData.contigSetList.map(function(a) {
+            return a[window.scatterXField + 'values'];
+        });
+        topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+
+        topHistogramPlot = $.jqplot('topHistogramDiv',
+                topHistogramData,
+                {
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    axes:{
+                        xaxis:{
+                            pad: 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            min : scatterPlot.axes.xaxis.min,
+                            max : scatterPlot.axes.xaxis.max,
+                            renderer : topHistogramXaxisRenderer,
+                            numberTicks : scatterPlot.axes.xaxis.numberTicks
+
+                        },
+                        yaxis:{
+                            label: 'frequency',
+                            pad : 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        )
+
+
+        //now draw histogram beside scatter plot
+
+        var sideHistogramYaxisRenderer;
+
+        var sideHistogramData = contigSetData.contigSetList.map(function(a) {
+            return a[window.scatterYField + 'values'].map(function(b) {
+                var pair = [b[1], b[0]];
+                return pair;
+            });
+        });
+        sideHistogramYaxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+
+        sideHistogramPlot = $.jqplot('sideHistogramDiv',
+                sideHistogramData,
+                {   sortData : false,
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    axes:{
+                        xaxis:{
+                            pad: 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            label: 'frequency'
+                        },
+                        yaxis:{
+                            pad : 0,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            min : scatterPlot.axes.yaxis.min,
+                            max : scatterPlot.axes.yaxis.max,
+                            renderer : sideHistogramYaxisRenderer,
+                            numberTicks : scatterPlot.axes.yaxis.numberTicks
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        )
+
+
+        $('#spinner').hide();
+        $('.scatterplotOptions').show();
+
+
+    }
+
+
+    drawChart = function() {
+        $('#histogramDiv').empty();
+        $('#spinner').show();
+
+        var allLengthValues;
+        var renderer;
+        var fieldName;
+
+        if (scaledOn) {
+            fieldName = 'scaled' + window.chartType + 'values';
+        } else {
+            fieldName = window.chartType + 'values';
+        }
+        if (logOn) {
+            // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
+            allLengthValues = contigSetData.contigSetList.map(function(a) {
+                return a[fieldName].map(function(b) {
+                    return [
+                        b[0], b[1] + 0.1
+                    ];
+                });
+            });
+            renderer = $.jqplot.LogAxisRenderer;
+        } else {
+//            console.log(fieldName);
+
+            allLengthValues = contigSetData.contigSetList.map(function(a) {
+                return a[fieldName];
+            });
+            renderer = $.jqplot.LinearAxisRenderer;
+        }
+
+        var colourList = contigSetData.contigSetList.map(function(a) {
+            return a.colour;
+        });
+//        console.log(colourList);
+
+        var mySeriesOptions = [];
+        for (var i = 0; i < contigSetData.contigSetList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        lineOptions: {
+                            show : window.series[i]
+                        },
+                        label : contigSetData.contigSetList[i].id
+                    }
+            );
+        }
+//        console.log(mySeriesOptions);
+
+//        console.log('values : ' + allLengthValues);
+        histogramPlot = $.jqplot('histogramDiv',
+                allLengthValues,
+                {
+                    seriesColors : colourList,
+                    title: window.chartType + ' histogram',
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label:window.chartType,
+                            pad: 0
+                        },
+                        yaxis:{
+                            label:'Frequency',
+                            pad : 0,
+                            renderer: renderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true
+                    },
+                    cursor: {
+                        show: !window.highlighterOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom: true,
+                        constrainZoomTo : 'x'
+                    } ,
+                    legend:{
+                        show: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        );
+        $('#spinner').hide();
+
+    }
+    drawCumulativeChart = function() {
+        $('#cumulativeDiv').empty();
+        $('#spinner').show();
+
+        var n50values = [];
+        var n90values = [];
+
+        var allValues = contigSetRawData.contigSetList.map(function(dataset) {
+
+            var lengthField = window.cumulativefilternOn ? 'lengthWithoutN' : 'length';
+            console.log('field will be : ' + lengthField);
+            var lengths = dataset[lengthField].filter(
+                    function(element) {
+                        return (element >= window.minSeqLength);
+                    }).sort(function(a, b) {
+                        return b - a
+                    });
+
+            var lengthsSum = 0;
+            for (var i = 0; i < lengths.length; i++) {
+                lengthsSum += lengths[i];
+            }
+
+            var n50Target = lengthsSum / 2
+            var n90Target = (lengthsSum / 100) * 90
+
+            console.log('n50 is ' + n50Target)
+            console.log('n90 is ' + n90Target)
+
+            var seenn50 = false;
+            var seenn90 = false;
+
+            var returnValue = [];
+            var cumulativeTotal = 0;
+            for (var i = 0; i < lengths.length; i++) {
+                var l = lengths[i];
+                cumulativeTotal += l;
+                returnValue.push([i, cumulativeTotal, l]);
+                if (cumulativeTotal >= n50Target && !seenn50) {
+                    n50values.push({
+                        contigNumber : i,
+                        contigLength : l,
+                        totalLength : cumulativeTotal
+                    });
+                    seenn50 = true;
+                }
+
+                if (cumulativeTotal >= n90Target && !seenn90) {
+                    n90values.push({
+                        contigNumber : i,
+                        contigLength : l,
+                        totalLength : cumulativeTotal
+                    });
+                    seenn90 = true;
+                }
+            }
+            return returnValue;
+        });
+
+        console.log(n50values);
+
+        var renderer;
+        var fieldName;
+
+        var colourList = contigSetData.contigSetList.map(function(a) {
+            return a.colour;
+        });
+
+        var mySeriesOptions = [];
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+
+            mySeriesOptions.push(
+                    {
+
+                        showLine : window.series[i],
+                        showLabel : window.series[i],
+                        label : window.seriesList[i].label
+
+                    }
+            );
+
+
+        }
+
+        // go through the list of contig sets again and add a new series to hold n50values
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+            allValues.push([
+                [n50values[i].contigNumber, n50values[i].totalLength, 'n50 length : ' + n50values[i].contigLength]
+            ]);
+
+            mySeriesOptions.push(
+                    {
+                        showMarker: window.series[i],
+                        showLabel : false,
+                        showLine : false,
+                        pointLabels: {
+                            show:window.series[i],
+                            ypadding : 5,
+                            xpadding : 5,
+                            location : 'nw'
+                        }
+                    }
+            );
+        }
+
+        // go through the list of contig sets again and add a new series to hold n90values
+        for (var i = 0; i < window.seriesList.length; i++) {
+
+            allValues.push([
+                [n90values[i].contigNumber, n90values[i].totalLength, 'n90 length : ' + n90values[i].contigLength]
+            ]);
+
+            mySeriesOptions.push(
+                    {
+                        showMarker: window.series[i],
+                        showLabel : false,
+                        showLine : false,
+                        pointLabels: {
+                            show:window.series[i],
+                            ypadding : 5,
+                            xpadding : 5,
+                            location : 'ne'
+                        }
+                    }
+            );
+        }
+
+
+        cumulativePlot = $.jqplot('cumulativeDiv',
+                allValues,
+                {
+                    seriesColors : colourList,
+                    title: 'cumulative contig lengths',
+                    seriesDefaults:{
+                        showMarker: false,
+                        lineWidth: 1
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label: 'Contigs ranked by length',
+                            pad: 0
+                        },
+                        yaxis:{
+                            label:'Cumulative contig length',
+                            pad : 0,
+                            renderer: renderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.highlighterOn,
+                        sizeAdjust: 7.5,
+                        bringSeriesToFront: true,
+                        yvalues: 2,
+                        formatString : 'rank : %d<br/>cumulative length : %d<br/>contig length: %d<br/>',
+                        useAxesFormatters: false
+                    },
+                    cursor: {
+                        show: !window.highlighterOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom: true,
+                        constrainZoomTo : 'x'
+                    },
+                    legend:{
+                        show: true,
+                        location: 'se'
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        );
+        $('#spinner').hide();
+
+    }
+
+
+    //         set up ajax compare assemblies
+    $(document).ready(function() {
+
+        // start with all series toggled on
+        window.series = [];
+        window.series[0] = true;
+        window.series[1] = true;
+        window.series[2] = true;
+        window.series[3] = true;
+        window.series[4] = true;
+        window.series[5] = true;
+        window.series[6] = true;
+        window.series[7] = true;
+        window.series[8] = true;
+        window.series[9] = true;
+
+        // global variables that determine how the chart is drawn
+        window.highlighterOn = true;
+        window.logOn = false;
+        window.scaledOn = false;
+
+        window.scatterhighlighterOn = true;
+        window.scaterylogOn = false;
+        window.scaterxlogOn = false;
+        window.scattertrendOn = false;
+
+
+        window.chartType = 'length';
+
+        window.scatterXField = 'length';
+        window.scatterYField = 'coverage';
+
+        window.minSeqLength = 0;
+        window.minSeqCoverage = 0;
+
+        // boring code to handle chart options
+
+        var setUpToggle = function(variableName) {
+            $('#turn' + variableName + 'On').click(function() {
+                window[variableName + 'On'] = true;
+                $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+                $('.scatterplotOptions').hide();
+                drawActiveChart();
+            });
+            $('#turn' + variableName + 'Off').click(function() {
+                window[variableName + 'On'] = false;
+                $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
+                $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
+                $('.scatterplotOptions').hide();
+                drawActiveChart();
+            });
+        };
+
+        setUpToggle('highlighter');
+        setUpToggle('log');
+        setUpToggle('scaled');
+
+        setUpToggle('scatterhighlighter');
+        setUpToggle('scattertrend');
+        setUpToggle('scatterylog');
+        setUpToggle('scatterxlog');
+
+
+        setUpToggle('cumulativefiltern');
+
+        $('#resetZoom').click(function() {
+            scatterPlot.resetZoom();
+        });
+        $('#resetHistogramZoom').click(function() {
+            histogramPlot.resetZoom();
+        });
+        $('#resetCumulativeZoom').click(function() {
+            cumulativePlot.resetZoom();
+        });
+
+
+        // handle chart type
+        $('#turnlengthOn').click(function() {
+            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'length';
+            setTimeout('drawChart();', 1);
+        });
+        $('#turncoverageOn').click(function() {
+            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'coverage';
+            setTimeout('drawChart();', 1);
+        });
+        $('#turnqualityOn').click(function() {
+            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'quality';
+            setTimeout('drawChart();', 1);
+        });
+
+        //show / hide the different chart types
+        $('#turnhistogramOn').click(function() {
+            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnhistogramOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#cumulativeContainer').hide();
+            $('#scatterplotContainer').hide();
+            $('#histogramContainer').show();
+            $('#histogramDiv').empty();
+            $('#spinner').show();
+            window.activeChart = 'histogram';
+            setTimeout('drawChart();', 1);
+
+        });
+        $('#turnScatterOn').click(function() {
+            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnScatterOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#histogramContainer').hide();
+            $('#cumulativeContainer').hide();
+            $('#scatterplotContainer').show();
+            $('#scatterplotDiv').empty();
+            $('#spinner').show();
+            window.activeChart = 'scatterplot';
+
+            setTimeout('drawScatterChart();', 1);
+
+        });
+        $('#turncumulativeOn').click(function() {
+            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turncumulativeOn').css({'cursor':'default', 'font-weight':'bold'});
+            $('#histogramContainer').hide();
+            $('#scatterplotContainer').hide();
+            $('#cumulativeContainer').show();
+
+            window.activeChart = 'cumulative';
+
+            setTimeout('drawCumulativeChart();', 1);
+
+        });
+
+        $('#scatterplotContainer').hide();
+        $('#cumulativeContainer').hide();
+
+        contigSetData = {contigSetList : [{"id":"test.fasta","colour":"aqua","lengthvalues":[[0,0],[10,0],[20,0],[30,0],[40,0],[50,0],[60,0],[70,0],[80,0],[90,0],[100,0],[110,0],[120,0],[130,0],[140,0],[150,0],[160,0],[170,0],[180,1],[190,0],[200,0],[210,0],[220,0],[230,0],[240,0],[250,0],[260,0],[270,0],[280,0],[290,0],[300,0],[310,0],[320,0],[330,0],[340,1],[350,0],[360,0],[370,1],[380,0],[390,1],[400,0],[410,0],[420,0],[430,0],[440,1],[450,0],[460,1],[470,0],[480,0],[490,2],[500,1],[510,0],[520,0],[530,0],[540,0],[550,0],[560,0],[570,0],[580,0],[590,0],[600,0],[610,0],[620,0],[630,0],[640,0],[650,0],[660,0],[670,0],[680,0],[690,0],[700,0],[710,0],[720,0],[730,0],[740,0],[750,0],[760,1],[770,0],[780,0],[790,1],[800,0],[810,0],[820,0],[830,0],[840,0],[850,0],[860,0],[870,0],[880,0],[890,0],[900,0],[910,0],[920,0],[930,0],[940,0],[950,0],[960,0],[970,0],[980,1],[990,0],[1000,0],[1010,0],[1020,0],[1030,0],[1040,0],[1050,0],[1060,0],[1070,0],[1080,0],[1090,0],[1100,0],[1110,0],[1120,0],[1130,0],[1140,0],[1150,0],[1160,1],[1170,0],[1180,1],[1190,0],[1200,0],[1210,0],[1220,0],[1230,0],[1240,0],[1250,0],[1260,0],[1270,0],[1280,0],[1290,0],[1300,0],[1310,0],[1320,0],[1330,0],[1340,0],[1350,0],[1360,0],[1370,0],[1380,0],[1390,0],[1400,0],[1410,0],[1420,0],[1430,0],[1440,0],[1450,0],[1460,0],[1470,0],[1480,0],[1490,0],[1500,0],[1510,0],[1520,0],[1530,0],[1540,1],[1550,0],[1560,0],[1570,0],[1580,0],[1590,0],[1600,1],[1610,0],[1620,0],[1630,0],[1640,0],[1650,0],[1660,0],[1670,0],[1680,0],[1690,0],[1700,0],[1710,0],[1720,0],[1730,0],[1740,0],[1750,0],[1760,0],[1770,0],[1780,0],[1790,0],[1800,0],[1810,0],[1820,0],[1830,0],[1840,0],[1850,0],[1860,0],[1870,0],[1880,0],[1890,1],[1900,0]],"scaledlengthvalues":[[0,0],[10,0],[20,0],[30,0],[40,0],[50,0],[60,0],[70,0],[80,0],[90,0],[100,0],[110,0],[120,0],[130,0],[140,0],[150,0],[160,0],[170,0],[180,58],[190,0],[200,0],[210,0],[220,0],[230,0],[240,0],[250,0],[260,0],[270,0],[280,0],[290,0],[300,0],[310,0],[320,0],[330,0],[340,58],[350,0],[360,0],[370,58],[380,0],[390,58],[400,0],[410,0],[420,0],[430,0],[440,58],[450,0],[460,58],[470,0],[480,0],[490,117],[500,58],[510,0],[520,0],[530,0],[540,0],[550,0],[560,0],[570,0],[580,0],[590,0],[600,0],[610,0],[620,0],[630,0],[640,0],[650,0],[660,0],[670,0],[680,0],[690,0],[700,0],[710,0],[720,0],[730,0],[740,0],[750,0],[760,58],[770,0],[780,0],[790,58],[800,0],[810,0],[820,0],[830,0],[840,0],[850,0],[860,0],[870,0],[880,0],[890,0],[900,0],[910,0],[920,0],[930,0],[940,0],[950,0],[960,0],[970,0],[980,58],[990,0],[1000,0],[1010,0],[1020,0],[1030,0],[1040,0],[1050,0],[1060,0],[1070,0],[1080,0],[1090,0],[1100,0],[1110,0],[1120,0],[1130,0],[1140,0],[1150,0],[1160,58],[1170,0],[1180,58],[1190,0],[1200,0],[1210,0],[1220,0],[1230,0],[1240,0],[1250,0],[1260,0],[1270,0],[1280,0],[1290,0],[1300,0],[1310,0],[1320,0],[1330,0],[1340,0],[1350,0],[1360,0],[1370,0],[1380,0],[1390,0],[1400,0],[1410,0],[1420,0],[1430,0],[1440,0],[1450,0],[1460,0],[1470,0],[1480,0],[1490,0],[1500,0],[1510,0],[1520,0],[1530,0],[1540,58],[1550,0],[1560,0],[1570,0],[1580,0],[1590,0],[1600,58],[1610,0],[1620,0],[1630,0],[1640,0],[1650,0],[1660,0],[1670,0],[1680,0],[1690,0],[1700,0],[1710,0],[1720,0],[1730,0],[1740,0],[1750,0],[1760,0],[1770,0],[1780,0],[1790,0],[1800,0],[1810,0],[1820,0],[1830,0],[1840,0],[1850,0],[1860,0],[1870,0],[1880,0],[1890,58],[1900,0]],"qualityvalues":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0],[21,0],[22,0],[23,0],[24,1],[25,0],[26,1],[27,0],[28,0],[29,0],[30,0],[31,1],[32,0],[33,1],[34,1],[35,0],[36,1],[37,0],[38,1],[39,0],[40,1],[41,0],[42,0],[43,0],[44,0],[45,0],[46,0],[47,1],[48,0],[49,0],[50,0],[51,0],[52,0],[53,1],[54,0],[55,1],[56,2],[57,0],[58,0],[59,1],[60,0],[61,0],[62,0],[63,0],[64,0],[65,0],[66,0],[67,0],[68,0],[69,1],[70,0],[71,0],[72,0],[73,0],[74,0],[75,0],[76,0],[77,2],[78,0]],"scaledqualityvalues":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0],[21,0],[22,0],[23,0],[24,58],[25,0],[26,58],[27,0],[28,0],[29,0],[30,0],[31,58],[32,0],[33,58],[34,58],[35,0],[36,58],[37,0],[38,58],[39,0],[40,58],[41,0],[42,0],[43,0],[44,0],[45,0],[46,0],[47,58],[48,0],[49,0],[50,0],[51,0],[52,0],[53,58],[54,0],[55,58],[56,117],[57,0],[58,0],[59,58],[60,0],[61,0],[62,0],[63,0],[64,0],[65,0],[66,0],[67,0],[68,0],[69,58],[70,0],[71,0],[72,0],[73,0],[74,0],[75,0],[76,0],[77,117],[78,0]],"coveragevalues":[[0,0],[1,5],[2,3],[3,5],[4,0],[5,1],[6,0],[7,0],[8,1],[9,0],[10,0],[11,1],[12,0],[13,0],[14,0],[15,1],[16,0]],"scaledcoveragevalues":[[0,0],[1,294],[2,176],[3,294],[4,0],[5,58],[6,0],[7,0],[8,58],[9,0],[10,0],[11,58],[12,0],[13,0],[14,0],[15,58],[16,0]],"gcvalues":[[0.26,0],[0.27,1],[0.28,1],[0.29,1],[0.3,0],[0.31,1],[0.32,1],[0.33,0],[0.34,3],[0.35,1],[0.36,2],[0.37,2],[0.38,0],[0.39,0],[0.4,1],[0.41,2],[0.42,0],[0.43,0],[0.44,1],[0.45,0]],"scaledgcvalues":[[0.26,0],[0.27,58],[0.28,58],[0.29,58],[0.3,0],[0.31,58],[0.32,58],[0.33,0],[0.34,176],[0.35,58],[0.36,117],[0.37,117],[0.38,0],[0.39,0],[0.4,58],[0.41,117],[0.42,0],[0.43,0],[0.44,58],[0.45,0]]}]};
+        window.activeChart = 'histogram';
+        drawChart();
+
+
+        contigSetRawData = {contigSetList : [{"id":["327","241","322","118","254","317","283","299","340","187","43","337","294","334","331","305","266"],"length":[491,769,469,1605,1187,500,795,442,395,1895,1545,181,348,377,496,982,1164],"lengthWithoutN":[491,769,469,1605,1187,500,795,442,395,1895,1545,181,348,377,495,982,1164],"quality":[38.82485,36.884266,47.89339,77.827415,56.700085,34.298,59.539623,56.14706,33.546837,69.53298,77.84337,24.127071,40.646553,26.090185,31.227823,55.3778,53.493988],"coverage":[1.8004073,5.1222367,2.162047,11.284735,2.9806235,3.064,3.3132076,3.2126696,1.164557,8.251715,15.2297735,1.3977901,3.9885058,1.3633952,1.7217742,2.7107942,3.6262887],"topBlast":["327","241","322","118","254","317","283","299","340","187","43","337","294","334","331","305","266"],"gc":[0.4154786151,0.2860858257,0.3731343284,0.4018691589,0.3580454928,0.378,0.3622641509,0.4479638009,0.2911392405,0.3488126649,0.4110032362,0.3259668508,0.3477011494,0.2732095491,0.3131313131,0.3645621181,0.3410652921],"colour":"aqua","label":"test.fasta","size":17}]};
+        window.seriesList = [];
+
+        // start off by sorting the data series so that the one with the fewest contigs is on top in the chart - this usually makes it easier to see
+        var sortedDatasetList = contigSetRawData.contigSetList;
+        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
+            window.seriesList[i] = sortedDatasetList[i];
+        }
+
+        $('#url').html(document.URL);
+
+    });
+</script>
+
+</head>
+
+<body>
+
+<h2>Bookmark this page to get back to your analysis:</h2>
+<h2 id="url"></h2>
+
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Contig sets</h2>
+
+    </div>        <!-- .block_head ends -->
+
+    <div class="block_content">
+
+        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <thead>
+            <tr>
+                <th>Colour</th>
+                <th>Contig Set name</th>
+                <th>Number of Contigs</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+                <tr>
+                    <td style="background-color: aqua">.</td>
+                    <td>
+                        test.fasta &nbsp;&nbsp;
+                        <span style="cursor:pointer;" onclick="toggleSeries(0);">toggle</span> |
+                        <span style="cursor:pointer;" onclick="moveToTop([327, 241, 322, 118, 254, 317, 283, 299, 340, 187, 43, 337, 294, 334, 331, 305, 266]);">move to top</span>
+                    </td>
+                    <td>17</td>
+                </tr>
+            
+            </tbody>
+
+        </table>
+
+    </div>        <!-- .block_content ends -->
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Contig Set charts</h2>
+
+    </div>        <!-- .block_head ends -->
+
+
+
+    <div class="block_content">
+
+        <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span> | <span style="cursor: pointer; " id='turncumulativeOn'>cumulative length</span>
+        </p>
+
+        <p>
+            Minimum sequence length: <input type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
+        drawActiveChart();">
+            <br/>
+            Minimum sequence coverage: <input type="text" id="minimumSequenceCoverage"/> <input type="submit" value="filter" onclick="window.minSeqCoverage = ($('#minimumSequenceCoverage').val());
+        drawActiveChart();">
+        </p>
+
+        <p>Exclude Ns from length : <span id='turncumulativefilternOff' style="font-weight: bold;">no</span> |
+            <span style="cursor: pointer; " id='turncumulativefilternOn'>yes</span>
+        </p>
+
+        
+        <h2 id="spinner">Drawing chart, please wait...<img src="/images/spinner.gif" style="vertical-align: middle;">
+        </h2>
+
+        <div id='histogramContainer'>
+            <p>Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> |
+                <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span> (
+                <span style="cursor: pointer;" id="resetHistogramZoom">click to reset</span>)
+
+            </p>
+
+            <p>
+
+                Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
+                &nbsp;&nbsp;&nbsp;
+
+                Scale : <span id='turnscaledOn' style="cursor: pointer; ">per 1000 contigs</span> | <span style="font-weight: bold;" id='turnscaledOff'>raw frequency</span>
+            </p>
+
+            <p>
+                Chart type : <span id='turnlengthOn' style="font-weight: bold;">length</span> | <span style="cursor: pointer; " id='turnqualityOn'>quality</span> | <span style="cursor: pointer; " id='turncoverageOn'>coverage</span>
+            </p>
+
+
+            <div id="histogramDiv" style="height: 800px; width: 1000px;">
+
+            </div>
+        </div>
+
+        <div id='cumulativeContainer'>
+            <p>Mouseover : <span id='turncumulativehighlighterOn' style="font-weight: bold;">highlight</span> |
+                <span style="cursor: pointer; " id='turncumulativehighlighterOff'>zoom</span> (
+                <span style="cursor: pointer;" id="resetCumulativeZoom">click to reset</span>)
+
+            </p>
+
+
+            <div id="cumulativeDiv" style="height: 800px; width: 1000px;">
+
+            </div>
+        </div>
+
+        <div id='scatterplotContainer'>
+            <p class='scatterplotOptions'>Mouseover :
+                <span id='turnscatterhighlighterOn' style="font-weight: bold;">hightlight</span> |
+                <span style="cursor: pointer; " id='turnscatterhighlighterOff'>zoom</span>(
+                <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
+                <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
+            &nbsp;&nbsp;&nbsp;
+
+            trendlines : <span id='turnscattertrendOff' style="font-weight: bold;">off</span> | <span id='turnscattertrendOn' style="cursor: pointer;">on</span>
+
+                &nbsp;&nbsp;&nbsp;
+
+                Y axis : <span id='turnscatterylogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterylogOff'>linear</span>
+                &nbsp;&nbsp;&nbsp;
+                X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
+            </p>
+
+            <p class='scatterplotOptions'>
+                X axis :
+                <span class="scatterx" id="scatterxlength" style="font-weight: bold;" onclick="setScatterX('length');">length</span> |
+                <span class="scatterx" id="scatterxquality" style="cursor: pointer; " onclick="setScatterX('quality');">quality</span> |
+                <span class="scatterx" id="scatterxcoverage" style="cursor: pointer; " onclick="setScatterX('coverage');">coverage</span> |
+                <span class="scatterx" id="scatterxgc" style="cursor: pointer; " onclick="setScatterX('gc');">gc</span>
+
+            </p>
+
+            <p class='scatterplotOptions'>
+                Y axis :
+                <span class="scattery" id="scatterylength" style="font-weight: bold;" onclick="setScatterY('length');">length</span> |
+                <span class="scattery" id="scatteryquality" style="cursor: pointer; " onclick="setScatterY('quality');">quality</span> |
+                <span class="scattery" id="scatterycoverage" style="cursor: pointer; " onclick="setScatterY('coverage');">coverage</span> |
+                <span class="scattery" id="scatterygc" style="cursor: pointer; " onclick="setScatterY('gc');">gc</span>
+
+            </p>
+
+            <table >
+                <tr>
+                    <td style="border: none; margin-left: 10px;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/></td>
+                    <td style="border: none;"></td>
+                </tr>
+                <tr>
+                    <td style="border: none;"><div id="scatterplotDiv" style="height: 800px; width: 800px;"/></td>
+                    <td style="border: none;"><div id="sideHistogramDiv" style="height: 800px; width: 200px;"/></td>
+                </tr>
+            </table>
+
+        </h2>
+        </div>
+    </div>
+
+</div>        <!-- .block_content ends -->
+<div class="bendl"></div>
+
+<div class="bendr"></div>
+</div>
+
+</body>
+</html>
