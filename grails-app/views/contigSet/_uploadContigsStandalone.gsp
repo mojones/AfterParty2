@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="layout" content="main.gsp"/>
+<meta name="layout" content="standalone.gsp"/>
 <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
 <title>Viewing a set of contigs</title>
 
@@ -109,145 +109,16 @@
 
     }
 
-    drawActiveChart = function() {
-        $('#spinner').show();
-        if (window.activeChart == 'histogram') {
-            $('#histogramDiv').empty();
-            setTimeout('drawChart();', 10);
+    function drawTopSideHistograms() {
+//now draw histogram above scatter plot
+
+
+        if (typeof scatterPlot == 'undefined' || typeof window.seriesList == 'undefined') {
+            return;
         }
 
-        if (window.activeChart == 'scatterplot') {
-            $('#scatterplotDiv').empty();
-            setTimeout('drawScatterChart();', 10);
-        }
-
-        if (window.activeChart == 'cumulative') {
-            $('#cumulativeDiv').empty();
-            setTimeout('drawCumulativeChart();', 10);
-        }
-
-    }
-
-    drawScatterChart = function() {
-        $('#scatterplotDiv').empty();
         $('#topHistogramDiv').empty();
         $('#sideHistogramDiv').empty();
-        $('#spinner').show();
-
-        var allLengthValues;
-        var fieldName;
-
-        var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
-        var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
-
-        var realXField = window.scatterXField;
-        var realYField = window.scatterYField;
-
-        if (window.scatterXField == 'length' && window.cumulativefilternOn) {
-            realXField = 'lengthWithoutN'
-        }
-
-        if (window.scatterYField == 'length' && window.cumulativefilternOn) {
-            realYField = 'lengthWithoutN'
-        }
-
-        var allValues = window.seriesList.map(function(a) {
-            return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
-                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
-            });
-        });
-
-
-        var colourList = window.seriesList.map(function(a) {
-            return a.colour;
-        });
-//        console.log(allValues);
-
-        var mySeriesOptions = [];
-        for (var i = 0; i < window.seriesList.length; i++) {
-            mySeriesOptions.push(
-                    {
-                        markerOptions: {
-                            show : window.series[i]
-                        },
-                        label : window.seriesList[i].label,
-                        trendline: {
-                            show: window.scattertrendOn,         // show the trend line
-                            color: colourList[i],   // CSS color spec for the trend line.
-                            label: '',          // label for the trend line.
-                            type: 'linear',     // 'linear', 'exponential' or 'exp'
-                            shadow: false,       // show the trend line shadow.
-                            lineWidth: 1.5     // width of the trend line.
-                        }
-                    }
-            );
-        }
-//        console.log(mySeriesOptions);
-
-        scatterPlot = $.jqplot('scatterplotDiv',
-                allValues,
-                {
-                    seriesColors : colourList,
-                    seriesDefaults:{
-                        showMarker: true,
-                        showLine: false,
-                        markerOptions : {
-                            shadow: false,
-                            lineWidth : 0,
-                            size : 5
-                        }
-                    },
-                    series: mySeriesOptions,
-                    axes:{
-                        xaxis:{
-                            label: window.scatterXField,
-                            pad: 0,
-                            renderer: xAxisRenderer,
-                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-
-                        },
-                        yaxis:{
-                            label:window.scatterYField,
-                            pad : 0,
-                            renderer : yAxisRenderer,
-                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
-
-                        }
-                    },
-                    highlighter: {
-                        show: window.scatterhighlighterOn,
-                        tooltipLocation:'ne',
-                        sizeAdjust: 7.5,
-                        markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
-                        yvalues: 9,
-                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
-                        useAxesFormatters: false,
-                        bringSeriesToFront: true
-
-                    },
-                    cursor: {
-                        show: !scatterhighlighterOn,
-                        tooltipLocation:'sw',
-                        followMouse : true,
-                        showVerticalLine: true,
-                        showHorizontalLine: true,
-                        zoom:true
-                    },
-                    legend:{
-                        show: true
-                    },
-                    grid: {
-                        background: '#ffffff'
-                    }
-                }
-        );
-
-        $('#scatterplotDiv').bind('jqplotDataClick', function (ev, seriesIndex, pointIndex, data) {
-            window.location = '../contig/show/' + data[2];
-        });
-
-        //now draw histogram above scatter plot
-
         var topHistogramXaxisRenderer;
 
         var topHistogramData = contigSetData.contigSetList.map(function(a) {
@@ -255,6 +126,9 @@
         });
         topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
+        var colourList = window.seriesList.map(function(a) {
+            return a.colour;
+        });
 
         topHistogramPlot = $.jqplot('topHistogramDiv',
                 topHistogramData,
@@ -339,6 +213,144 @@
                 }
         )
 
+    }
+
+    drawActiveChart = function() {
+        $('#spinner').show();
+        if (window.activeChart == 'histogram') {
+            $('#histogramDiv').empty();
+            setTimeout('drawChart();', 10);
+        }
+
+        if (window.activeChart == 'scatterplot') {
+            $('#scatterplotDiv').empty();
+            setTimeout('drawScatterChart();', 10);
+        }
+
+        if (window.activeChart == 'cumulative') {
+            $('#cumulativeDiv').empty();
+            setTimeout('drawCumulativeChart();', 10);
+        }
+
+    }
+
+    drawScatterChart = function() {
+        $('#scatterplotDiv').empty();
+
+        $('#spinner').show();
+
+        var allLengthValues;
+        var fieldName;
+
+        var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+        var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+        var realXField = window.scatterXField;
+        var realYField = window.scatterYField;
+
+        if (window.scatterXField == 'length' && window.cumulativefilternOn) {
+            realXField = 'lengthWithoutN'
+        }
+
+        if (window.scatterYField == 'length' && window.cumulativefilternOn) {
+            realYField = 'lengthWithoutN'
+        }
+
+        var allValues = window.seriesList.map(function(a) {
+            return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
+                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
+            });
+        });
+
+
+        var colourList = window.seriesList.map(function(a) {
+            return a.colour;
+        });
+//        console.log(allValues);
+
+        var mySeriesOptions = [];
+        for (var i = 0; i < window.seriesList.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        markerOptions: {
+                            show : window.series[i]
+                        },
+                        label : window.seriesList[i].label,
+                        trendline: {
+                            show: window.scattertrendOn,         // show the trend line
+                            color: colourList[i],   // CSS color spec for the trend line.
+                            label: '',          // label for the trend line.
+                            type: 'linear',     // 'linear', 'exponential' or 'exp'
+                            shadow: false,       // show the trend line shadow.
+                            lineWidth: 1.5     // width of the trend line.
+                        }
+                    }
+            );
+        }
+//        console.log(mySeriesOptions);
+
+        scatterPlot = $.jqplot('scatterplotDiv',
+                allValues,
+                {
+                    seriesColors : colourList,
+                    seriesDefaults:{
+                        showMarker: true,
+                        showLine: false,
+                        markerOptions : {
+                            shadow: false,
+                            lineWidth : 0,
+                            size : 5
+                        }
+                    },
+                    series: mySeriesOptions,
+                    axes:{
+                        xaxis:{
+                            label: window.scatterXField,
+                            pad: 0,
+                            renderer: xAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+
+                        },
+                        yaxis:{
+                            label:window.scatterYField,
+                            pad : 0,
+                            renderer : yAxisRenderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+
+                        }
+                    },
+                    highlighter: {
+                        show: window.scatterhighlighterOn,
+                        tooltipLocation:'ne',
+                        sizeAdjust: 7.5,
+                        markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
+                        yvalues: 9,
+                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
+                        useAxesFormatters: false,
+                        bringSeriesToFront: true
+
+                    },
+                    cursor: {
+                        show: !scatterhighlighterOn,
+                        tooltipLocation:'sw',
+                        followMouse : true,
+                        showVerticalLine: true,
+                        showHorizontalLine: true,
+                        zoom:true
+                    },
+                    legend:{
+                        show: true
+                    },
+                    grid: {
+                        background: '#ffffff'
+                    }
+                }
+        );
+
+        scatterPlot.postDrawHooks.add(function() {
+            drawTopSideHistograms();
+        });
+        drawTopSideHistograms();
 
         $('#spinner').hide();
         $('.scatterplotOptions').show();
@@ -773,6 +785,7 @@
         $('#scatterplotContainer').hide();
         $('#cumulativeContainer').hide();
 
+
         contigSetData = {contigSetList : ${contigSetDataJSON}};
         window.activeChart = 'histogram';
         drawChart();
@@ -949,6 +962,8 @@
                 &nbsp;&nbsp;&nbsp;
                 X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
             </p>
+
+            <p><span onclick="drawTopSideHistograms()" style="cursor: pointer">Update histograms</span></p>
 
             <p class='scatterplotOptions'>
                 X axis :
