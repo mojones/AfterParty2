@@ -28,6 +28,15 @@
 
 <script type="text/javascript">
 
+    function setChartSize(pixels) {
+        $('#histogramDiv').height(pixels).width(2 * pixels);
+        $('#scatterplotDiv').height(2 * pixels).width(2 * pixels);
+        $('#topHistogramDiv').height(pixels/2).width(2 * pixels);
+        $('#sideHistogramDiv').height(2 * pixels).width(pixels/2);
+        $('#cumulativeDiv').height(2 * pixels).width(2 * pixels);
+        drawActiveChart();
+    }
+
     function zip2(arrayA, arrayB) {
         var length = Math.min(arrayA.length, arrayB.length);
         var result = [];
@@ -121,9 +130,7 @@
         $('#sideHistogramDiv').empty();
         var topHistogramXaxisRenderer;
 
-        var topHistogramData = contigSetData.contigSetList.map(function(a) {
-            return a[window.scatterXField + 'values'];
-        });
+        var topHistogramData = buildHistogram(window.scatterXField, scatterPlot.axes.xaxis.min, scatterPlot.axes.xaxis.max);
         topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         var colourList = window.seriesList.map(function(a) {
@@ -170,10 +177,9 @@
 
         var sideHistogramYaxisRenderer;
 
-        var sideHistogramData = contigSetData.contigSetList.map(function(a) {
-            return a[window.scatterYField + 'values'].map(function(b) {
-                var pair = [b[1], b[0]];
-                return pair;
+        var sideHistogramData = buildHistogram(window.scatterYField).map(function(a) {
+            return a.map(function(b) {
+                return [b[1], b[0]];
             });
         });
         sideHistogramYaxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
@@ -358,6 +364,50 @@
 
     }
 
+    buildHistogram = function(fieldName, min, max) {
+
+        if (!max) {
+            max = Math.max.apply(Math, contigSetRawData.contigSetList.map(function(set) {
+                return Math.max.apply(Math, set[fieldName]);
+            }));
+        }
+
+        if (!min) {
+            min = Math.min.apply(Math, contigSetRawData.contigSetList.map(function(set) {
+                return Math.min.apply(Math, set[fieldName]);
+            }));
+        }
+
+        console.log(min + ' to ' + max);
+
+        var allFieldValues = contigSetRawData.contigSetList.map(function(set) {
+            var fieldValues = [];
+            var logMax = Math.floor(Math.log(max - min) / Math.LN10);
+            var stepSize = Math.max(1, Math.pow(10, logMax - 2));
+            var numberOfSteps = Math.floor((max / stepSize)) + 2;
+
+            for (var i = (min / stepSize) - 1; i <= numberOfSteps; i++) {
+                var binFloor = i * stepSize;
+                var binCeiling = (i + 1) * stepSize;
+                var count = set[fieldName].filter(
+                        function(element) {
+                            return (element >= binFloor && element < binCeiling);
+                        }).length;
+                if (logOn) {
+                    count = count + 0.1;
+                }
+                if (scaledOn) {
+                    count = 1000 * count / set[fieldName].length;
+                }
+//                console.log(count + ' between ' + binFloor + ' and ' + binCeiling);
+                fieldValues.push([binFloor, count]);
+
+            }
+            return fieldValues;
+        });
+        return allFieldValues;
+    }
+
 
     drawChart = function() {
         $('#histogramDiv').empty();
@@ -365,31 +415,14 @@
 
         var allLengthValues;
         var renderer;
-        var fieldName;
+        var fieldName = window.chartType;
 
-        if (scaledOn) {
-            fieldName = 'scaled' + window.chartType + 'values';
-        } else {
-            fieldName = window.chartType + 'values';
-        }
         if (logOn) {
-            // if we are plotting on a log scale then we will add 0.1 to all the Y values to prevent log(0) error
-            allLengthValues = contigSetData.contigSetList.map(function(a) {
-                return a[fieldName].map(function(b) {
-                    return [
-                        b[0], b[1] + 0.1
-                    ];
-                });
-            });
             renderer = $.jqplot.LogAxisRenderer;
         } else {
-//            console.log(fieldName);
-
-            allLengthValues = contigSetData.contigSetList.map(function(a) {
-                return a[fieldName];
-            });
             renderer = $.jqplot.LinearAxisRenderer;
         }
+
 
         var colourList = contigSetData.contigSetList.map(function(a) {
             return a.colour;
@@ -409,9 +442,11 @@
         }
 //        console.log(mySeriesOptions);
 
+        var allFieldValues = buildHistogram(fieldName);
+
 //        console.log('values : ' + allLengthValues);
         histogramPlot = $.jqplot('histogramDiv',
-                allLengthValues,
+                allFieldValues,
                 {
                     seriesColors : colourList,
                     title: window.chartType + ' histogram',
@@ -422,14 +457,14 @@
                     series: mySeriesOptions,
                     axes:{
                         xaxis:{
-                            label:window.chartType,
+                            label: window.chartType,
                             pad: 0
                         },
                         yaxis:{
-                            label:'Frequency',
+                            label: scaledOn ? 'Frequency per 1000 contigs' : 'Frequency',
                             pad : 0,
-                            renderer: renderer
-
+                            renderer: renderer,
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
                         }
                     },
                     highlighter: {
@@ -662,14 +697,14 @@
         window.scaledOn = false;
 
         window.scatterhighlighterOn = true;
-        window.scaterylogOn = false;
-        window.scaterxlogOn = false;
+        window.scatterylogOn = true;
+        window.scatterxlogOn = false;
         window.scattertrendOn = false;
 
 
         window.chartType = 'length';
 
-        window.scatterXField = 'length';
+        window.scatterXField = 'gc';
         window.scatterYField = 'coverage';
 
         window.minSeqLength = 0;
@@ -719,26 +754,30 @@
 
         // handle chart type
         $('#turnlengthOn').click(function() {
-            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
             $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
             window.chartType = 'length';
             setTimeout('drawChart();', 1);
         });
         $('#turncoverageOn').click(function() {
-            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnqualityOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
             $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
             window.chartType = 'coverage';
             setTimeout('drawChart();', 1);
         });
         $('#turnqualityOn').click(function() {
-            $('#turncoverageOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnlengthOn').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
             $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
             window.chartType = 'quality';
             setTimeout('drawChart();', 1);
         });
+        $('#turngcOn').click(function() {
+            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
+            $('#turngcOn').css({'cursor':'default', 'font-weight':'bold'});
+            window.chartType = 'gc';
+            setTimeout('drawChart();', 1);
+        });
+
 
         //show / hide the different chart types
         $('#turnhistogramOn').click(function() {
@@ -787,12 +826,13 @@
 
 
         contigSetData = {contigSetList : ${contigSetDataJSON}};
-        window.activeChart = 'histogram';
-        drawChart();
-
-
         contigSetRawData = {contigSetList : ${contigSetRawDataJSON}};
+
         window.seriesList = [];
+        window.activeChart = 'histogram';
+
+
+        drawChart();
 
         // start off by sorting the data series so that the one with the fewest contigs is on top in the chart - this usually makes it easier to see
         var sortedDatasetList = contigSetRawData.contigSetList;
@@ -893,6 +933,15 @@
         </p>
 
         <p>
+            Chart size :
+            <span onclick="setChartSize(200);" style="cursor: pointer;">tiny</span> |
+            <span onclick="setChartSize(300);" style="cursor: pointer;">small</span> |
+            <span onclick="setChartSize(400);" style="cursor: pointer;">medium</span> |
+            <span onclick="setChartSize(600);" style="cursor: pointer;">large</span> |
+            <span onclick="setChartSize(800);" style="cursor: pointer;">huge</span>
+        </p>
+
+        <p>
             Minimum sequence length: <input type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
         drawActiveChart();">
             <br/>
@@ -924,11 +973,15 @@
             </p>
 
             <p>
-                Chart type : <span id='turnlengthOn' style="font-weight: bold;">length</span> | <span style="cursor: pointer; " id='turnqualityOn'>quality</span> | <span style="cursor: pointer; " id='turncoverageOn'>coverage</span>
+                Chart type :
+                <span id='turnlengthOn' class="histogramField" style="font-weight: bold;">length</span> |
+                <span style="cursor: pointer; " id='turnqualityOn' class="histogramField">quality</span> |
+                <span style="cursor: pointer; " id='turncoverageOn' class="histogramField">coverage</span>|
+                <span style="cursor: pointer; " id='turngcOn' class="histogramField">gc</span>
             </p>
 
 
-            <div id="histogramDiv" style="height: 800px; width: 1000px;">
+            <div id="histogramDiv" style="height: 400px; width: 800px;">
 
             </div>
         </div>
@@ -958,27 +1011,25 @@
 
                 &nbsp;&nbsp;&nbsp;
 
-                Y axis : <span id='turnscatterylogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterylogOff'>linear</span>
+                Y axis : <span id='turnscatterylogOn' style="font-weight: bold;">log</span> | <span style="cursor: pointer; " id='turnscatterylogOff'>linear</span>
                 &nbsp;&nbsp;&nbsp;
                 X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
             </p>
 
-            <p><span onclick="drawTopSideHistograms()" style="cursor: pointer">Update histograms</span></p>
-
             <p class='scatterplotOptions'>
                 X axis :
-                <span class="scatterx" id="scatterxlength" style="font-weight: bold;" onclick="setScatterX('length');">length</span> |
+                <span class="scatterx" id="scatterxlength" style="cursor: pointer; " onclick="setScatterX('length');">length</span> |
                 <span class="scatterx" id="scatterxquality" style="cursor: pointer; " onclick="setScatterX('quality');">quality</span> |
                 <span class="scatterx" id="scatterxcoverage" style="cursor: pointer; " onclick="setScatterX('coverage');">coverage</span> |
-                <span class="scatterx" id="scatterxgc" style="cursor: pointer; " onclick="setScatterX('gc');">gc</span>
+                <span class="scatterx" id="scatterxgc" style="font-weight: bold;" onclick="setScatterX('gc');">gc</span>
 
             </p>
 
             <p class='scatterplotOptions'>
                 Y axis :
-                <span class="scattery" id="scatterylength" style="font-weight: bold;" onclick="setScatterY('length');">length</span> |
+                <span class="scattery" id="scatterylength" style="cursor: pointer; " onclick="setScatterY('length');">length</span> |
                 <span class="scattery" id="scatteryquality" style="cursor: pointer; " onclick="setScatterY('quality');">quality</span> |
-                <span class="scattery" id="scatterycoverage" style="cursor: pointer; " onclick="setScatterY('coverage');">coverage</span> |
+                <span class="scattery" id="scatterycoverage" style="font-weight: bold;" onclick="setScatterY('coverage');">coverage</span> |
                 <span class="scattery" id="scatterygc" style="cursor: pointer; " onclick="setScatterY('gc');">gc</span>
 
             </p>

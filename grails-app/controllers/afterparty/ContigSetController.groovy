@@ -73,7 +73,7 @@ class ContigSetController {
                 cs.quality.push(quality.toFloat())
                 cs.coverage.push(coverage.toFloat())
                 cs.topBlast.push(id)
-                cs.gc.push((sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+                cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
             }
 
             println "built map in ${System.currentTimeMillis() - start}"
