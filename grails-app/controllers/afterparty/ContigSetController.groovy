@@ -171,11 +171,6 @@ class ContigSetController {
 
         }
 
-        def templateString = g.render(template: 'uploadContigsStandalone', model: [
-                contigSets: contigSetRawResult,
-                contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
-                contigSetDataJSON: contigSetStatsResult.encodeAsJSON()
-        ])
 
 
 
@@ -184,6 +179,15 @@ class ContigSetController {
         println "temp directory is $tempFileDirectory.absolutePath"
         File output = File.createTempFile('standalone', '.html', tempFileDirectory)
         println "output file is $output.absolutePath"
+
+        def templateString = g.render(template: 'uploadContigsStandalone', model: [
+                contigSets: contigSetRawResult,
+                contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
+                contigSetDataJSON: contigSetStatsResult.encodeAsJSON(),
+                fileName : output.name
+        ])
+
+
         output.append(templateString)
         redirect(uri: "/standalonePages/$output.name")
     }

@@ -787,6 +787,7 @@
             window.seriesList[i] = sortedDatasetList[i];
         }
 
+        $('#url').html(document.URL);
 
     });
 </script>
@@ -794,6 +795,28 @@
 </head>
 
 <body>
+
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>Bookmark this page to get back to your analysis</h2>
+
+    </div>        <!-- .block_head ends -->
+
+    <div class="block_content">
+
+        <h2 id="url"></h2>
+
+    </div>        <!-- .block_content ends -->
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
 
 <div class="block">
 
@@ -945,9 +968,10 @@
 
             </p>
 
-            <table >
+            <table>
                 <tr>
-                    <td style="border: none; margin-left: 10px;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/></td>
+                    <td style="border: none; margin-left: 10px;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/>
+                    </td>
                     <td style="border: none;"></td>
                 </tr>
                 <tr>
