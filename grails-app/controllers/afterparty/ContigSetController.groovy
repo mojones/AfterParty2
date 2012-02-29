@@ -42,12 +42,12 @@ class ContigSetController {
 
         }
 
+        def start = System.currentTimeMillis()
         // find all fasta file parameters
         assemblies.eachWithIndex { f, i ->
-
             // get contigs
             def contigs = miraService.parseFasta(f.inputStream)
-            println "got ${contigs.size()} contigs"
+            println "got ${contigs.size()} contigs in ${System.currentTimeMillis() - start}"
 
 
             def cs = [
@@ -60,24 +60,22 @@ class ContigSetController {
                     gc: []
             ]
 
+
             contigs.each { contig ->
 //                println "looking at contig $contig"
-                def (id, quality, coverage) = contig.key.split(/_/)
-                def sequence = contig.value
+                def (id, quality, coverage) = contig.key.split('_')
+                def sequence = contig.value.toLowerCase()
                 cs.id.push(id)
-                cs.length.push(sequence.length().toFloat())
-                cs.lengthWithoutN.push(sequence.toUpperCase().replaceAll(/N/, '').length().toFloat())
+                cs.length.push(sequence.length())
+                def lengthWithoutN = sequence.replaceAll('n', '').length()
+                cs.lengthWithoutN.push(lengthWithoutN)
                 cs.quality.push(quality.toFloat())
                 cs.coverage.push(coverage.toFloat())
                 cs.topBlast.push(id)
-                cs.gc.push(sequence.toLowerCase().findAll({it == 'g' || it == 'c'}).size() / sequence.toLowerCase().findAll({it != 'n'}).size())
+                cs.gc.push((sequence.count('g') + sequence.count('c')) / lengthWithoutN)
             }
 
-            cs.length.eachWithIndex {element, index ->
-                if (element != cs.lengthWithoutN[index]){
-                    println "with n : $element - without n : ${cs.lengthWithoutN[index]}"
-                }
-            }
+            println "built map in ${System.currentTimeMillis() - start}"
 
             cs.colour = StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
 
@@ -93,7 +91,8 @@ class ContigSetController {
         Integer overallMaxGc = contigSetRawResult.collect({it.gc.max()}).max() * 100
         Integer overallMinGc = contigSetRawResult.collect({it.gc.min()}).min() * 100
 
-        def maximums = [length: overallMaxLength, quality : overallMaxQuality, coverage : overallMaxCoverage]
+        println "calculated maxima in ${System.currentTimeMillis() - start}"
+
 
         contigSetRawResult.each { assembly ->
 
@@ -114,7 +113,6 @@ class ContigSetController {
                 def count = assembly.length.findAll({it >= floor && it < ceiling}).size()
                 statsResult.lengthvalues.add([floor, count])
                 statsResult.scaledlengthvalues.add([floor, (1000 * (count / assembly.length.size())).toInteger()])
-                maximums.length = floor + stepSizeLength
 //                println "counted length for $floor (max is $overallMaxLength)"
             }
 
@@ -163,18 +161,21 @@ class ContigSetController {
                 def count = assembly.gc.findAll({it >= floor && it < ceiling}).size()
                 statsResult.gcvalues.add([floor, count])
                 statsResult.scaledgcvalues.add([floor, (1000 * (count / assembly.gc.size())).toInteger()])
-                println "counted ${count} gc between $floor and $ceiling"
 
             }
 
             contigSetStatsResult.push(statsResult)
+
+            println "built histograms in ${System.currentTimeMillis() - start}"
+
         }
+
+
 
         [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
-                contigSetDataJSON: contigSetStatsResult.encodeAsJSON(),
-                maximums : maximums.encodeAsJSON()
+                contigSetDataJSON: contigSetStatsResult.encodeAsJSON()
         ]
     }
 

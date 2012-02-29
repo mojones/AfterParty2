@@ -773,8 +773,6 @@
         $('#scatterplotContainer').hide();
         $('#cumulativeContainer').hide();
 
-        maximums = ${maximums};
-
         contigSetData = {contigSetList : ${contigSetDataJSON}};
         window.activeChart = 'histogram';
         drawChart();
