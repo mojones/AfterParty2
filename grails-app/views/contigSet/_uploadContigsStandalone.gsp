@@ -37,24 +37,6 @@
         drawActiveChart();
     }
 
-    function zip2(arrayA, arrayB) {
-        var length = Math.min(arrayA.length, arrayB.length);
-        var result = [];
-        for (var n = 0; n < length; n++) {
-            result.push([arrayA[n], arrayB[n]]);
-        }
-        return result;
-    }
-
-    function zip3(arrayA, arrayB, arrayC) {
-        var length = Math.min(arrayA.length, arrayB.length, arrayC.length);
-        var result = [];
-        for (var n = 0; n < length; n++) {
-            result.push([arrayA[n], arrayB[n], arrayC[n]]);
-        }
-        return result;
-    }
-
     function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, lengthWithoutNArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
         var length = Math.min(arrayA.length, arrayB.length);
         var result = [];
@@ -424,19 +406,19 @@
         }
 
 
-        var colourList = contigSetData.contigSetList.map(function(a) {
+        var colourList = contigSetRawData.contigSetList.map(function(a) {
             return a.colour;
         });
 //        console.log(colourList);
 
         var mySeriesOptions = [];
-        for (var i = 0; i < contigSetData.contigSetList.length; i++) {
+        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
             mySeriesOptions.push(
                     {
                         lineOptions: {
                             show : window.series[i]
                         },
-                        label : contigSetData.contigSetList[i].id
+                        label : contigSetRawData.contigSetList[i].label
                     }
             );
         }
@@ -556,7 +538,7 @@
         var renderer;
         var fieldName;
 
-        var colourList = contigSetData.contigSetList.map(function(a) {
+        var colourList = contigSetRawData.contigSetList.map(function(a) {
             return a.colour;
         });
 
@@ -825,11 +807,11 @@
         $('#cumulativeContainer').hide();
 
 
-        contigSetData = {contigSetList : ${contigSetDataJSON}};
+        %{--contigSetData = {contigSetList : ${contigSetDataJSON}};--}%
         contigSetRawData = {contigSetList : ${contigSetRawDataJSON}};
 
         window.seriesList = [];
-        window.activeChart = 'histogram';
+        window.activeChart = 'scatterplot';
 
 
         drawChart();

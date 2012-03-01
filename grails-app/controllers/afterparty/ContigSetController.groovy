@@ -18,17 +18,9 @@ class ContigSetController {
 
     def standaloneComparison = {}
 
-    /*
-    * TODO
-    *
-    * histograms on the side of the scatterplot
-    *
-    * */
-
     def uploadContigsStandalone = {
 
         def contigSetRawResult = []
-        def contigSetStatsResult = []
 
         def assemblies = []
 
@@ -85,92 +77,6 @@ class ContigSetController {
             contigSetRawResult.add(cs)
         }
 
-        Integer overallMaxLength = contigSetRawResult.collect({it.length.max()}).max()     // nicely functional
-        Integer overallMaxQuality = contigSetRawResult.collect({it.quality.max()}).max()
-        Integer overallMaxCoverage = contigSetRawResult.collect({it.coverage.max()}).max()
-
-        Integer overallMaxGc = contigSetRawResult.collect({it.gc.max()}).max() * 100
-        Integer overallMinGc = contigSetRawResult.collect({it.gc.min()}).min() * 100
-
-        println "calculated maxima in ${System.currentTimeMillis() - start}"
-
-
-        contigSetRawResult.each { assembly ->
-
-            def statsResult = [:]
-            statsResult.id = assembly.label
-            statsResult.colour = assembly.colour
-
-            // build a histogram of length and a scaled histogram of length
-            statsResult.lengthvalues = []
-            statsResult.scaledlengthvalues = []
-            Integer logMaxLength = Math.log10(overallMaxLength)
-            Integer stepSizeLength = 10 ** (logMaxLength - 2)
-            println "length stepSize is $stepSizeLength"
-            Integer numberOfStepsLength = (overallMaxLength / stepSizeLength) + 1
-            (0..numberOfStepsLength).each {
-                def floor = it * stepSizeLength
-                def ceiling = (it * stepSizeLength) + stepSizeLength
-                def count = assembly.length.findAll({it >= floor && it < ceiling}).size()
-                statsResult.lengthvalues.add([floor, count])
-                statsResult.scaledlengthvalues.add([floor, (1000 * (count / assembly.length.size())).toInteger()])
-//                println "counted length for $floor (max is $overallMaxLength)"
-            }
-
-            // build a histogram of quality and a scaled histogram of length
-            statsResult.qualityvalues = []
-            statsResult.scaledqualityvalues = []
-
-            Integer stepSizeQuality = 1
-            println "quality stepSize is $stepSizeQuality"
-            Integer numberOfStepsQuality = (overallMaxQuality / stepSizeQuality) + 1
-
-            (0..numberOfStepsQuality).each {
-                def floor = it * stepSizeQuality
-                def ceiling = (it * stepSizeQuality) + stepSizeQuality
-                def count = assembly.quality.findAll({it >= floor && it < ceiling}).size()
-                statsResult.qualityvalues.add([floor, count])
-                statsResult.scaledqualityvalues.add([floor, (1000 * (count / assembly.quality.size())).toInteger()])
-//                println "counted quality for $floor (max is $overallMaxQuality)"
-
-            }
-
-            // build a histogram of coverage and a scaled histogram of length
-            statsResult.coveragevalues = []
-            statsResult.scaledcoveragevalues = []
-            Integer logMaxCoverage = Math.log10(overallMaxCoverage)
-            Integer stepSizeCoverage = [10 ** (logMaxCoverage - 2), 1].max()
-            println "coverage stepSize is $stepSizeCoverage"
-            Integer numberOfStepsCoverage = (overallMaxCoverage / stepSizeCoverage) + 1
-            (0..numberOfStepsCoverage).each {
-                def floor = it * stepSizeCoverage
-                def ceiling = (it * stepSizeCoverage) + stepSizeCoverage
-                def count = assembly.coverage.findAll({it >= floor && it < ceiling}).size()
-                statsResult.coveragevalues.add([floor, count])
-                statsResult.scaledcoveragevalues.add([floor, (1000 * (count / assembly.coverage.size())).toInteger()])
-//                println "counted coverage for $floor (max is $overallMaxCoverage)"
-
-            }
-
-            // build a histogram of gc and a scaled histogram of gc
-            statsResult.gcvalues = []
-            statsResult.scaledgcvalues = []
-
-            ((overallMinGc - 1)..(overallMaxGc + 1)).each {
-                def floor = it / 100
-                def ceiling = (it + 1) / 100
-                def count = assembly.gc.findAll({it >= floor && it < ceiling}).size()
-                statsResult.gcvalues.add([floor, count])
-                statsResult.scaledgcvalues.add([floor, (1000 * (count / assembly.gc.size())).toInteger()])
-
-            }
-
-            contigSetStatsResult.push(statsResult)
-
-            println "built histograms in ${System.currentTimeMillis() - start}"
-
-        }
-
 
 
 
@@ -183,7 +89,6 @@ class ContigSetController {
         def templateString = g.render(template: 'uploadContigsStandalone', model: [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
-                contigSetDataJSON: contigSetStatsResult.encodeAsJSON(),
                 fileName : output.name
         ])
 
