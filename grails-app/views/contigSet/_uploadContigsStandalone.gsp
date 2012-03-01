@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="layout" content="standalone.gsp"/>
 <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
-<title>Viewing a set of contigs</title>
+<title>Standalone assembly viewer</title>
 
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
 <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.js')}"></script>
@@ -28,25 +28,14 @@
 
 <script type="text/javascript">
 
+    // set the size of the divs that will hold charts, then redraw the active chart
     function setChartSize(pixels) {
         $('#histogramDiv').height(pixels).width(2 * pixels);
         $('#scatterplotDiv').height(2 * pixels).width(2 * pixels);
-        $('#topHistogramDiv').height(pixels/2).width(2 * pixels);
-        $('#sideHistogramDiv').height(2 * pixels).width(pixels/2);
+        $('#topHistogramDiv').height(pixels / 2).width(2 * pixels);
+        $('#sideHistogramDiv').height(2 * pixels).width(pixels / 2);
         $('#cumulativeDiv').height(2 * pixels).width(2 * pixels);
         drawActiveChart();
-    }
-
-    function zipAllWithFilter(arrayA, arrayB, idArray, lengthArray, lengthWithoutNArray, qualityArray, coverageArray, gcArray, topBlastArray, filterFunction) {
-        var length = Math.min(arrayA.length, arrayB.length);
-        var result = [];
-        for (var n = 0; n < length; n++) {
-
-            if (filterFunction(n)) {
-                result.push([arrayA[n], arrayB[n], idArray[n], lengthArray[n],lengthWithoutNArray[n], qualityArray[n], coverageArray[n], gcArray[n], topBlastArray[n]]);
-            }
-        }
-        return result;
     }
 
     // show and hide data series when asked to
@@ -60,7 +49,6 @@
         window.scatterXField = fieldName;
         $('.scatterx').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#scatterx' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
-        $('.scatterplotOptions').hide();
         drawActiveChart();
     }
 
@@ -68,7 +56,6 @@
         window.scatterYField = fieldName;
         $('.scattery').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#scattery' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
-        $('.scatterplotOptions').hide();
         drawActiveChart();
     }
 
@@ -204,28 +191,25 @@
     }
 
     drawActiveChart = function() {
+        $('.chartOptions').hide();
+        $('.chartDiv').empty();
         $('#spinner').show();
         if (window.activeChart == 'histogram') {
-            $('#histogramDiv').empty();
             setTimeout('drawChart();', 10);
         }
 
         if (window.activeChart == 'scatterplot') {
-            $('#scatterplotDiv').empty();
             setTimeout('drawScatterChart();', 10);
         }
 
         if (window.activeChart == 'cumulative') {
-            $('#cumulativeDiv').empty();
             setTimeout('drawCumulativeChart();', 10);
         }
 
     }
 
     drawScatterChart = function() {
-        $('#scatterplotDiv').empty();
 
-        $('#spinner').show();
 
         var allLengthValues;
         var fieldName;
@@ -245,9 +229,14 @@
         }
 
         var allValues = window.seriesList.map(function(a) {
-            return zipAllWithFilter(a[realXField], a[realYField], a.id, a.length, a.lengthWithoutN, a.quality, a.coverage, a.gc, a.topBlast, function(n) {
-                return (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage);
-            });
+            var length = a.id.length;
+            var result = [];
+            for (var n = 0; n < length; n++) {
+                if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
+                    result.push([a[realXField][n], a[realYField][n], a.id[n], a.length[n], a.lengthWithoutN[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+                }
+            }
+            return result;
         });
 
 
@@ -341,7 +330,9 @@
         drawTopSideHistograms();
 
         $('#spinner').hide();
+        $('.chartOptions').show();
         $('.scatterplotOptions').show();
+        $('#scatterplotContainer').show();
 
 
     }
@@ -472,8 +463,10 @@
                 }
         );
         $('#spinner').hide();
+        $('.chartOptions').show();
 
     }
+
     drawCumulativeChart = function() {
         $('#cumulativeDiv').empty();
         $('#spinner').show();
@@ -653,9 +646,31 @@
                 }
         );
         $('#spinner').hide();
+        $('.chartOptions').show();
 
     }
 
+    //show / hide the different chart types
+    function switchTo(chartType) {
+        console.log('switching to ' + chartType);
+        $('.chartTypeSelector').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#turn' + chartType + 'On').css({'cursor':'default', 'font-weight':'bold'});
+
+        $('.chartContainer').hide();
+        $('#' + chartType + 'Container').show();
+
+        $('.chartDiv').empty();
+        $('#spinner').show();
+        window.activeChart = chartType;
+        setTimeout('drawActiveChart();', 1);
+    }
+
+    function setHistogramX(fieldName) {
+        $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#turn' + fieldName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+        window.chartType = fieldName;
+        setTimeout('drawActiveChart();', 1);
+    }
 
     //         set up ajax compare assemblies
     $(document).ready(function() {
@@ -734,87 +749,13 @@
         });
 
 
-        // handle chart type
-        $('#turnlengthOn').click(function() {
-            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnlengthOn').css({'cursor':'default', 'font-weight':'bold'});
-            window.chartType = 'length';
-            setTimeout('drawChart();', 1);
-        });
-        $('#turncoverageOn').click(function() {
-            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turncoverageOn').css({'cursor':'default', 'font-weight':'bold'});
-            window.chartType = 'coverage';
-            setTimeout('drawChart();', 1);
-        });
-        $('#turnqualityOn').click(function() {
-            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnqualityOn').css({'cursor':'default', 'font-weight':'bold'});
-            window.chartType = 'quality';
-            setTimeout('drawChart();', 1);
-        });
-        $('#turngcOn').click(function() {
-            $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turngcOn').css({'cursor':'default', 'font-weight':'bold'});
-            window.chartType = 'gc';
-            setTimeout('drawChart();', 1);
-        });
-
-
-        //show / hide the different chart types
-        $('#turnhistogramOn').click(function() {
-            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnhistogramOn').css({'cursor':'default', 'font-weight':'bold'});
-            $('#cumulativeContainer').hide();
-            $('#scatterplotContainer').hide();
-            $('#histogramContainer').show();
-            $('#histogramDiv').empty();
-            $('#spinner').show();
-            window.activeChart = 'histogram';
-            setTimeout('drawChart();', 1);
-
-        });
-        $('#turnScatterOn').click(function() {
-            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turncumulativeOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnScatterOn').css({'cursor':'default', 'font-weight':'bold'});
-            $('#histogramContainer').hide();
-            $('#cumulativeContainer').hide();
-            $('#scatterplotContainer').show();
-            $('#scatterplotDiv').empty();
-            $('#spinner').show();
-            window.activeChart = 'scatterplot';
-
-            setTimeout('drawScatterChart();', 1);
-
-        });
-        $('#turncumulativeOn').click(function() {
-            $('#turnhistogramOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turnScatterOn').css({'cursor':'pointer', 'font-weight':'normal'});
-            $('#turncumulativeOn').css({'cursor':'default', 'font-weight':'bold'});
-            $('#histogramContainer').hide();
-            $('#scatterplotContainer').hide();
-            $('#cumulativeContainer').show();
-
-            window.activeChart = 'cumulative';
-
-            setTimeout('drawCumulativeChart();', 1);
-
-        });
-
-        $('#scatterplotContainer').hide();
-        $('#cumulativeContainer').hide();
-
-
-        %{--contigSetData = {contigSetList : ${contigSetDataJSON}};--}%
         contigSetRawData = {contigSetList : ${contigSetRawDataJSON}};
 
         window.seriesList = [];
-        window.activeChart = 'scatterplot';
 
+        setHistogramX('length');
 
-        drawChart();
+        switchTo('scatterplot');
 
         // start off by sorting the data series so that the one with the fewest contigs is on top in the chart - this usually makes it easier to see
         var sortedDatasetList = contigSetRawData.contigSetList;
@@ -911,10 +852,15 @@
 
     <div class="block_content">
 
-        <p>Chart type : <span id='turnScatterOn' style="cursor: pointer; ">scatter plot</span> | <span style="font-weight: bold;" id='turnhistogramOn'>histogram</span> | <span style="cursor: pointer; " id='turncumulativeOn'>cumulative length</span>
+        <h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Drawing chart, please wait...</h2>
+
+        <p class="chartOptions">Chart type :
+            <span class="chartTypeSelector" id='turnscatterplotOn' onclick="switchTo('scatterplot')">scatter plot</span> |
+            <span class="chartTypeSelector" id='turnhistogramOn' onclick="switchTo('histogram')">histogram</span> |
+            <span class="chartTypeSelector" id='turncumulativeOn' onclick="switchTo('cumulative')">cumulative length</span>
         </p>
 
-        <p>
+        <p class="chartOptions">
             Chart size :
             <span onclick="setChartSize(200);" style="cursor: pointer;">tiny</span> |
             <span onclick="setChartSize(300);" style="cursor: pointer;">small</span> |
@@ -923,7 +869,7 @@
             <span onclick="setChartSize(800);" style="cursor: pointer;">huge</span>
         </p>
 
-        <p>
+        <p class="chartOptions">
             Minimum sequence length: <input type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
         drawActiveChart();">
             <br/>
@@ -931,22 +877,19 @@
         drawActiveChart();">
         </p>
 
-        <p>Exclude Ns from length : <span id='turncumulativefilternOff' style="font-weight: bold;">no</span> |
+        <p class="chartOptions">Exclude Ns from length : <span id='turncumulativefilternOff' style="font-weight: bold;">no</span> |
             <span style="cursor: pointer; " id='turncumulativefilternOn'>yes</span>
         </p>
 
-        %{--TODO possibly replace this with spin.js so that the spinner doesn't freeze while we are drawing the chart--}%
-        <h2 id="spinner">Drawing chart, please wait...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-        </h2>
 
-        <div id='histogramContainer'>
-            <p>Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> |
+        <div class="chartContainer" id='histogramContainer'>
+            <p class="chartOptions">Mouseover : <span id='turnhighlighterOn' style="font-weight: bold;">highlight</span> |
                 <span style="cursor: pointer; " id='turnhighlighterOff'>zoom</span> (
                 <span style="cursor: pointer;" id="resetHistogramZoom">click to reset</span>)
 
             </p>
 
-            <p>
+            <p class="chartOptions">
 
                 Y axis : <span id='turnlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnlogOff'>linear</span>
                 &nbsp;&nbsp;&nbsp;
@@ -954,35 +897,35 @@
                 Scale : <span id='turnscaledOn' style="cursor: pointer; ">per 1000 contigs</span> | <span style="font-weight: bold;" id='turnscaledOff'>raw frequency</span>
             </p>
 
-            <p>
+            <p class="chartOptions">
                 Chart type :
-                <span id='turnlengthOn' class="histogramField" style="font-weight: bold;">length</span> |
-                <span style="cursor: pointer; " id='turnqualityOn' class="histogramField">quality</span> |
-                <span style="cursor: pointer; " id='turncoverageOn' class="histogramField">coverage</span>|
-                <span style="cursor: pointer; " id='turngcOn' class="histogramField">gc</span>
+                <span onclick="setHistogramX('length')" id='turnlengthOn' class="histogramField">length</span> |
+                <span onclick="setHistogramX('quality')" id='turnqualityOn' class="histogramField">quality</span> |
+                <span onclick="setHistogramX('coverage')" id='turncoverageOn' class="histogramField">coverage</span>|
+                <span onclick="setHistogramX('gc')" id='turngcOn' class="histogramField">gc</span>
             </p>
 
 
-            <div id="histogramDiv" style="height: 400px; width: 800px;">
+            <div class="chartDiv" id="histogramDiv" style="height: 400px; width: 800px;">
 
             </div>
         </div>
 
-        <div id='cumulativeContainer'>
-            <p>Mouseover : <span id='turncumulativehighlighterOn' style="font-weight: bold;">highlight</span> |
+        <div class="chartContainer" id='cumulativeContainer'>
+            <p class="chartOptions">Mouseover : <span id='turncumulativehighlighterOn' style="font-weight: bold;">highlight</span> |
                 <span style="cursor: pointer; " id='turncumulativehighlighterOff'>zoom</span> (
                 <span style="cursor: pointer;" id="resetCumulativeZoom">click to reset</span>)
 
             </p>
 
 
-            <div id="cumulativeDiv" style="height: 800px; width: 1000px;">
+            <div class="chartDiv" id="cumulativeDiv" style="height: 800px; width: 1000px;">
 
             </div>
         </div>
 
-        <div id='scatterplotContainer'>
-            <p class='scatterplotOptions'>Mouseover :
+        <div class="chartContainer" id='scatterplotContainer'>
+            <p class="chartOptions" class='scatterplotOptions'>Mouseover :
                 <span id='turnscatterhighlighterOn' style="font-weight: bold;">hightlight</span> |
                 <span style="cursor: pointer; " id='turnscatterhighlighterOff'>zoom</span>(
                 <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
@@ -998,7 +941,7 @@
                 X axis : <span id='turnscatterxlogOn' style="cursor: pointer; ">log</span> | <span style="font-weight: bold;" id='turnscatterxlogOff'>linear</span>
             </p>
 
-            <p class='scatterplotOptions'>
+            <p class="chartOptions" class='scatterplotOptions'>
                 X axis :
                 <span class="scatterx" id="scatterxlength" style="cursor: pointer; " onclick="setScatterX('length');">length</span> |
                 <span class="scatterx" id="scatterxquality" style="cursor: pointer; " onclick="setScatterX('quality');">quality</span> |
@@ -1007,7 +950,7 @@
 
             </p>
 
-            <p class='scatterplotOptions'>
+            <p class="chartOptions" class='scatterplotOptions'>
                 Y axis :
                 <span class="scattery" id="scatterylength" style="cursor: pointer; " onclick="setScatterY('length');">length</span> |
                 <span class="scattery" id="scatteryquality" style="cursor: pointer; " onclick="setScatterY('quality');">quality</span> |
@@ -1018,13 +961,20 @@
 
             <table>
                 <tr>
-                    <td style="border: none; margin-left: 10px;"><div id="topHistogramDiv" style="height: 200px; width: 800px;"/>
+                    <td style="border: none; margin-left: 10px;">
+                        <div class="chartDiv" id="topHistogramDiv" style="height: 200px; width: 800px;"></div>
                     </td>
-                    <td style="border: none;"></td>
+                    <td style="border: none;">
+
+                    </td>
                 </tr>
                 <tr>
-                    <td style="border: none;"><div id="scatterplotDiv" style="height: 800px; width: 800px;"/></td>
-                    <td style="border: none;"><div id="sideHistogramDiv" style="height: 800px; width: 200px;"/></td>
+                    <td style="border: none;">
+                        <div class="chartDiv" id="scatterplotDiv" style="height: 800px; width: 800px;"></div>
+                    </td>
+                    <td style="border: none;">
+                        <div class="chartDiv" id="sideHistogramDiv" style="height: 800px; width: 200px;"></div>
+                    </td>
                 </tr>
             </table>
 
