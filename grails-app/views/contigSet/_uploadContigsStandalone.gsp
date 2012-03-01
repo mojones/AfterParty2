@@ -374,21 +374,13 @@
     // draw a histogram
     drawChart = function() {
 
-        var allLengthValues;
-        var renderer;
-        var fieldName = window.chartType;
+        // pick the correct renderer to use
+        var renderer = logOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
-        if (logOn) {
-            renderer = $.jqplot.LogAxisRenderer;
-        } else {
-            renderer = $.jqplot.LinearAxisRenderer;
-        }
-
-
+        // grab the colour list
         var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
-//        console.log(colourList);
 
         var mySeriesOptions = [];
         for (var i = 0; i < contigSetRawData.length; i++) {
@@ -401,11 +393,9 @@
                     }
             );
         }
-//        console.log(mySeriesOptions);
 
-        var allFieldValues = buildHistogram(fieldName);
+        var allFieldValues = buildHistogram(window.chartType);
 
-//        console.log('values : ' + allLengthValues);
         histogramPlot = $.jqplot('histogramDiv',
                 allFieldValues,
                 {
@@ -450,22 +440,25 @@
                     }
                 }
         );
+        // show the options again
         $('#spinner').hide();
         $('.chartOptions').show();
-
     }
 
+    // draw kumar-blaxter curve for the contig set
     drawCumulativeChart = function() {
-        $('#cumulativeDiv').empty();
-        $('#spinner').show();
 
+        // we will need arrays to hold an n50 and n90 value for each series
         var n50values = [];
         var n90values = [];
 
+        // use a map to go through the series
         var allValues = contigSetRawData.map(function(dataset) {
 
-            var lengthField = window.cumulativefilternOn ? 'lengthWithoutN' : 'length';
-            console.log('field will be : ' + lengthField);
+            // are we using length without N?
+            var lengthField = window.cumulativefilternOn ? 'lengthwithoutn' : 'length';
+
+            // get an array of all the lengths, filtering by minimum sequence length, and sort them in reverse order i.e. largest first
             var lengths = dataset[lengthField].filter(
                     function(element) {
                         return (element >= window.minSeqLength);
@@ -473,26 +466,28 @@
                         return b - a
                     });
 
+            // calculate the sum of all lengths - we need this to work out the n50/n90
             var lengthsSum = 0;
             for (var i = 0; i < lengths.length; i++) {
                 lengthsSum += lengths[i];
             }
-
             var n50Target = lengthsSum / 2
             var n90Target = (lengthsSum / 100) * 90
 
-            console.log('n50 is ' + n50Target)
-            console.log('n90 is ' + n90Target)
-
+            // use flags to keep track of whether or not we have seen the n50/n90 contig yet
             var seenn50 = false;
             var seenn90 = false;
 
             var returnValue = [];
             var cumulativeTotal = 0;
+
+            // go throught the sorted list of lengths and push the cumulative values onto the return array
             for (var i = 0; i < lengths.length; i++) {
                 var l = lengths[i];
                 cumulativeTotal += l;
                 returnValue.push([i, cumulativeTotal, l]);
+
+                // when we hit the n50 contig, push some data onto the n50 array
                 if (cumulativeTotal >= n50Target && !seenn50) {
                     n50values.push({
                         contigNumber : i,
@@ -502,6 +497,7 @@
                     seenn50 = true;
                 }
 
+                // ditto for n90
                 if (cumulativeTotal >= n90Target && !seenn90) {
                     n90values.push({
                         contigNumber : i,
@@ -514,39 +510,31 @@
             return returnValue;
         });
 
-        console.log(n50values);
 
-        var renderer;
-        var fieldName;
-
+        //grab the colours
         var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
 
+        // decide whether or not to show each series
         var mySeriesOptions = [];
         for (var i = 0; i < contigSetRawData.length; i++) {
-
-
             mySeriesOptions.push(
                     {
-
                         showLine : window.series[i],
                         showLabel : window.series[i],
                         label : contigSetRawData[i].label
 
                     }
             );
-
-
         }
 
-        // go through the list of contig sets again and add a new series to hold n50values
+        // go through the list of contig sets again and add a new series for each to hold n50values
         for (var i = 0; i < contigSetRawData.length; i++) {
-
             allValues.push([
                 [n50values[i].contigNumber, n50values[i].totalLength, 'n50 length : ' + n50values[i].contigLength]
             ]);
-
+            // also add a new object to the series options - decide whether or not to show the marker
             mySeriesOptions.push(
                     {
                         showMarker: window.series[i],
@@ -556,7 +544,7 @@
                             show:window.series[i],
                             ypadding : 5,
                             xpadding : 5,
-                            location : 'nw'
+                            location : 'e'
                         }
                     }
             );
@@ -564,11 +552,9 @@
 
         // go through the list of contig sets again and add a new series to hold n90values
         for (var i = 0; i < contigSetRawData.length; i++) {
-
             allValues.push([
                 [n90values[i].contigNumber, n90values[i].totalLength, 'n90 length : ' + n90values[i].contigLength]
             ]);
-
             mySeriesOptions.push(
                     {
                         showMarker: window.series[i],
@@ -578,13 +564,13 @@
                             show:window.series[i],
                             ypadding : 5,
                             xpadding : 5,
-                            location : 'ne'
+                            location : 'e'
                         }
                     }
             );
         }
 
-
+        // now create the plot
         cumulativePlot = $.jqplot('cumulativeDiv',
                 allValues,
                 {
@@ -602,9 +588,7 @@
                         },
                         yaxis:{
                             label:'Cumulative contig length',
-                            pad : 0,
-                            renderer: renderer
-
+                            pad : 0
                         }
                     },
                     highlighter: {
@@ -633,6 +617,8 @@
                     }
                 }
         );
+
+        // done!
         $('#spinner').hide();
         $('.chartOptions').show();
 
@@ -641,26 +627,35 @@
     //show / hide the different chart types
     function switchTo(chartType) {
         console.log('switching to ' + chartType);
+
+        // make the one we've selected bold, and make the others have a pointer
         $('.chartTypeSelector').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#turn' + chartType + 'On').css({'cursor':'default', 'font-weight':'bold'});
 
+        // hide all chart containers, then show the one we want
         $('.chartContainer').hide();
         $('#' + chartType + 'Container').show();
 
+        // delete all charts, show the spinner
         $('.chartDiv').empty();
         $('#spinner').show();
+
+        // set the correct advice chart, and draw it
         window.activeChart = chartType;
         setTimeout('drawActiveChart();', 1);
     }
 
+
     function setHistogramX(fieldName) {
+        // make the selected field bold and make all the others clickable
         $('.histogramField').css({'cursor':'pointer', 'font-weight':'normal'});
         $('#turn' + fieldName + 'On').css({'cursor':'default', 'font-weight':'bold'});
+
+        // update the chart type and draw it
         window.chartType = fieldName;
         setTimeout('drawActiveChart();', 1);
     }
 
-    //         set up ajax compare assemblies
     $(document).ready(function() {
 
         // start with all series toggled on
@@ -681,51 +676,56 @@
         window.logOn = false;
         window.scaledOn = false;
 
+        // globals that affect the scatter plot
         window.scatterhighlighterOn = true;
         window.scatterylogOn = true;
         window.scatterxlogOn = false;
         window.scattertrendOn = false;
 
 
+        // global for the histogram field
         window.chartType = 'length';
 
-        window.scatterXField = 'gc';
-        window.scatterYField = 'coverage';
-
+        // length/coverage filters
         window.minSeqLength = 0;
         window.minSeqCoverage = 0;
 
-        // boring code to handle chart options
+        // function to handle the various option toggles
 
         var setUpToggle = function(variableName) {
+            // when the turnsomethingOn element is clicked....
             $('#turn' + variableName + 'On').click(function() {
+                // ..set the global variable to true...
                 window[variableName + 'On'] = true;
+                // ..make the 'on' element bold and the 'off' element clickable...
                 $('#turn' + variableName + 'Off').css({'cursor':'pointer', 'font-weight':'normal'});
                 $('#turn' + variableName + 'On').css({'cursor':'default', 'font-weight':'bold'});
-                $('.scatterplotOptions').hide();
+                // ..and redraw the chart
                 drawActiveChart();
             });
             $('#turn' + variableName + 'Off').click(function() {
                 window[variableName + 'On'] = false;
                 $('#turn' + variableName + 'On').css({'cursor':'pointer', 'font-weight':'normal'});
                 $('#turn' + variableName + 'Off').css({'cursor':'default', 'font-weight':'bold'});
-                $('.scatterplotOptions').hide();
                 drawActiveChart();
             });
         };
 
+        // global toggles that affect all charts
         setUpToggle('highlighter');
         setUpToggle('log');
         setUpToggle('scaled');
 
+        // toggles for scatter plot
         setUpToggle('scatterhighlighter');
         setUpToggle('scattertrend');
         setUpToggle('scatterylog');
         setUpToggle('scatterxlog');
 
-
+        // toggle for cumulative n filtering
         setUpToggle('cumulativefiltern');
 
+        // three 'reset zoom' elements
         $('#resetZoom').click(function() {
             scatterPlot.resetZoom();
         });
@@ -736,14 +736,18 @@
             cumulativePlot.resetZoom();
         });
 
-
+        // embed the raw data as json
         contigSetRawData = ${contigSetRawDataJSON};
 
-
+        // set up some sensible defaults
         setHistogramX('length');
+        setScatterX('gc');
+        setScatterY('coverage');
 
+        // start by showing the user the scatter plot
         switchTo('scatterplot');
 
+        // put the url at the top of the page as a hint to the user to bookmark it
         $('#url').html(document.URL);
 
     });
