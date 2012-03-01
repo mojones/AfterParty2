@@ -46,7 +46,7 @@ class ContigSetController {
             def cs = [
                     id: [],
                     length: [],
-                    lengthWithoutN: [],
+                    lengthwithoutn: [],
                     quality: [],
                     coverage: [],
                     topBlast: [],
@@ -61,7 +61,7 @@ class ContigSetController {
                 cs.id.push(id)
                 cs.length.push(sequence.length())
                 def lengthWithoutN = sequence.replaceAll('n', '').length()
-                cs.lengthWithoutN.push(lengthWithoutN)
+                cs.lengthwithoutn.push(lengthWithoutN)
                 cs.quality.push(quality.toFloat())
                 cs.coverage.push(coverage.toFloat())
                 cs.topBlast.push(id)
@@ -76,7 +76,6 @@ class ContigSetController {
             cs.size = contigs.size()
             contigSetRawResult.add(cs)
         }
-
 
 
 

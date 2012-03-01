@@ -40,7 +40,6 @@
 
     // show and hide data series when asked to
     function toggleSeries(index) {
-        $('#spinner').show();
         window.series[index] = !window.series[index];
         drawActiveChart();
     }
@@ -60,52 +59,44 @@
     }
 
     //rearrange the data series so that the one with the specified id is last i.e. on the top layer of the scatter plot
-    function moveToTop(id) {
-        $('#spinner').show();
-        var sortedDatasetList = contigSetRawData.contigSetList.sort(function(a, b) {
-            return b.id.length - a.id.length
-        });
-        // empty the dataset list
-        window.seriesList = [];
-        var currentDataset;
-        // first add all the other datasets
-        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
-            currentDataset = contigSetRawData.contigSetList[i];
-            if (currentDataset.contigSetId != id) {
-                window.seriesList.push(currentDataset);
-            }
-        }
-
-        // now add the one we want
-        for (var j = 0; j < contigSetRawData.contigSetList.length; j++) {
-            currentDataset = contigSetRawData.contigSetList[j];
-            if (currentDataset.contigSetId == id) {
-                window.seriesList.push(currentDataset);
-            }
-        }
-        drawActiveChart();
-
+    function moveToTop(index) {
+        scatterPlot.moveSeriesToFront(index);
+        histogramPlot.moveSeriesToFront(index);
+        cumulativePlot.moveSeriesToFront(index);
+        topHistogramPlot.moveSeriesToFront(index);
+        sideHistogramPlot.moveSeriesToFront(index);
     }
 
+    // draw the top and side histograms that accompany the scatter plot
     function drawTopSideHistograms() {
-//now draw histogram above scatter plot
 
-
-        if (typeof scatterPlot == 'undefined' || typeof window.seriesList == 'undefined') {
+        //sanity check - we need to have a scatter plot and a list of data series to proceed
+        if (typeof scatterPlot == 'undefined' || typeof contigSetRawData == 'undefined') {
             return;
         }
 
-        $('#topHistogramDiv').empty();
-        $('#sideHistogramDiv').empty();
-        var topHistogramXaxisRenderer;
-
+        // build data using the current X field of the scatter plot and the max/min from the already-drawn scatter plot
         var topHistogramData = buildHistogram(window.scatterXField, scatterPlot.axes.xaxis.min, scatterPlot.axes.xaxis.max);
-        topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
-        var colourList = window.seriesList.map(function(a) {
+        // decide whether to render a linear or a logarithmic axis
+        var topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
+
+        // grab the list of colours to use from the series List - they may have been rearranged since last time
+        var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
 
+        // set up series options - only show lines for series that are enabled
+        var mySeriesOptions = [];
+        for (var i = 0; i < contigSetRawData.length; i++) {
+            mySeriesOptions.push(
+                    {
+                        showLine : window.series[i]
+                    }
+            );
+        }
+
+        // now go ahead and create the plot
         topHistogramPlot = $.jqplot('topHistogramDiv',
                 topHistogramData,
                 {
@@ -114,20 +105,21 @@
                         showMarker: false,
                         lineWidth: 1
                     },
+                    series: mySeriesOptions,
                     axes:{
                         xaxis:{
                             pad: 0,
                             labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                            min : scatterPlot.axes.xaxis.min,
+                            min : scatterPlot.axes.xaxis.min, // take the max and min from the scatter plot
                             max : scatterPlot.axes.xaxis.max,
                             renderer : topHistogramXaxisRenderer,
-                            numberTicks : scatterPlot.axes.xaxis.numberTicks
+                            numberTicks : scatterPlot.axes.xaxis.numberTicks // also try to copy the scatter plot number of ticks
 
                         },
                         yaxis:{
                             label: 'frequency',
                             pad : 0,
-                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer // use this renderer to make the text rotated
                         }
                     },
                     highlighter: {
@@ -142,26 +134,27 @@
         )
 
 
-        //now draw histogram beside scatter plot
-
+        // same process for the side histogram
         var sideHistogramYaxisRenderer;
 
-        var sideHistogramData = buildHistogram(window.scatterYField).map(function(a) {
+        // because the plot is on its side, we need to transpose the x and y elements of each data point
+        var sideHistogramData = buildHistogram(window.scatterYField, scatterPlot.axes.yaxis.min, scatterPlot.axes.yaxis.max).map(function(a) {
             return a.map(function(b) {
                 return [b[1], b[0]];
             });
         });
-        sideHistogramYaxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
+        sideHistogramYaxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         sideHistogramPlot = $.jqplot('sideHistogramDiv',
                 sideHistogramData,
-                {   sortData : false,
+                {   sortData : false,  // prevent jqplot from sorting the data - we want the points to go from top to bottom, not left to right
                     seriesColors : colourList,
                     seriesDefaults:{
                         showMarker: false,
                         lineWidth: 1
                     },
+                    series: mySeriesOptions,
                     axes:{
                         xaxis:{
                             pad: 0,
@@ -187,13 +180,16 @@
                     }
                 }
         )
-
     }
 
+    // draw whichever chart we want to look at
     drawActiveChart = function() {
+        // hide all the options and all charts while we are drawing - we want to prevent the user clicking on anything
         $('.chartOptions').hide();
         $('.chartDiv').empty();
         $('#spinner').show();
+
+        // now draw the chart with a timeout to make sure that the options get hidden
         if (window.activeChart == 'histogram') {
             setTimeout('drawChart();', 10);
         }
@@ -208,64 +204,52 @@
 
     }
 
+
     drawScatterChart = function() {
 
-
-        var allLengthValues;
-        var fieldName;
-
+        // choose log or linear axes depending on the options
         var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
-        var realXField = window.scatterXField;
-        var realYField = window.scatterYField;
-
-        if (window.scatterXField == 'length' && window.cumulativefilternOn) {
-            realXField = 'lengthWithoutN'
-        }
-
-        if (window.scatterYField == 'length' && window.cumulativefilternOn) {
-            realYField = 'lengthWithoutN'
-        }
-
-        var allValues = window.seriesList.map(function(a) {
+        // map through the data - each series will generate an array of 8-element arrays. We will use the first to elements to plot X and Y and the last six to display the tooltip
+        var allValues = contigSetRawData.map(function(a) {
             var length = a.id.length;
             var result = [];
             for (var n = 0; n < length; n++) {
+                // only add contigs if they pass the length and coverage filters
                 if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
-                    result.push([a[realXField][n], a[realYField][n], a.id[n], a.length[n], a.lengthWithoutN[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+                    result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
                 }
             }
             return result;
         });
 
-
-        var colourList = window.seriesList.map(function(a) {
+        // grab the colours
+        var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
-//        console.log(allValues);
 
         var mySeriesOptions = [];
-        for (var i = 0; i < window.seriesList.length; i++) {
+        for (var i = 0; i < contigSetRawData.length; i++) {
             mySeriesOptions.push(
                     {
                         markerOptions: {
                             show : window.series[i]
                         },
-                        label : window.seriesList[i].label,
+                        label : contigSetRawData[i].label,
                         trendline: {
-                            show: window.scattertrendOn,         // show the trend line
-                            color: colourList[i],   // CSS color spec for the trend line.
-                            label: '',          // label for the trend line.
-                            type: 'linear',     // 'linear', 'exponential' or 'exp'
-                            shadow: false,       // show the trend line shadow.
-                            lineWidth: 1.5     // width of the trend line.
+                            show: window.scattertrendOn,
+                            color: colourList[i],
+                            label: '',
+                            type: 'linear',
+                            shadow: false,
+                            lineWidth: 1.5
                         }
                     }
             );
         }
-//        console.log(mySeriesOptions);
 
+        // now create the plot
         scatterPlot = $.jqplot('scatterplotDiv',
                 allValues,
                 {
@@ -302,13 +286,13 @@
                         sizeAdjust: 7.5,
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
                         yvalues: 9,
-                        formatString : '%.2f,%.2f<br/>id: %d<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',
+                        formatString : '%.2f,%.2f<br/>id: %s<br/>length: %d (minus Ns : %d)<br/>quality: %d<br/>coverage: %.2f<br/>gc: %.2f',    // a fragment of HTML that displays all contig info on a tooltip
                         useAxesFormatters: false,
                         bringSeriesToFront: true
 
                     },
                     cursor: {
-                        show: !scatterhighlighterOn,
+                        show: !scatterhighlighterOn, //only show the cursor if we are not currently using the highlighter
                         tooltipLocation:'sw',
                         followMouse : true,
                         showVerticalLine: true,
@@ -324,11 +308,13 @@
                 }
         );
 
+        // tell this plot to redraw the top & side histograms whenever it is redrawn (i.e. when the user zooms)
         scatterPlot.postDrawHooks.add(function() {
             drawTopSideHistograms();
         });
         drawTopSideHistograms();
 
+        // all done; hide the spinner and unhide the other stuff
         $('#spinner').hide();
         $('.chartOptions').show();
         $('.scatterplotOptions').show();
@@ -337,42 +323,46 @@
 
     }
 
+    // utility funtion to build histograms from the raw contig data. Takes the name of a field and the max/min values
     buildHistogram = function(fieldName, min, max) {
 
+        // if the max/min hasn't been supplied, work out the overall max/min across all data series
         if (!max) {
-            max = Math.max.apply(Math, contigSetRawData.contigSetList.map(function(set) {
+            max = Math.max.apply(Math, contigSetRawData.map(function(set) {
                 return Math.max.apply(Math, set[fieldName]);
             }));
         }
-
         if (!min) {
-            min = Math.min.apply(Math, contigSetRawData.contigSetList.map(function(set) {
+            min = Math.min.apply(Math, contigSetRawData.map(function(set) {
                 return Math.min.apply(Math, set[fieldName]);
             }));
         }
 
-        console.log(min + ' to ' + max);
-
-        var allFieldValues = contigSetRawData.contigSetList.map(function(set) {
+        // use a map to iterate over the individual data series
+        var allFieldValues = contigSetRawData.map(function(set) {
             var fieldValues = [];
+
+            // use some convoluted math to work out the step size - it should be the power of 10 that gives us 100 bins
             var logMax = Math.floor(Math.log(max - min) / Math.LN10);
             var stepSize = Math.max(1, Math.pow(10, logMax - 2));
             var numberOfSteps = Math.floor((max / stepSize)) + 2;
 
             for (var i = (min / stepSize) - 1; i <= numberOfSteps; i++) {
+                // work out count for a given bin
                 var binFloor = i * stepSize;
                 var binCeiling = (i + 1) * stepSize;
                 var count = set[fieldName].filter(
                         function(element) {
                             return (element >= binFloor && element < binCeiling);
                         }).length;
+                // if we're going to display this data on a log scale, add 0.1 to each count to avoid log(0) error
                 if (logOn) {
                     count = count + 0.1;
                 }
+                // do we want to scale it, to make series with different numbers of contigs easier to compare?
                 if (scaledOn) {
                     count = 1000 * count / set[fieldName].length;
                 }
-//                console.log(count + ' between ' + binFloor + ' and ' + binCeiling);
                 fieldValues.push([binFloor, count]);
 
             }
@@ -381,10 +371,8 @@
         return allFieldValues;
     }
 
-
+    // draw a histogram
     drawChart = function() {
-        $('#histogramDiv').empty();
-        $('#spinner').show();
 
         var allLengthValues;
         var renderer;
@@ -397,19 +385,19 @@
         }
 
 
-        var colourList = contigSetRawData.contigSetList.map(function(a) {
+        var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
 //        console.log(colourList);
 
         var mySeriesOptions = [];
-        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
+        for (var i = 0; i < contigSetRawData.length; i++) {
             mySeriesOptions.push(
                     {
                         lineOptions: {
                             show : window.series[i]
                         },
-                        label : contigSetRawData.contigSetList[i].label
+                        label : contigSetRawData[i].label
                     }
             );
         }
@@ -474,7 +462,7 @@
         var n50values = [];
         var n90values = [];
 
-        var allValues = contigSetRawData.contigSetList.map(function(dataset) {
+        var allValues = contigSetRawData.map(function(dataset) {
 
             var lengthField = window.cumulativefilternOn ? 'lengthWithoutN' : 'length';
             console.log('field will be : ' + lengthField);
@@ -531,12 +519,12 @@
         var renderer;
         var fieldName;
 
-        var colourList = contigSetRawData.contigSetList.map(function(a) {
+        var colourList = contigSetRawData.map(function(a) {
             return a.colour;
         });
 
         var mySeriesOptions = [];
-        for (var i = 0; i < window.seriesList.length; i++) {
+        for (var i = 0; i < contigSetRawData.length; i++) {
 
 
             mySeriesOptions.push(
@@ -544,7 +532,7 @@
 
                         showLine : window.series[i],
                         showLabel : window.series[i],
-                        label : window.seriesList[i].label
+                        label : contigSetRawData[i].label
 
                     }
             );
@@ -553,7 +541,7 @@
         }
 
         // go through the list of contig sets again and add a new series to hold n50values
-        for (var i = 0; i < window.seriesList.length; i++) {
+        for (var i = 0; i < contigSetRawData.length; i++) {
 
             allValues.push([
                 [n50values[i].contigNumber, n50values[i].totalLength, 'n50 length : ' + n50values[i].contigLength]
@@ -575,7 +563,7 @@
         }
 
         // go through the list of contig sets again and add a new series to hold n90values
-        for (var i = 0; i < window.seriesList.length; i++) {
+        for (var i = 0; i < contigSetRawData.length; i++) {
 
             allValues.push([
                 [n90values[i].contigNumber, n90values[i].totalLength, 'n90 length : ' + n90values[i].contigLength]
@@ -749,19 +737,12 @@
         });
 
 
-        contigSetRawData = {contigSetList : ${contigSetRawDataJSON}};
+        contigSetRawData = ${contigSetRawDataJSON};
 
-        window.seriesList = [];
 
         setHistogramX('length');
 
         switchTo('scatterplot');
-
-        // start off by sorting the data series so that the one with the fewest contigs is on top in the chart - this usually makes it easier to see
-        var sortedDatasetList = contigSetRawData.contigSetList;
-        for (var i = 0; i < contigSetRawData.contigSetList.length; i++) {
-            window.seriesList[i] = sortedDatasetList[i];
-        }
 
         $('#url').html(document.URL);
 
@@ -822,7 +803,7 @@
                     <td>
                         ${contigSet.label} &nbsp;&nbsp;
                         <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
-                        <span style="cursor:pointer;" onclick="moveToTop(${contigSet.id});">move to top</span>
+                        <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
                     </td>
                     <td>${contigSet.size}</td>
                 </tr>
@@ -944,6 +925,7 @@
             <p class="chartOptions" class='scatterplotOptions'>
                 X axis :
                 <span class="scatterx" id="scatterxlength" style="cursor: pointer; " onclick="setScatterX('length');">length</span> |
+                <span class="scatterx" id="scatterxlengthwithoutn" style="cursor: pointer; " onclick="setScatterX('lengthwithoutn');">length excluding N</span> |
                 <span class="scatterx" id="scatterxquality" style="cursor: pointer; " onclick="setScatterX('quality');">quality</span> |
                 <span class="scatterx" id="scatterxcoverage" style="cursor: pointer; " onclick="setScatterX('coverage');">coverage</span> |
                 <span class="scatterx" id="scatterxgc" style="font-weight: bold;" onclick="setScatterX('gc');">gc</span>
@@ -953,6 +935,7 @@
             <p class="chartOptions" class='scatterplotOptions'>
                 Y axis :
                 <span class="scattery" id="scatterylength" style="cursor: pointer; " onclick="setScatterY('length');">length</span> |
+                <span class="scattery" id="scatterylengthwithoutn" style="cursor: pointer; " onclick="setScatterY('lengthwithoutn');">length excluding N</span> |
                 <span class="scattery" id="scatteryquality" style="cursor: pointer; " onclick="setScatterY('quality');">quality</span> |
                 <span class="scattery" id="scatterycoverage" style="font-weight: bold;" onclick="setScatterY('coverage');">coverage</span> |
                 <span class="scattery" id="scatterygc" style="cursor: pointer; " onclick="setScatterY('gc');">gc</span>
