@@ -330,8 +330,6 @@
                     },
                     cursor: {
                         show: true,
-                        tooltipLocation:'sw',
-                        followMouse : true,
                         showVerticalLine: true,
                         showHorizontalLine: true,
                         zoom:true
@@ -997,9 +995,8 @@
         </div>
 
         <div class="chartContainer" id='scatterplotContainer'>
-            <p class="chartOptions" class='scatterplotOptions'>Mouseover :
-                <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
-                <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
+            <p class="chartOptions" class='scatterplotOptions'>
+                <span style="cursor: pointer;" id="resetZoom">click to reset zoom</span>
             &nbsp;&nbsp;&nbsp;
 
             trendlines : <span id='turnscattertrendOff' style="font-weight: bold;">off</span> | <span id='turnscattertrendOn' style="cursor: pointer;">on</span>
