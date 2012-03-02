@@ -75,8 +75,13 @@
             return;
         }
 
+        var topXMin = scatterPlot.axes.xaxis.min;
+        if (window.scatterXField == 'length') {
+            topXMin = Math.max(window.minSeqLength, topXMin)
+        }
+
         // build data using the current X field of the scatter plot and the max/min from the already-drawn scatter plot
-        var topHistogramData = buildHistogram(window.scatterXField, scatterPlot.axes.xaxis.min, scatterPlot.axes.xaxis.max);
+        var topHistogramData = buildHistogram(window.scatterXField, topXMin, scatterPlot.axes.xaxis.max);
 
         // decide whether to render a linear or a logarithmic axis
         var topHistogramXaxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
@@ -137,8 +142,14 @@
         // same process for the side histogram
         var sideHistogramYaxisRenderer;
 
+
+        var sideXMin = scatterPlot.axes.yaxis.min;
+        if (window.scatterYField == 'length') {
+            sideXMin = Math.max(window.minSeqLength, sideXMin)
+        }
+
         // because the plot is on its side, we need to transpose the x and y elements of each data point
-        var sideHistogramData = buildHistogram(window.scatterYField, scatterPlot.axes.yaxis.min, scatterPlot.axes.yaxis.max).map(function(a) {
+        var sideHistogramData = buildHistogram(window.scatterYField, sideXMin.min, scatterPlot.axes.yaxis.max).map(function(a) {
             return a.map(function(b) {
                 return [b[1], b[0]];
             });
@@ -214,17 +225,22 @@
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
         // map through the data - each series will generate an array of 8-element arrays. We will use the first to elements to plot X and Y and the last six to display the tooltip
-        var allValues = contigSetRawData.map(function(a) {
+        var allValues = [];
+        for (var i = 0; i < contigSetRawData.length; i++) {
+            var a = contigSetRawData[i];
             var length = a.id.length;
             var result = [];
-            for (var n = 0; n < length; n++) {
-                // only add contigs if they pass the length and coverage filters
-                if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
-                    result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+            if (window.series[i]) {
+                for (var n = 0; n < length; n++) {
+                    // only add contigs if they pass the length and coverage filters
+                    if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
+                        result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+                    }
                 }
             }
-            return result;
-        });
+            allValues.push(result);
+        }
+
 
         console.log('built data : ' + (new Date().getTime() - start));
         console.log('number of datapoints : ' + allValues[0].length);
@@ -336,7 +352,7 @@
 
     // utility funtion to build histograms from the raw contig data. Takes the name of a field and the max/min values
     buildHistogram = function(fieldName, min, max) {
-        console.log('starting build histogram');
+        console.log('starting build histogram from ' + min + ' to ' + max);
         var start = new Date().getTime();
         // if the max/min hasn't been supplied, work out the overall max/min across all data series
         if (!max) {
@@ -344,13 +360,11 @@
                 return Math.max.apply(Math, set[fieldName]);
             }));
         }
-        console.log('got max : ' + (new Date().getTime() - start));
         if (!min) {
             min = Math.min.apply(Math, contigSetRawData.map(function(set) {
                 return Math.min.apply(Math, set[fieldName]);
             }));
         }
-        console.log('got min : ' + (new Date().getTime() - start));
 
         // use a map to iterate over the individual data series
         var allFieldValues = contigSetRawData.map(function(set) {
@@ -361,7 +375,7 @@
             var stepSize = Math.max(1, Math.pow(10, logMax - 2));
             var numberOfSteps = Math.floor((max / stepSize)) + 2;
 
-            for (var i = (min / stepSize) - 1; i <= numberOfSteps; i++) {
+            for (var i = (min / stepSize); i <= numberOfSteps; i++) {
                 // work out count for a given bin
                 var binFloor = i * stepSize;
                 var binCeiling = (i + 1) * stepSize;
@@ -407,8 +421,14 @@
                     }
             );
         }
-
-        var allFieldValues = buildHistogram(window.chartType);
+        var allFieldValues;
+        if (window.chartType == 'length') {
+            console.log('type is length, using min seq length');
+            allFieldValues = buildHistogram(window.chartType, window.minSeqLength);
+        }
+        else {
+            allFieldValues = buildHistogram(window.chartType);
+        }
 
         histogramPlot = $.jqplot('histogramDiv',
                 allFieldValues,
@@ -701,7 +721,7 @@
         window.chartType = 'length';
 
         // length/coverage filters
-        window.minSeqLength = 0;
+        window.minSeqLength = 200;
         window.minSeqCoverage = 0;
 
         // function to handle the various option toggles
@@ -869,7 +889,7 @@
         </p>
 
         <p class="chartOptions">
-            Minimum sequence length: <input type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
+            Minimum sequence length: <input value="200" type="text" id="minimumSequenceLength"/> <input type="submit" value="filter" onclick="window.minSeqLength = ($('#minimumSequenceLength').val());
         drawActiveChart();">
             <br/>
             Minimum sequence coverage: <input type="text" id="minimumSequenceCoverage"/> <input type="submit" value="filter" onclick="window.minSeqCoverage = ($('#minimumSequenceCoverage').val());
