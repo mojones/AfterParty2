@@ -391,7 +391,7 @@
                 if (
                         set['length'][i] >= window.minSeqLength &&
                                 set.coverage[i] >= window.minSeqCoverage &&
-                                (scatterPlot == undefined ||
+                                (window.activeChart != 'scatterplot' ||
                                         (
                                                 set[window.scatterXField][i] >= scatterPlot.axes.xaxis.min &&
                                                         set[window.scatterXField][i] <= scatterPlot.axes.xaxis.max &&
