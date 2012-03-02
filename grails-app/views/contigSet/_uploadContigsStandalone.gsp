@@ -206,6 +206,8 @@
 
 
     drawScatterChart = function() {
+        console.log('starting draw scatter');
+        var start = new Date().getTime();
 
         // choose log or linear axes depending on the options
         var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
@@ -223,6 +225,10 @@
             }
             return result;
         });
+
+        console.log('built data : ' + (new Date().getTime() - start));
+        console.log('number of datapoints : ' + allValues[0].length);
+
 
         // grab the colours
         var colourList = contigSetRawData.map(function(a) {
@@ -248,6 +254,9 @@
                     }
             );
         }
+
+        console.log('built options : ' + (new Date().getTime() - start));
+
 
         // now create the plot
         scatterPlot = $.jqplot('scatterplotDiv',
@@ -307,6 +316,8 @@
                     }
                 }
         );
+        console.log('drew chart : ' + (new Date().getTime() - start));
+
 
         // tell this plot to redraw the top & side histograms whenever it is redrawn (i.e. when the user zooms)
         scatterPlot.postDrawHooks.add(function() {
@@ -325,18 +336,21 @@
 
     // utility funtion to build histograms from the raw contig data. Takes the name of a field and the max/min values
     buildHistogram = function(fieldName, min, max) {
-
+        console.log('starting build histogram');
+        var start = new Date().getTime();
         // if the max/min hasn't been supplied, work out the overall max/min across all data series
         if (!max) {
             max = Math.max.apply(Math, contigSetRawData.map(function(set) {
                 return Math.max.apply(Math, set[fieldName]);
             }));
         }
+        console.log('got max : ' + (new Date().getTime() - start));
         if (!min) {
             min = Math.min.apply(Math, contigSetRawData.map(function(set) {
                 return Math.min.apply(Math, set[fieldName]);
             }));
         }
+        console.log('got min : ' + (new Date().getTime() - start));
 
         // use a map to iterate over the individual data series
         var allFieldValues = contigSetRawData.map(function(set) {
@@ -745,7 +759,7 @@
         setScatterY('coverage');
 
         // start by showing the user the scatter plot
-        switchTo('scatterplot');
+        switchTo('histogram');
 
         // put the url at the top of the page as a hint to the user to bookmark it
         $('#url').html(document.URL);

@@ -57,15 +57,17 @@ class ContigSetController {
             contigs.each { contig ->
 //                println "looking at contig $contig"
                 def (id, quality, coverage) = contig.key.split('_')
-                def sequence = contig.value.toLowerCase()
-                cs.id.push(id)
-                cs.length.push(sequence.length())
-                def lengthWithoutN = sequence.replaceAll('n', '').length()
-                cs.lengthwithoutn.push(lengthWithoutN)
-                cs.quality.push(quality.toFloat())
-                cs.coverage.push(coverage.toFloat())
-                cs.topBlast.push(id)
-                cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+                if (coverage.toFloat() > 0) {
+                    def sequence = contig.value.toLowerCase()
+                    cs.id.push(id)
+                    cs.length.push(sequence.length())
+                    def lengthWithoutN = sequence.replaceAll('n', '').length()
+                    cs.lengthwithoutn.push(lengthWithoutN)
+                    cs.quality.push(quality.toFloat())
+                    cs.coverage.push(coverage.toFloat())
+                    cs.topBlast.push(id)
+                    cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+                }
             }
 
             println "built map in ${System.currentTimeMillis() - start}"
@@ -88,7 +90,7 @@ class ContigSetController {
         def templateString = g.render(template: 'uploadContigsStandalone', model: [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
-                fileName : output.name
+                fileName: output.name
         ])
 
 
