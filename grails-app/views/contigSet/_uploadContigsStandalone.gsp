@@ -70,6 +70,10 @@
     // draw the top and side histograms that accompany the scatter plot
     function drawTopSideHistograms() {
 
+        // in case we are being called following a zoom, delete any existing charts
+        $('#sideHistogramDiv').empty();
+        $('#topHistogramDiv').empty();
+
         //sanity check - we need to have a scatter plot and a list of data series to proceed
         if (typeof scatterPlot == 'undefined' || typeof contigSetRawData == 'undefined') {
             return;
@@ -147,9 +151,9 @@
         if (window.scatterYField == 'length') {
             sideXMin = Math.max(window.minSeqLength, sideXMin)
         }
-
+        console.log(' side x min is ' + sideXMin);
         // because the plot is on its side, we need to transpose the x and y elements of each data point
-        var sideHistogramData = buildHistogram(window.scatterYField, sideXMin.min, scatterPlot.axes.yaxis.max).map(function(a) {
+        var sideHistogramData = buildHistogram(window.scatterYField, sideXMin, scatterPlot.axes.yaxis.max).map(function(a) {
             return a.map(function(b) {
                 return [b[1], b[0]];
             });
@@ -224,8 +228,10 @@
         var yAxisRenderer = window.scatterylogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
         var xAxisRenderer = window.scatterxlogOn ? $.jqplot.LogAxisRenderer : $.jqplot.LinearAxisRenderer;
 
+
         // map through the data - each series will generate an array of 8-element arrays. We will use the first to elements to plot X and Y and the last six to display the tooltip
         var allValues = [];
+        var allDatapointsCount = 0;
         for (var i = 0; i < contigSetRawData.length; i++) {
             var a = contigSetRawData[i];
             var length = a.id.length;
@@ -235,6 +241,7 @@
                     // only add contigs if they pass the length and coverage filters
                     if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
                         result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+                        allDatapointsCount++;
                     }
                 }
             }
@@ -242,8 +249,13 @@
         }
 
 
-        console.log('built data : ' + (new Date().getTime() - start));
-        console.log('number of datapoints : ' + allValues[0].length);
+        var pointSize = 8;
+        if (allDatapointsCount > 100) {
+            pointSize = 6;
+        }
+        if (allDatapointsCount > 1000) {
+            pointSize = 5;
+        }
 
 
         // grab the colours
@@ -285,7 +297,7 @@
                         markerOptions : {
                             shadow: false,
                             lineWidth : 0,
-                            size : 5
+                            size : pointSize
                         }
                     },
                     series: mySeriesOptions,
@@ -306,7 +318,7 @@
                         }
                     },
                     highlighter: {
-                        show: window.scatterhighlighterOn,
+                        show: true,
                         tooltipLocation:'ne',
                         sizeAdjust: 7.5,
                         markerRenderer : new $.jqplot.MarkerRenderer({color:'#FFFFFF'}),
@@ -317,7 +329,7 @@
 
                     },
                     cursor: {
-                        show: !scatterhighlighterOn, //only show the cursor if we are not currently using the highlighter
+                        show: true,
                         tooltipLocation:'sw',
                         followMouse : true,
                         showVerticalLine: true,
@@ -340,6 +352,8 @@
             drawTopSideHistograms();
         });
         drawTopSideHistograms();
+
+        turnScatterHighlighterOn();
 
         // all done; hide the spinner and unhide the other stuff
         $('#spinner').hide();
@@ -366,20 +380,41 @@
             }));
         }
 
+        // TODO only count points that are visible inside the current zoom window of the scatter plot i.e. need to filter on both fields, but only if it's for
+
         // use a map to iterate over the individual data series
-        var allFieldValues = contigSetRawData.map(function(set) {
+        var allFieldCounts = contigSetRawData.map(function(set) {
+
             var fieldValues = [];
+            for (var i = 0; i < set['length'].length; i++) {
+
+                if (
+                        set['length'][i] >= window.minSeqLength &&
+                                set.coverage[i] >= window.minSeqCoverage &&
+                                (scatterPlot == undefined ||
+                                        (
+                                                set[window.scatterXField][i] >= scatterPlot.axes.xaxis.min &&
+                                                        set[window.scatterXField][i] <= scatterPlot.axes.xaxis.max &&
+                                                        set[window.scatterYField][i] >= scatterPlot.axes.yaxis.min &&
+                                                        set[window.scatterYField][i] <= scatterPlot.axes.yaxis.max
+                                                )
+                                        )
+                        ) {
+                    fieldValues.push(set[fieldName][i]);
+                }
+            }
+            var fieldCounts = [];
 
             // use some convoluted math to work out the step size - it should be the power of 10 that gives us 100 bins
             var logMax = Math.floor(Math.log(max - min) / Math.LN10);
-            var stepSize = Math.max(1, Math.pow(10, logMax - 2));
+            var stepSize = Math.max(0.01, Math.pow(10, logMax - 2));
             var numberOfSteps = Math.floor((max / stepSize)) + 2;
 
             for (var i = (min / stepSize); i <= numberOfSteps; i++) {
                 // work out count for a given bin
                 var binFloor = i * stepSize;
                 var binCeiling = (i + 1) * stepSize;
-                var count = set[fieldName].filter(
+                var count = fieldValues.filter(
                         function(element) {
                             return (element >= binFloor && element < binCeiling);
                         }).length;
@@ -391,12 +426,13 @@
                 if (scaledOn) {
                     count = 1000 * count / set[fieldName].length;
                 }
-                fieldValues.push([binFloor, count]);
+                fieldCounts.push([binFloor, count]);
 
             }
-            return fieldValues;
+
+            return fieldCounts;
         });
-        return allFieldValues;
+        return allFieldCounts;
     }
 
     // draw a histogram
@@ -690,6 +726,18 @@
         setTimeout('drawActiveChart();', 1);
     }
 
+    function turnScatterHighlighterOn() {
+        scatterPlot.plugins.highlighter.show = true;
+        $('#turnscatterzoomOn').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#turnscatterhighlighterOn').css({'cursor':'default', 'font-weight':'bold'});
+    }
+
+    function turnScatterZoomOn() {
+        scatterPlot.plugins.cursor.show = true;
+        $('#turnscatterhighlighterOn').css({'cursor':'pointer', 'font-weight':'normal'});
+        $('#turnscatterzoomOn').css({'cursor':'default', 'font-weight':'bold'});
+    }
+
     $(document).ready(function() {
 
         // start with all series toggled on
@@ -778,6 +826,8 @@
         setScatterX('gc');
         setScatterY('coverage');
 
+        scatterPlot=undefined;
+
         // start by showing the user the scatter plot
         switchTo('histogram');
 
@@ -806,6 +856,9 @@
 
         <h2 id="url"></h2>
 
+        <p><g:link action="standaloneComparison">Create a new comparison page</g:link></p>
+
+        <p>Questions, comments, suggestions to martin.jones@ed.ac.uk</p>
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
 
@@ -945,8 +998,6 @@
 
         <div class="chartContainer" id='scatterplotContainer'>
             <p class="chartOptions" class='scatterplotOptions'>Mouseover :
-                <span id='turnscatterhighlighterOn' style="font-weight: bold;">hightlight</span> |
-                <span style="cursor: pointer; " id='turnscatterhighlighterOff'>zoom</span>(
                 <span style="cursor: pointer;" id="resetZoom">click to reset</span>,
                 <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
             &nbsp;&nbsp;&nbsp;

@@ -2543,6 +2543,8 @@
         // Draws all elements of the plot into the container.
         // Does not clear the container before drawing.
         this.draw = function(){
+            console.log(new Date().getTime() + ' : start draw ');
+
             if (this.drawIfHidden || this.target.is(':visible')) {
                 this.target.trigger('jqplotPreDraw');
                 var i,
@@ -2751,6 +2753,8 @@
                     _els;
                 // ughh.  ideally would hide all series then show them.
                 for (i=0, l=seriesLength; i<l; i++) {
+                    console.log(new Date().getTime() + ' : drawing series ' + i);
+
                     temps = series[i];
                     tempr = temps.renderer;
                     sel = '.jqplot-point-label.jqplot-series-'+i;
@@ -2768,6 +2772,8 @@
             
                 this.target.trigger('jqplotPostDraw', [this]);
             }
+            console.log(new Date().getTime() + ' : end draw ');
+
         };
 
         jqPlot.prototype.doFillBetweenLines = function () {
