@@ -59,7 +59,7 @@ class Contig {
         List qualities = quality.split(/ /).collect({it.toInteger()})
         Integer sum = qualities.sum()
         Integer size = qualities.size()
-        return sum / size
+        return [sum / size, 0.1].max()
     }
 
     def coverage() {
@@ -89,7 +89,7 @@ class Contig {
 
     def averageCoverage() {
         def coverage = this.coverage()
-        return (Float) coverage.sum() / coverage.size()
+        return (Float) [coverage.sum() / coverage.size(), 0.1].max()
     }
 
     def gc() {

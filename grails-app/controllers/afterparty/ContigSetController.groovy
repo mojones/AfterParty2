@@ -224,17 +224,17 @@ class ContigSetController {
             def start = System.currentTimeMillis()
 
             set.contigs.each { contig ->
-                if (contig.averageCoverage().toFloat() > 0) {
-                    def sequence = contig.sequence.toLowerCase()
-                    cs.id.push(contig.id)
-                    cs.length.push(sequence.length())
-                    def lengthWithoutN = sequence.replaceAll('n', '').length()
-                    cs.lengthwithoutn.push(lengthWithoutN)
-                    cs.quality.push(contig.averageQuality().toFloat())
-                    cs.coverage.push(contig.averageCoverage().toFloat())
-                    cs.topBlast.push(contig.topBlastHit)
-                    cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
-                }
+
+                def sequence = contig.sequence.toLowerCase()
+                cs.id.push(contig.id)
+                cs.length.push(sequence.length())
+                def lengthWithoutN = sequence.replaceAll('n', '').length()
+                cs.lengthwithoutn.push(lengthWithoutN)
+                cs.quality.push(contig.averageQuality().toFloat())
+                cs.coverage.push(contig.averageCoverage().toFloat())
+                cs.topBlast.push(contig.topBlastHit)
+                cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+
             }
 
             println "built map in ${System.currentTimeMillis() - start}"
