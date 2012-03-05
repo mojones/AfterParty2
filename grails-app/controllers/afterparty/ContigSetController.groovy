@@ -206,48 +206,51 @@ class ContigSetController {
     }
 
     def showContigSetsJSON = {
+
         def contigSetListResult = []
         params.idList.split(/,/).sort().eachWithIndex { id, i ->
-            def cs = statisticsService.getContigStatsForContigSet(id.toLong())
-            cs.colour = statisticsService.boldAssemblyColours[i]
+            ContigSet set = ContigSet.get(id.toLong())
 
-            cs.contigSetId = id
-            cs.label = ContigSet.get(id).name
+            def cs = [
+                    id: [],
+                    length: [],
+                    lengthwithoutn: [],
+                    quality: [],
+                    coverage: [],
+                    topBlast: [],
+                    gc: []
+            ]
 
-            int cumulativeLength = 0
-            int n50Target = cs.length.sum() / 2
-            int n90Target = (cs.length.sum() / 100) * 90
-            int numberContigsSeen = 0
+            def start = System.currentTimeMillis()
 
-            for (contigLength in cs.length.sort().reverse()) {
-
-                cumulativeLength += contigLength
-
-                if (cumulativeLength >= n50Target && !cs.n50Contig) {
-                    cs.n50Contig = numberContigsSeen
-                    cs.n50Total = cumulativeLength
-                    cs.n50length = contigLength
+            set.contigs.each { contig ->
+                if (contig.averageCoverage().toFloat() > 0) {
+                    def sequence = contig.sequence.toLowerCase()
+                    cs.id.push(contig.id)
+                    cs.length.push(sequence.length())
+                    def lengthWithoutN = sequence.replaceAll('n', '').length()
+                    cs.lengthwithoutn.push(lengthWithoutN)
+                    cs.quality.push(contig.averageQuality().toFloat())
+                    cs.coverage.push(contig.averageCoverage().toFloat())
+                    cs.topBlast.push(contig.topBlastHit)
+                    cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
                 }
-
-                if (cumulativeLength >= n90Target && !cs.n90Contig) {
-                    cs.n90Length = contigLength
-                    cs.n90Contig = numberContigsSeen
-                    cs.n90Total = cumulativeLength
-                }
-
-                if (contigLength <= 500 && !cs.smallContig) {
-                    cs.smallContig = numberContigsSeen
-                    cs.smallTotal = cumulativeLength
-                }
-                numberContigsSeen++
             }
 
+            println "built map in ${System.currentTimeMillis() - start}"
 
+            cs.colour = StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
+
+            cs.label = set.name
+            cs.size = set.contigs.size()
             contigSetListResult.add(cs)
         }
 
+
+
+
         render(contentType: "text/json") {
-            contigSetList = contigSetListResult
+            contigSetListResult
         }
 
     }
@@ -266,44 +269,6 @@ class ContigSetController {
         c.save()
         println "rendering $c.id"
         render(c.id)
-    }
-
-
-    def showContigSetsStatsJSON = {
-
-
-        def contigSetListResult = []
-        params.idList.split(/,/).each {
-            contigSetListResult.add(ContigSet.get(it.toLong()))
-        }
-
-        println "contigSets are " + contigSetListResult
-
-        def contigSets = statisticsService.getStatsForContigSets(contigSetListResult)
-
-
-
-
-        def drawQualityBoolean = false
-        if (contigSets[0].qualityvalues.size() > 1) {
-            drawQualityBoolean = true
-        }
-        def drawCoverageBoolean = false
-        if (contigSets[0].coveragevalues.size() > 1) {
-            drawCoverageBoolean = true
-        }
-
-        render(contentType: "text/json") {
-            contigSetList = contigSets
-            lengthYmax = contigSets*.lengthYmax.max()
-            scaledLengthYmax = contigSets*.scaledLengthYmax.max()
-            qualityYmax = contigSets*.qualityYmax.max()
-            scaledQualityYmax = contigSets*.scaledQualityYmax.max()
-            coverageYmax = contigSets*.coverageYmax.max()
-            scaledCoverageYmax = contigSets*.scaledCoverageYmax.max()
-            drawQuality = drawQualityBoolean
-            drawCoverage = drawCoverageBoolean
-        }
     }
 
 }
