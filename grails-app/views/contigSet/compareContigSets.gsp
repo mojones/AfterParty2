@@ -230,7 +230,7 @@ To make a bit of text editable we need to
 
     <div class="block_content">
 
-        <h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Drawing chart, please wait...</h2>
+        <h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;display: none;">Drawing chart, please wait...</h2>
 
         <h2 id="downloadingSpinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Downloading contig data, please wait...</h2>
 
