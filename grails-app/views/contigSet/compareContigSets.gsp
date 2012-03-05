@@ -28,6 +28,26 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $('#saveSelected').click(function() {
+            var xmin = scatterPlot.axes.xaxis.min;
+            var xmax = scatterPlot.axes.xaxis.max;
+            var ymin = scatterPlot.axes.yaxis.min;
+            var ymax = scatterPlot.axes.yaxis.max;
+
+            var ids = [];
+            for (var i = 0; i < scatterPlot.data.length; i++) {
+                for (var j = 0; j < scatterPlot.data[i].length; j++) {
+                    var dataPoint = scatterPlot.data[i][j];
+                    if (dataPoint[0] >= xmin && dataPoint[0] <= xmax && dataPoint[1] >= ymin && dataPoint[1] <= ymax) {
+                        ids.push(dataPoint[2]);
+                    }
+                }
+            }
+
+            doCreate(ids, ${contigSets[0].study.id});
+        });
+
             $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
                 contigSetRawData = data;
                 // start by showing the user the scatter plot
@@ -174,11 +194,11 @@ To make a bit of text editable we need to
                     <tr>
                         <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
                         <td>
-                            ${contigSet.label} &nbsp;&nbsp;
+                            ${contigSet.name} &nbsp;&nbsp;
                             <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
                             <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
                         </td>
-                        <td>${contigSet.size}</td>
+                        <td>${contigSet.contigs.size()}</td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -280,7 +300,7 @@ To make a bit of text editable we need to
 
         <div class="chartContainer" id='scatterplotContainer'>
             <p class="chartOptions" class='scatterplotOptions'>
-                <span style="cursor: pointer;" id="resetZoom">click to reset zoom</span>
+                <span style="cursor: pointer;" id="resetZoom">click to reset zoom</span> , <span style="cursor: pointer;" id="saveSelected">click to save selected</span>)
                 &nbsp;&nbsp;&nbsp;
 
                 trendlines : <span id='turnscattertrendOff' style="font-weight: bold;">off</span> | <span id='turnscattertrendOn' style="cursor: pointer;">on</span>
