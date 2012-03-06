@@ -211,31 +211,9 @@ class ContigSetController {
         params.idList.split(/,/).sort().eachWithIndex { id, i ->
             ContigSet set = ContigSet.get(id.toLong())
 
-            def cs = [
-                    id: [],
-                    length: [],
-                    lengthwithoutn: [],
-                    quality: [],
-                    coverage: [],
-                    topBlast: [],
-                    gc: []
-            ]
-
             def start = System.currentTimeMillis()
 
-            set.contigs.each { contig ->
-
-                def sequence = contig.sequence.toLowerCase()
-                cs.id.push(contig.id)
-                cs.length.push(sequence.length())
-                def lengthWithoutN = sequence.replaceAll('n', '').length()
-                cs.lengthwithoutn.push(lengthWithoutN)
-                cs.quality.push(contig.averageQuality().toFloat())
-                cs.coverage.push(contig.averageCoverage().toFloat())
-                cs.topBlast.push(contig.topBlastHit)
-                cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
-
-            }
+            Map cs = statisticsService.getStatsForContigSet(set.id.toLong())
 
             println "built map in ${System.currentTimeMillis() - start}"
 
@@ -266,7 +244,8 @@ class ContigSetController {
             c.addToContigs(Contig.get(it.toLong()))
         }
         blastService.attachBlastDatabaseToContigSet(c)
-        c.save()
+        c.save(flush:true)
+        statisticsService.getStatsForContigSet(c)
         println "rendering $c.id"
         render(c.id)
     }

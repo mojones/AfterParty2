@@ -2,6 +2,8 @@ package afterparty
 
 class ContigSet {
 
+    def statisticsService
+
     String name
     String description
     byte[] blastHeaderFile
@@ -32,4 +34,5 @@ class ContigSet {
     def isOwnedBy(def user) {
         return this.study.isOwnedBy(user)
     }
+
 }

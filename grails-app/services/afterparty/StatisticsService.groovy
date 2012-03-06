@@ -11,7 +11,7 @@ class StatisticsService {
 
     static paleAssemblyColours = ['LightCyan', 'LightPink', 'LightSkyBlue']
 //    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB', '#8A2BE2', '#DC143C']
-    public static boldAssemblyColours = ['blue','red', 'green','purple',  'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive',  'teal', 'yellow', 'aqua']
+    public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive', 'teal', 'yellow', 'aqua']
 
 
     @Cacheable("myCache")
@@ -28,7 +28,7 @@ class StatisticsService {
         def a = criteria.get({
             eq('id', id)
 //            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
             //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println "got raw assembly object : " + (System.currentTimeMillis() - start)
@@ -116,7 +116,7 @@ class StatisticsService {
         def cs = criteria.get({
             eq('id', id)
 //            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
         })
         println "got $cs"
         println "got contigs : " + (System.currentTimeMillis() - start)
@@ -156,64 +156,32 @@ class StatisticsService {
         return word2count.sort({-it.value})
     }
 
-    def getStatsForContigSets(List<ContigSet> contigSetList) {
+    @Cacheable("contigSetCache")
+    Map getStatsForContigSet(Long  contigSetId) {
+        Map cs = [
+                id: [],
+                length: [],
+                lengthwithoutn: [],
+                quality: [],
+                coverage: [],
+                topBlast: [],
+                gc: []
+        ]
 
-        def result = []
+        ContigSet.get(contigSetId).contigs.each { contig ->
 
-        // figure out the buckets sizes for histograms
-        def overallMaxLength = contigSetList.collect({grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(it.id).length.max()}).max()     // nicely functional
-        def overallMaxQuality = contigSetList.collect({grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(it.id).quality.max()}).max()
-        def overallMaxCoverage = contigSetList.collect({grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(it.id).coverage.max()}).max()
+            def sequence = contig.sequence.toLowerCase()
+            cs.id.push(contig.id)
+            cs.length.push(sequence.length())
+            def lengthWithoutN = sequence.replaceAll('n', '').length()
+            cs.lengthwithoutn.push(lengthWithoutN)
+            cs.quality.push(contig.averageQuality().toFloat())
+            cs.coverage.push(contig.averageCoverage().toFloat())
+            cs.topBlast.push(contig.topBlastHit)
+            cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
 
-
-
-        contigSetList.eachWithIndex {  ContigSet contigSet, index ->
-
-
-
-            def contigSetJSON = [:]
-
-            contigSetJSON.id = contigSet.name
-            contigSetJSON.colour = StatisticsService.boldAssemblyColours[index]
-            def contigStats = grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(contigSet.id)
-
-            // build a histogram of length and a scaled histogram of length
-            contigSetJSON.lengthvalues = []
-            contigSetJSON.scaledlengthvalues = []
-            (0..overallMaxLength / 10).each {
-                def floor = it * 10
-                def ceiling = (it * 10) + 10
-                def count = contigStats.length.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.lengthvalues.add([floor, count])
-                contigSetJSON.scaledlengthvalues.add([floor, (1000 * (count / contigStats.length.size())).toInteger()])
-            }
-
-            // build a histogram of quality and a scaled histogram of length
-            contigSetJSON.qualityvalues = []
-            contigSetJSON.scaledqualityvalues = []
-            (0..overallMaxQuality / 1).each {
-                def floor = it * 1
-                def ceiling = (it * 1) + 1
-                def count = contigStats.quality.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.qualityvalues.add([floor, count])
-                contigSetJSON.scaledqualityvalues.add([floor, (1000 * (count / contigStats.quality.size())).toInteger()])
-            }
-
-            // build a histogram of coverage and a scaled histogram of length
-            contigSetJSON.coveragevalues = []
-            contigSetJSON.scaledcoveragevalues = []
-            (0..overallMaxCoverage / 1).each {
-                def floor = it * 1
-                def ceiling = (it * 1) + 1
-                def count = contigStats.coverage.findAll({it >= floor && it < ceiling}).size()
-                contigSetJSON.coveragevalues.add([floor, count])
-                contigSetJSON.scaledcoveragevalues.add([floor, (1000 * (count / contigStats.coverage.size())).toInteger()])
-            }
-
-
-            result.add(contigSetJSON)
         }
-        return result
+        return cs
 
     }
 
@@ -306,4 +274,6 @@ class StatisticsService {
         createContigSetForCompoundSample(a.compoundSample.id)
 
     }
+
+
 }
