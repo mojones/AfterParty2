@@ -46,20 +46,39 @@ To make a bit of text editable we need to
 
         function updateButton() {
             if ($("input:checked").length == 0) {
-                $('#showContigSetsButton').hide();
-                $('#noneSelectedMessage').show();
+                $('#showContigSetsButton').slideUp('slow');
+                $('#searchContigSetAnnotationButton').slideUp('slow');
+                $('#noneSelectedMessage').slideDown('slow');
             }
             if ($("input:checked").length == 1) {
-                $('#showContigSetsButton').show();
-                $('#noneSelectedMessage').hide();
+                $('#noneSelectedMessage').slideUp('slow');
+                $('#showContigSetsButton').slideDown('slow');
                 $('#showContigSetsButton').val('view contig set');
+                $('#searchContigSetAnnotationButton').slideDown('slow');
+                $('#searchContigSetAnnotationButton').val('search contig set');
             }
             if ($("input:checked").length > 1) {
-                $('#showContigSetsButton').show();
-                $('#noneSelectedMessage').hide();
+                $('#showContigSetsButton').slideDown('slow');
+                $('#noneSelectedMessage').slideUp('slow');
                 $('#showContigSetsButton').val('compare contig sets');
+                $('#searchContigSetAnnotationButton').slideDown('slow');
+                $('#searchContigSetAnnotationButton').val('search contig sets');
             }
         }
+
+        function showSearchBox() {
+            $('#searchContigSetAnnotationButton').slideUp('slow');
+            $('#showContigSetsButton').slideUp('slow');
+            $('#searchForm').slideDown('slow');
+            return false;
+        }
+
+        function submitSearchForm() {
+            $('#contigSetForm').attr('action','/contigSet/searchContigSets');
+//            $('#contigSetForm').submit();
+        }
+
+
     </script>
 
 </head>
@@ -192,7 +211,7 @@ To make a bit of text editable we need to
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <g:form url='[controller: "contigSet", action: "compareContigSetsFromCheckbox"]' id="searchableForm" name="searchableForm" method="get">
+        <form id="contigSetForm">
 
             <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
                 <thead>
@@ -202,7 +221,6 @@ To make a bit of text editable we need to
                 </tr>
                 </thead>
                 <tbody>
-
                 <g:each in="${studyInstance.contigSets.sort({it.name})}" var="contigSet" status="index">
                     <tr class='compoundSampleRow ${contigSet.type}'>
                         <td>
@@ -214,10 +232,18 @@ To make a bit of text editable we need to
 
             </table>
 
-            <p id="noneSelectedMessage">Select some contig sets to view/compare them</p>
-            <input id="showContigSetsButton" type="submit" class="submit long" value="select contig set"/>
-        </g:form>
+            <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
+            <input id="showContigSetsButton" style="display:none" type="submit" class="submit long" value="select contig set"/>
+            <input id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox();return false;" type="submit" class="submit long" value="search contig sets">
 
+            <br/>
+
+            <p id="searchForm" style="display:none">
+                <label>Search query:</label> <br/><br/>
+                <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>
+                <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
+            </p>
+        </form>
     </div>        <!-- .block_content ends -->
     <div class="bendl"></div>
 

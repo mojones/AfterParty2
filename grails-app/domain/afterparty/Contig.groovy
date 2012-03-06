@@ -7,15 +7,11 @@ class Contig {
     String sequence
     String quality
 
-    // this allows us to search contigs from specific assemblies
-    Integer searchAssemblyId
+    Float averageQuality
+    Float averageCoverage
 
-    // tell the searchable plugin that the blast hits are to be treated as a componenet of the contig for searching purposes
-    static searchable = {
-        except = ['id', 'reads', 'quality']
-        blastHits component: true
-        searchAssemblyId: accessor: 'property'
-    }
+    Assembly assembly
+
 
     static constraints = {
         name(maxSize: 500)
@@ -26,26 +22,27 @@ class Contig {
         quality type: 'text'
     }
 
+    static belongsTo = [Assembly, ContigSet]
 
     static transients = ['topBlastHit', 'topBlastBitscore']
 
 
-    static hasMany = [blastHits: BlastHit, reads: Read]
+    static hasMany = [blastHits: BlastHit, reads: Read, contigSets : ContigSet]
 
-    String getTopBlastHit(){
-        if (this.blastHits && this.blastHits.size() > 0){
+    String getTopBlastHit() {
+        if (this.blastHits && this.blastHits.size() > 0) {
             return this.blastHits.toArray().sort({-it.bitscore})[0].description
         }
-        else{
+        else {
             return null
         }
     }
 
-    String getTopBlastBitscore(){
-        if (this.blastHits && this.blastHits.size() > 0){
+    String getTopBlastBitscore() {
+        if (this.blastHits && this.blastHits.size() > 0) {
             return this.blastHits.toArray().sort({-it.bitscore})[0].bitscore
         }
-        else{
+        else {
             return null
         }
     }
@@ -55,12 +52,7 @@ class Contig {
         return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore: 0)
     }
 
-    def averageQuality() {
-        List qualities = quality.split(/ /).collect({it.toInteger()})
-        Integer sum = qualities.sum()
-        Integer size = qualities.size()
-        return [sum / size, 0.1].max()
-    }
+
 
     def coverage() {
 
@@ -87,7 +79,7 @@ class Contig {
 
     }
 
-    def averageCoverage() {
+    def calculateAverageCoverage() {
         def coverage = this.coverage()
         return (Float) [coverage.sum() / coverage.size(), 0.1].max()
     }
@@ -100,7 +92,7 @@ class Contig {
         return this.sequence.length()
     }
 
-    static belongsTo = [assembly: Assembly]
+
 
 
     def isPublished() {

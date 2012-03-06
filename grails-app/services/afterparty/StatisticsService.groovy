@@ -125,8 +125,8 @@ class StatisticsService {
         def result = [
                 id: contigs*.id,
                 length: contigs*.length(),
-                quality: contigs*.averageQuality(),
-                coverage: contigs*.averageCoverage(),
+                quality: contigs*.averageQuality,
+                coverage: contigs*.averageCoverage,
                 gc: contigs*.gc(),
                 topBlast: contigs.collect({
                     it.blastHits.size() > 0 ? it.blastHits.toArray()[0].description : 'no blast hit'
@@ -175,8 +175,8 @@ class StatisticsService {
             cs.length.push(sequence.length())
             def lengthWithoutN = sequence.replaceAll('n', '').length()
             cs.lengthwithoutn.push(lengthWithoutN)
-            cs.quality.push(contig.averageQuality().toFloat())
-            cs.coverage.push(contig.averageCoverage().toFloat())
+            cs.quality.push(contig.averageQuality)
+            cs.coverage.push(contig.averageCoverage)
             cs.topBlast.push(contig.topBlastHit)
             cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
 
@@ -245,6 +245,7 @@ class StatisticsService {
     }
 
     def createContigSetForAssembly(Long id) {
+        println "creating contig set for assembly $id"
         def criteria = Assembly.createCriteria()
         def a = criteria.get({
             eq('id', id)

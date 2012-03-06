@@ -677,7 +677,7 @@ a:hover {
     clear: both;
 }
 
-.block form label {
+.block label {
     font-family: "Lucida Grande", Verdana, sans-serif;
     font-size: 12px;
     font-weight: bold;
@@ -686,7 +686,7 @@ a:hover {
     vertical-align: middle;
 }
 
-.block form input.text {
+.block input.text {
     width: 410px;
     background: #fefefe;
     border: 1px solid #bbb;
@@ -701,22 +701,22 @@ a:hover {
     vertical-align: middle;
 }
 
-.block form input.text.medium {
+.block input.text.medium {
     width: 600px;
 }
 
-.block form input.text.big {
+.block input.text.big {
     width: 98%;
 }
 
-.block form input.text.date_picker {
+.block input.text.date_picker {
     width: 100px;
     padding-right: 36px;
     cursor: pointer;
     background: url(../images/cal.jpg) center right no-repeat;
 }
 
-.block form textarea {
+.block textarea {
     width: 98%;
     height: 140px;
     padding: 5px;
@@ -731,13 +731,13 @@ a:hover {
     outline: none;
 }
 
-.block form textarea.wysiwyg {
+.block textarea.wysiwyg {
     width: 98%;
     padding: 0;
 }
 
-.block form input.radio,
-.block form input.checkbox {
+.block  input.radio,
+.block  input.checkbox {
     vertical-align: middle;
 }
 
@@ -830,7 +830,7 @@ input.checkbox {
     color: #e3302c;
 }
 
-.block form input.submit {
+.block input.submit {
     width: 85px;
     height: 30px;
     line-height: 30px;
@@ -847,12 +847,12 @@ input.checkbox {
     vertical-align: middle;
 }
 
-.block form input.submit:hover {
+.block input.submit:hover {
     background: url(../images/btns_.gif) top center no-repeat;
     text-shadow: 1px 1px 0 #b55f10;
 }
 
-.block form input.submit.tiny {
+.block input.submit.tiny {
     width: 105px;
     height: 20px;
     line-height: 20px;
@@ -865,25 +865,25 @@ input.checkbox {
     background: url(../images/tiny.gif) top center no-repeat;
 }
 
-.block form input.submit.tiny:hover {
+.block input.submit.tiny:hover {
     background: url(../images/tiny_.gif) top center no-repeat;
 }
 
-.block form input.submit.mid {
+.block input.submit.mid {
     width: 115px;
     background: url(../images/btnm.gif) top center no-repeat;
 }
 
-.block form input.submit.mid:hover {
+.block input.submit.mid:hover {
     background: url(../images/btnm_.gif) top center no-repeat;
 }
 
-.block form input.submit.long {
+.block input.submit.long {
     width: 165px;
     background: url(../images/btnb.gif) top center no-repeat;
 }
 
-.block form input.submit.long:hover {
+.block input.submit.long:hover {
     background: url(../images/btnb_.gif) top center no-repeat;
 }
 

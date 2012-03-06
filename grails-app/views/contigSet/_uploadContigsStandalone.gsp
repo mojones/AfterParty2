@@ -32,6 +32,8 @@
 
     <script type="text/javascript">
 
+        // TODO make cumulative plot zoomable
+
         $(document).ready(function() {
 
             // embed the raw data as json

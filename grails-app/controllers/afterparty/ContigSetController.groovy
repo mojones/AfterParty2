@@ -187,19 +187,13 @@ class ContigSetController {
     }
 
     def createFromSearch = {
-        List assemblies = []
 
-        //which assemblies are we looking at?
-        println "query is ${params.q}"
-
-        def contigs = searchService.getContigsForSearch(params.q, 0, 100000000).contigs
-
-        ContigSet cs = new ContigSet(name: params.q, description: "automatically generated contig set from query ${params.q}", study: Study.get(params.studyId))
-        contigs.each {
-
+        ContigSet cs = new ContigSet(name: params.q, description: "automatically generated contig set from query ${params.q}", study: Study.get(params.studyId), type: ContigSetType.USER)
+        params.contigList.split(',').each {
             println "adding contig $it"
-            cs.addToContigs(it)
+            cs.addToContigs(Contig.get(it))
         }
+        blastService.attachBlastDatabaseToContigSet(cs)
         cs.save()
         redirect(action: compareContigSets, params: [idList: [cs.id]])
 
@@ -244,10 +238,44 @@ class ContigSetController {
             c.addToContigs(Contig.get(it.toLong()))
         }
         blastService.attachBlastDatabaseToContigSet(c)
-        c.save(flush:true)
+        c.save(flush: true)
         statisticsService.getStatsForContigSet(c)
         println "rendering $c.id"
         render(c.id)
     }
 
+
+
+    def searchContigSets = {
+        def idList = getIdsFromCheckbox(params)
+        Integer offset = params.offset.toInteger() ?: 0
+        def allContigs = []
+        def studyId = 0
+        idList.each {
+            println "searching in contig set $it"
+            ContigSet set = ContigSet.get(it)
+            studyId = set.study.id
+            def contigs = searchService.searchInContigSet(set, params.searchQuery)
+            println "got ${contigs.size()} results for ${params.searchQuery}"
+            allContigs.addAll(contigs)
+        }
+        [
+                contigs: allContigs,
+                query: params.searchQuery,
+                offset: offset,
+                max: [allContigs.size(), offset + 100.toInteger()].min(),
+                studyId: studyId
+        ]
+    }
+
+
+    def getIdsFromCheckbox(params) {
+        //which contigsets are we looking at?
+        def ids = []
+        params.entrySet().findAll({it.key.startsWith('check_')}).each {
+            Integer contigSetId = it.key.split(/_/)[1].toInteger()
+            ids.add(contigSetId)
+        }
+        return ids
+    }
 }

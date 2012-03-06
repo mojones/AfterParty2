@@ -9,11 +9,6 @@ class Read {
 
     String source
 
-    static constraints = {
-        sampleSource(nullable: true)
-        assemblySource(nullable: true)
-    }
-
     static mapping = {
         sequence type: 'text'
         sort "start"

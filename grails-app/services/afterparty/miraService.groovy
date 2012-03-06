@@ -8,12 +8,6 @@ class miraService {
 
     def statisticsService
 
-    def cleanUpGorm() {
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-    }
-
 
     def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
 
@@ -36,15 +30,18 @@ class miraService {
         def currentContig
 
 
-        def session = sessionFactory.openStatelessSession()
-
-        a.save(flush:true)
+        a.save(flush: true)
 
         aceFile.eachLine { line ->
 
             if (line.startsWith(/CO /)) {
+                // if we already have a contig then update it
                 if (currentContig) {
-                    session.update(currentContig)
+                    println "updating contig with ${currentContig.reads.size()} reads"
+                    currentContig.averageCoverage = currentContig.calculateAverageCoverage()
+                    def start = System.currentTimeMillis()
+                    currentContig.save()
+                    println System.currentTimeMillis() - start
                     if (++added % 100 == 0) {
                         println added
                     }
@@ -58,12 +55,13 @@ class miraService {
 
                 currentContig = new Contig()
                 currentContig.name = currentContigName
-                currentContig.searchAssemblyId = a.id
                 currentContig.quality = 'qqq'
                 currentContig.sequence = 'sss'
+                currentContig.averageCoverage = 0
+                currentContig.averageQuality = 0
 
                 a.addToContigs(currentContig)
-                session.insert(currentContig)
+                currentContig.save()
             }
 
             else if (line.startsWith(/BQ/)) {
@@ -110,10 +108,11 @@ class miraService {
                 r.start = start
                 r.sequence = outputString.toString()
                 r.stop = start + currentReadString.size() - deletedBases
-                r.source = a.name
+                String sourceString = a.name
+                r.source = sourceString
                 r.contig = currentContig
-//                currentContig.addToReads(r)
-                session.insert(r)
+                currentContig.addToReads(r)
+                r.save()
                 currentReadString = []
                 inReadString = false;
             }
@@ -126,6 +125,14 @@ class miraService {
             else if (line.equals('') && inQualityString) {    // we have reached the end of the contig sequence string
                 //        currentFile.append(currentQualityString.join('') + "\n")
                 currentContig.quality = currentQualityString.join(' ')
+
+
+                List qualities = currentContig.quality.split(/ /).collect({it.toInteger()})
+                Integer sum = qualities.sum()
+                Integer size = qualities.size()
+                currentContig.averageQuality = [sum / size, 0.1].max()
+
+
                 currentQualityString = []
                 inQualityString = false;
             }
@@ -142,13 +149,15 @@ class miraService {
             }
 
         }
+        // take care of the final contig in the file
         if (currentContig) {
-            session.update(currentContig)
+            currentContig.averageCoverage = currentContig.calculateAverageCoverage()
+            currentContig.save()
 
         }
 
         a = a.merge()
-        a.save(flush: true)
+        a.save()
 //
         statisticsService.createContigSetForAssembly(a.id)
         return a

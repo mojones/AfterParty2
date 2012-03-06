@@ -1,5 +1,7 @@
 package afterparty
 
+import grails.plugin.springcache.annotations.Cacheable
+
 class SearchService {
 
     static transactional = true
@@ -30,4 +32,21 @@ class SearchService {
         return [contigs: searchResultContigs, rawSearch: rawSearchResult]
 
     }
+
+    @Cacheable('annotationSearchCache')
+    def searchInContigSet(ContigSet set, String query) {
+        def idList = set.contigs*.id
+
+        def c = Contig.createCriteria()
+        def result = c.listDistinct() {
+            blastHits {
+                order('bitscore')
+                ilike('description', "%$query%")
+            }
+            inList('id', idList)
+        }
+        println "got $result.size() results"
+        return result
+    }
+
 }
