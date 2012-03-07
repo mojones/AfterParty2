@@ -150,8 +150,9 @@ class ContigSetController {
         def studyId = 0
         idList.each {
             studyId = ContigSet.get(it).study.id
-            println "blasting against contig set ${it}"
+            println "\tblasting against contig set ${ContigSet.get(it).name}"
             def blastResults = blastAgainstSingleContigSet(it, params.blastQuery)
+            println "\tgot ${blastResults.size()} results"
             allResults.addAll(blastResults)
         }
 
@@ -254,7 +255,7 @@ class ContigSetController {
 
     def searchContigSets = {
         def idList = getIdsFromCheckbox(params)
-        Integer offset = params.offset.toInteger() ?: 0
+        Integer offset = params.offset?.toInteger() ?: 0
         def allContigs = []
         def studyId = 0
         idList.each {
@@ -266,10 +267,10 @@ class ContigSetController {
             allContigs.addAll(contigs)
         }
         [
-                contigs: allContigs,
+                contigs: allContigs.sort({-it.topBlastBitscore}),
                 query: params.searchQuery,
                 offset: offset,
-                max: [allContigs.size(), offset + 100.toInteger()].min(),
+                max: [allContigs.size() - 1, offset + 100.toInteger()].min(),
                 studyId: studyId
         ]
     }

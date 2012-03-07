@@ -16,11 +16,11 @@ sqlAfterparty.execute("delete from blast_hit using contig, assembly, compound_sa
 println "deleting reads"
 sqlAfterparty.execute("delete from read using contig, assembly, compound_sample, study where read.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
 println "deleting contigsets"
-sqlAfterparty.execute("delete from contig_set_contig using contig, assembly, compound_sample, study where contig_set_contig.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
+sqlAfterparty.execute("delete from contig_set_contigs using contig, assembly, compound_sample, study where contig_set_contigs.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
 println "deleting contigs"
 sqlAfterparty.execute("delete from contig using assembly, compound_sample, study where contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
 println "deleting everything else"
-Study.findByName('Nembase').delete(flush:true)
+Study.findByName('Nembase')?.delete(flush: true)
 
 
 
@@ -85,7 +85,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                 c.name = clusterId + '_' + contigId
                 c.sequence = consensus
                 c.quality = '0 ' * consensus.length()
-                c.searchAssemblyId = a.id
+                c.averageQuality = 20
 
                 a.addToContigs(c)
 
@@ -105,6 +105,8 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     r.source = libraryId2sample.get(estLibrary)?.name ?: 'no name'
                     c.addToReads(r)
                 }
+
+                c.averageCoverage = c.calculateAverageCoverage()
 
                 sqlData.rows("select * from blast where clus_id=$clusterId and contig=$contigId").eachWithIndex {blastRow, i4 ->
                     def blastAcc = blastRow.id

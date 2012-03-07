@@ -51,8 +51,6 @@ class BlastService {
         println "returning from service"
     }
 
-
-
     def runBlast(def assemblyId, def backgroundJobId) {
 
         println "running blast for $assemblyId"

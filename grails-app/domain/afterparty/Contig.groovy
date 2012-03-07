@@ -38,7 +38,7 @@ class Contig {
         }
     }
 
-    String getTopBlastBitscore() {
+    Float getTopBlastBitscore() {
         if (this.blastHits && this.blastHits.size() > 0) {
             return this.blastHits.toArray().sort({-it.bitscore})[0].bitscore
         }

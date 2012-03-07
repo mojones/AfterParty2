@@ -217,7 +217,7 @@ To make a bit of text editable we need to
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
-        <form id="contigSetForm">
+        <form id="contigSetForm" method="get">
 
             <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
                 <thead>
