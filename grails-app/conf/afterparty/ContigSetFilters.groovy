@@ -6,23 +6,23 @@ class ContigSetFilters {
 
     def filters = {
 
-        allContigSetsExist(controller: 'contigSet', action: '(compareContigSets|showContigSetsStatsJSON)') {
-            before = {
-                println "checking if contig set exists"
-                params.idList.split(/,/).each {
-                    def cs = ContigSet.get(it.toLong())
-                    if (!cs) {
-                        flash.error = "ContigSet $it doesn't exist"
-                        redirect(controller: 'study', action: 'listPublished')
-                        return false
-                    }
-                    else{
-                        session.studyId = cs.study.id
-                    }
-                }
-
-            }
-        }
+//        allContigSetsExist(controller: 'contigSet', action: '(compareContigSets|showContigSetsStatsJSON)') {
+//            before = {
+//                println "checking if contig set exists"
+//                params.idList.split(/,/).each {
+//                    def cs = ContigSet.get(it.toLong())
+//                    if (!cs) {
+//                        flash.error = "ContigSet $it doesn't exist"
+//                        redirect(controller: 'study', action: 'listPublished')
+//                        return false
+//                    }
+//                    else{
+//                        session.studyId = cs.study.id
+//                    }
+//                }
+//
+//            }
+//        }
 
 //        assemblyIsPublicOrOwnedByUser(controller: 'assembly', action: '(download|scatterplotAjax|histogramAjax|show)') {
 //            before = {

@@ -144,21 +144,26 @@ class ContigSetController {
         return blastResults
     }
 
-    def blastAgainstContigSet = {
-        println "blasting against contig set ${params.id}"
-        println "sequence is ${params.inputSequence}"
-
-        def blastResults = blastAgainstSingleContigSet(params.id.toLong(), params.inputSequence)
+    def blastAgainstContigSets = {
+        def idList = getIdsFromCheckbox(params)
+        def allResults = []
+        def studyId = 0
+        idList.each {
+            studyId = ContigSet.get(it).study.id
+            println "blasting against contig set ${it}"
+            def blastResults = blastAgainstSingleContigSet(it, params.blastQuery)
+            allResults.addAll(blastResults)
+        }
 
         def fullResult = [
-                hits: blastResults,
-                query: params.inputSequence
+                hits: allResults,
+                query: params.blastQuery
         ]
 
         [
                 resultsJSON: fullResult.encodeAsJSON(),
-                results: blastResults,
-                studyId: ContigSet.get(params.id).study.id
+                results: allResults,
+                studyId: studyId
         ]
 
     }
@@ -177,8 +182,9 @@ class ContigSetController {
     }
 
     def compareContigSets = {
+        def idList = getIdsFromCheckbox(params)
         def contigSetListResult = []
-        params.idList.split(/,/).sort().each {
+        idList.each {
             contigSetListResult.add(ContigSet.get(it.toLong()))
         }
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'

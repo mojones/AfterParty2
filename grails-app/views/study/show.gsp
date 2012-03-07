@@ -46,36 +46,47 @@ To make a bit of text editable we need to
 
         function updateButton() {
             if ($("input:checked").length == 0) {
-                $('#showContigSetsButton').slideUp('slow');
-                $('#searchContigSetAnnotationButton').slideUp('slow');
+                $('.doSomethingButton').slideUp('slow');
                 $('#noneSelectedMessage').slideDown('slow');
             }
             if ($("input:checked").length == 1) {
                 $('#noneSelectedMessage').slideUp('slow');
-                $('#showContigSetsButton').slideDown('slow');
+                $('.doSomethingButton').slideDown('slow');
+
                 $('#showContigSetsButton').val('view contig set');
-                $('#searchContigSetAnnotationButton').slideDown('slow');
                 $('#searchContigSetAnnotationButton').val('search contig set');
+                $('#blastContigSetAnnotationButton').val('BLAST vs contig set');
             }
             if ($("input:checked").length > 1) {
-                $('#showContigSetsButton').slideDown('slow');
                 $('#noneSelectedMessage').slideUp('slow');
+                $('.doSomethingButton').slideDown('slow');
+
                 $('#showContigSetsButton').val('compare contig sets');
-                $('#searchContigSetAnnotationButton').slideDown('slow');
                 $('#searchContigSetAnnotationButton').val('search contig sets');
+                $('#blastContigSetAnnotationButton').val('BLAST vs contig sets');
             }
         }
 
         function showSearchBox() {
-            $('#searchContigSetAnnotationButton').slideUp('slow');
-            $('#showContigSetsButton').slideUp('slow');
+            $('.doSomethingButton').slideUp('slow');
             $('#searchForm').slideDown('slow');
             return false;
         }
 
+        function showBLASTBox() {
+            $('.doSomethingButton').slideUp('slow');
+            $('#blastForm').slideDown('slow');
+            return false;
+        }
+
         function submitSearchForm() {
-            $('#contigSetForm').attr('action','/contigSet/searchContigSets');
-//            $('#contigSetForm').submit();
+            $('#contigSetForm').attr('action', '/contigSet/searchContigSets');
+        }
+        function submitBLASTForm() {
+            $('#contigSetForm').attr('action', '/contigSet/blastAgainstContigSets');
+        }
+        function submitCompare() {
+            $('#contigSetForm').attr('action', '/contigSet/compareContigSets');
         }
 
 
@@ -118,12 +129,7 @@ To make a bit of text editable we need to
                 <input type="submit" class="submit long" value="Index contigs for searching"/>
             </g:form>
         </g:if>
-        <p>
-            <g:form controller="study" action="search" method="get">
-                <g:hiddenField name="id" value="${studyInstance.id}"/>
-                <input type="submit" class="submit long" value="Search contigs"/>
-            </g:form>
-        </p>
+
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -233,10 +239,22 @@ To make a bit of text editable we need to
             </table>
 
             <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
-            <input id="showContigSetsButton" style="display:none" type="submit" class="submit long" value="select contig set"/>
-            <input id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox();return false;" type="submit" class="submit long" value="search contig sets">
+
+            <input class="doSomethingButton submit long" id="showContigSetsButton" style="display:none" type="submit" value="select contig set" onclick="submitCompare();"/>
+
+            <input class="doSomethingButton submit long" id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox();
+            return false;" type="submit" class="submit long" value="search contig sets">
+            <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" style="display:none" onclick="showBLASTBox();
+            return false;" type="submit" class="submit long" value="search contig sets">
 
             <br/>
+
+            <p id="blastForm" style="display:none">
+                <label>BLAST query sequence:</label> <br/><br/>
+                <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
+                <br/><br/>
+                <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
+            </p>
 
             <p id="searchForm" style="display:none">
                 <label>Search query:</label> <br/><br/>
@@ -249,50 +267,6 @@ To make a bit of text editable we need to
 
     <div class="bendr"></div>
 </div>
-
-
-%{--only show workflow and structure if we have at least one sample--}%
-%{--<g:if test="${studyInstance.compoundSamples}">--}%
-
-%{--<div class="block">--}%
-%{--<div class="block_head">--}%
-%{--<div class="bheadl"></div>--}%
-
-%{--<div class="bheadr"></div>--}%
-
-%{--<h2>Dataset overviews</h2>--}%
-%{--<ul class="tabs">--}%
-%{--<li><a href="#tab1">Structure</a></li>--}%
-%{--<li><a href="#tab2">Workflow</a></li>--}%
-%{--</ul>--}%
-%{--</div>        <!-- .block_head ends -->--}%
-
-%{--<div class="block_content tab_content" id="tab1">--}%
-
-%{--<h3>Structure</h3>--}%
-%{--<object data=" <g:createLink controller="study" action="overview" params="['id' : studyInstance.id]"/> "--}%
-%{--type="image/svg+xml" id="overviewSVG"></object>--}%
-
-%{--</div>        <!-- .block_content ends -->--}%
-
-
-
-%{--<div class="block_content tab_content" id="tab2">--}%
-
-%{--<h3>Workflow</h3>--}%
-
-%{--<object data=" <g:createLink controller="backgroundJob" action="overview"--}%
-%{--params="['id' : studyInstance.id]"/> "--}%
-%{--type="image/svg+xml" id="workflowSVG"></object>--}%
-
-%{--</div>        <!-- .block_content ends -->--}%
-
-%{--<div class="bendl"></div>--}%
-
-%{--<div class="bendr"></div>--}%
-
-%{--</div>--}%
-%{--</g:if>--}%
 
 </body>
 </html>
