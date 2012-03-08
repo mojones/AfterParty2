@@ -33,6 +33,17 @@
     %{--jquery edit in place plugin--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.editinplace.js')}"></script>
 
+    %{--jquery smart paginator stuff--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'smartpaginator.js')}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'js', file: 'smartpaginator.css')}"/>
+
+    %{--table sorter--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.tablesorter.min.js')}"></script>
+
+    %{--load mask for long running stuff--}%
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.loadmask.min.js')}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.loadmask.css')}"/>
+
 
     %{--application-specific scripts--}%
     <g:javascript library="application"/>

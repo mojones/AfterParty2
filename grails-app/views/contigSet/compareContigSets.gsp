@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="standalone.gsp"/>
+    <meta name="layout" content="main.gsp"/>
     <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
     <title>Standalone assembly viewer</title>
 
@@ -72,6 +72,17 @@ To make a bit of text editable we need to
 1. add the edit_in_place tag to it
 2. set the name attribute to be the name of the property that the text refers to --}%
     <script type="text/javascript">
+
+        function updatePaginator() {
+            $('#pag').smartpaginator({
+                totalrecords : ${contigSetInstance.contigs.size()},
+                recordsperpage:10,
+                datacontainer: 'contigTableBody',
+                dataelement: 'tr',
+                theme: 'green'
+            });
+        }
+
         //         set up edit-in-place
         $(document).ready(function() {
             setUpEditInPlace(
@@ -79,7 +90,22 @@ To make a bit of text editable we need to
                     "<g:createLink controller="update" action="updateField"/>",
                     'ContigSet'
             );
+
+            $('#contigTable').tablesorter();
+
+            $("#contigTable").bind("sortStart", function() {
+                $('#contigTable').mask('Sorting...');
+            });
+            $("#contigTable").bind("sortEnd", function() {
+                $('#contigTable').unmask();
+                updatePaginator();
+            });
+
+            updatePaginator();
+
         });
+
+
     </script>
 
     <div class="block">
@@ -135,34 +161,44 @@ To make a bit of text editable we need to
 
                 <div class="bheadr"></div>
 
-                <h2>Contigs in this set</h2>
+                <h2>High coverage contigs in this set</h2>
             </div>        <!-- .block_head ends -->
 
             <div class="block_content">
-                <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                <table cellpadding="0" cellspacing="0" width="100%" class="sortable" id="contigTable">
 
                     <thead>
                     <tr>
 
-                        <th>Contig ID</th>
-                        <th>Length</th>
-                        <th>Reads</th>
+                        <th width="100px;">Contig ID</th>
+                        <th width="50px;">Length</th>
+                        <th width="50px;">Reads</th>
+                        <th width="50px;">Coverage</th>
+                        <th width="50px;">Quality</th>
+                        <th width="50px;">GC%</th>
+                        <th">Top BLAST hit</th>
                     </tr>
                     </thead>
 
-                    <tbody>
-                    <g:each var="contig" in="${contigSetInstance.contigs.toArray()[0..5]}" status="index">
+                    <tbody id="contigTableBody">
+                    <g:each var="contig" in="${contigSetInstance.contigs.sort({-it.averageCoverage})}" status="index">
 
                         <tr>
                             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
                             <td>${contig.length()}</td>
                             <td>${contig.reads.size()}</td>
+                            <td>${contig.averageCoverage}</td>
+                            <td>${contig.averageQuality}</td>
+                            <td>${(contig.gc() * 100).toInteger()}</td>
+                            <td>${contig.topBlastHit}</td>
 
                         </tr>
                     </g:each>
                     </tbody>
 
                 </table>
+
+                <div id="pag"></div>
 
             </div>        <!-- .block_content ends -->
             <div class="bendl"></div>

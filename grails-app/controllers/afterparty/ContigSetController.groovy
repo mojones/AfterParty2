@@ -183,9 +183,17 @@ class ContigSetController {
     }
 
     def compareContigSets = {
-        def idList = getIdsFromCheckbox(params)
+        def idList
+        if (!params.idList){
+            idList = getIdsFromCheckbox(params)
+        }
+        else{
+            idList = params.idList.split(',')
+        }
+        println "idlist is $idList"
         def contigSetListResult = []
         idList.each {
+            println "getting a contig set with id $it"
             contigSetListResult.add(ContigSet.get(it.toLong()))
         }
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
@@ -254,7 +262,14 @@ class ContigSetController {
 
 
     def searchContigSets = {
-        def idList = getIdsFromCheckbox(params)
+        def idList
+        if (!params.idList){
+            idList = getIdsFromCheckbox(params)
+        }
+        else{
+            idList = params.idList.split(',')
+        }
+        println "idlist is $idList"
         Integer offset = params.offset?.toInteger() ?: 0
         def allContigs = []
         def studyId = 0

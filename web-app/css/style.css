@@ -579,7 +579,8 @@ a:hover {
 
 .block .block_content ul li {
     margin-bottom: 5px;
-    padding-left: 15px;
+    /*commented out for smart pagination*/
+    /*padding-left: 15px;*/
     background: url(../images/li.gif) 0 7px no-repeat;
 }
 
