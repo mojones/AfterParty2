@@ -198,6 +198,7 @@ class ContigSetController {
         }
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
 
+        // comment
         [contigSets: contigSetListResult, isOwner: contigSetListResult[0].study.user.id == userId]
     }
 
