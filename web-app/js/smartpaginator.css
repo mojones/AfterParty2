@@ -1,6 +1,7 @@
 ﻿.pager
 {
-    width: 720px;
+    /*let the pagination div just take its natural width*/
+    /*width: 720px;*/
     height: 30px;
     padding: 0;
     margin: 0;

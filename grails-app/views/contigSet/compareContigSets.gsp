@@ -27,6 +27,7 @@
     </style>
 
     <script type="text/javascript">
+
         $(document).ready(function() {
 
             $('#saveSelected').click(function() {
@@ -48,9 +49,42 @@
                 doCreate(ids, ${contigSets[0].study.id});
             });
 
-            $('#spinner').hide();
-            $('#downloadingSpinner').show();
+            // draw and paginate table first
+            <g:if test="${contigSets.size() == 1}">
 
+            function updatePaginator() {
+                $('#pag').smartpaginator({
+                    totalrecords : ${contigSets[0].contigs.size()},
+                    recordsperpage:10,
+                    datacontainer: 'contigTableBody',
+                    dataelement: 'tr',
+                    theme: 'green'
+                });
+            }
+
+
+            setUpEditInPlace(
+                    ${contigSets[0].id},
+                    "<g:createLink controller="update" action="updateField"/>",
+                    'ContigSet'
+            );
+
+//            $('#contigTable').tablesorter({debug:true});
+//
+//            $("#contigTable").bind("sortStart", function() {
+//                $('#contigTable').mask('Sorting...');
+//            });
+//            $("#contigTable").bind("sortEnd", function() {
+//                $('#contigTable').unmask();
+//                updatePaginator();
+//            });
+
+            updatePaginator();
+
+            </g:if>
+
+
+            $('#chartBlock').mask('downloading data...');
             $.get('/contigSet/showContigSetsJSON/?idList=${contigSets*.id.join(',')}', function(data) {
                 contigSetRawData = data;
                 // start by showing the user the scatter plot
@@ -71,42 +105,7 @@
 To make a bit of text editable we need to
 1. add the edit_in_place tag to it
 2. set the name attribute to be the name of the property that the text refers to --}%
-    <script type="text/javascript">
 
-        function updatePaginator() {
-            $('#pag').smartpaginator({
-                totalrecords : ${contigSetInstance.contigs.size()},
-                recordsperpage:10,
-                datacontainer: 'contigTableBody',
-                dataelement: 'tr',
-                theme: 'green'
-            });
-        }
-
-        //         set up edit-in-place
-        $(document).ready(function() {
-            setUpEditInPlace(
-                    ${contigSetInstance.id},
-                    "<g:createLink controller="update" action="updateField"/>",
-                    'ContigSet'
-            );
-
-            $('#contigTable').tablesorter();
-
-            $("#contigTable").bind("sortStart", function() {
-                $('#contigTable').mask('Sorting...');
-            });
-            $("#contigTable").bind("sortEnd", function() {
-                $('#contigTable').unmask();
-                updatePaginator();
-            });
-
-            updatePaginator();
-
-        });
-
-
-    </script>
 
     <div class="block">
 
@@ -161,10 +160,11 @@ To make a bit of text editable we need to
 
                 <div class="bheadr"></div>
 
-                <h2>High coverage contigs in this set</h2>
+                <h2>Contigs in this set</h2>
             </div>        <!-- .block_head ends -->
 
             <div class="block_content">
+                %{--<p>Click table headers to sort</p>--}%
                 <table cellpadding="0" cellspacing="0" width="100%" class="sortable" id="contigTable">
 
                     <thead>
@@ -176,19 +176,19 @@ To make a bit of text editable we need to
                         <th width="50px;">Coverage</th>
                         <th width="50px;">Quality</th>
                         <th width="50px;">GC%</th>
-                        <th">Top BLAST hit</th>
+                        <th>Top BLAST hit</th>
                     </tr>
                     </thead>
 
                     <tbody id="contigTableBody">
                     <g:each var="contig" in="${contigSetInstance.contigs.sort({-it.averageCoverage})}" status="index">
 
-                        <tr>
+                        <tr style="display:none;">
                             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
                             <td>${contig.length()}</td>
                             <td>${contig.reads.size()}</td>
-                            <td>${contig.averageCoverage}</td>
-                            <td>${contig.averageQuality}</td>
+                            <td>${contig.averageCoverage.toInteger()}</td>
+                            <td>${contig.averageQuality.toInteger()}</td>
                             <td>${(contig.gc() * 100).toInteger()}</td>
                             <td>${contig.topBlastHit}</td>
 
@@ -251,7 +251,7 @@ To make a bit of text editable we need to
         <div class="bendr"></div>
     </div>
 </g:else>
-<div class="block">
+<div class="block" id="chartBlock">
 
     <div class="block_head">
         <div class="bheadl"></div>
@@ -266,9 +266,9 @@ To make a bit of text editable we need to
 
     <div class="block_content">
 
-        <h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;display: none;">Drawing chart, please wait...</h2>
+        %{--<h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;display: none;">Drawing chart, please wait...</h2>--}%
 
-        <h2 id="downloadingSpinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Downloading contig data, please wait...</h2>
+        %{--<h2 id="downloadingSpinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Downloading contig data, please wait...</h2>--}%
 
         <p class="chartOptions">Chart type :
             <span class="chartTypeSelector" id='turnscatterplotOn' onclick="switchTo('scatterplot')">scatter plot</span> |

@@ -85,7 +85,7 @@ class Contig {
     }
 
     def gc() {
-        return sequence.findAll({it == 'G' || it == 'C'}).size() / sequence.length()
+        return sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / sequence.length()
     }
 
     def length() {

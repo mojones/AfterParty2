@@ -172,7 +172,7 @@ drawActiveChart = function() {
     // hide all the options and all charts while we are drawing - we want to prevent the user clicking on anything
     $('.chartOptions').hide();
     $('.chartDiv').empty();
-    $('#spinner').show();
+    $('#chartBlock').mask('building chart...');
 
     // now draw the chart with a timeout to make sure that the options get hidden
     if (window.activeChart == 'histogram') {
@@ -324,7 +324,8 @@ drawScatterChart = function() {
     turnScatterHighlighterOn();
 
     // all done; hide the spinner and unhide the other stuff
-    $('#spinner').hide();
+//    $('#spinner').hide();
+    $('#chartBlock').unmask();
     $('.chartOptions').show();
     $('.scatterplotOptions').show();
     $('#scatterplotContainer').show();
@@ -483,7 +484,9 @@ drawChart = function() {
             }
     );
     // show the options again
-    $('#spinner').hide();
+//    $('#spinner').hide();
+    $('#chartBlock').unmask();
+
     $('.chartOptions').show();
 }
 
@@ -661,7 +664,8 @@ drawCumulativeChart = function() {
     );
 
     // done!
-    $('#spinner').hide();
+//    $('#spinner').hide();
+    $('#chartBlock').unmask();
     $('.chartOptions').show();
 
 }
