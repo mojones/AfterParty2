@@ -67,28 +67,6 @@ To make a bit of text editable we need to
             }
         }
 
-        function showSearchBox() {
-            $('.doSomethingButton').slideUp('slow');
-            $('#searchForm').slideDown('slow');
-            return false;
-        }
-
-        function showBLASTBox() {
-            $('.doSomethingButton').slideUp('slow');
-            $('#blastForm').slideDown('slow');
-            return false;
-        }
-
-        function submitSearchForm() {
-            $('#contigSetForm').attr('action', '/contigSet/searchContigSets');
-        }
-        function submitBLASTForm() {
-            $('#contigSetForm').attr('action', '/contigSet/blastAgainstContigSets');
-        }
-        function submitCompare() {
-            $('#contigSetForm').attr('action', '/contigSet/compareContigSets');
-        }
-
 
     </script>
 

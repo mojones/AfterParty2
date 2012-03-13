@@ -52,16 +52,6 @@
             // draw and paginate table first
             <g:if test="${contigSets.size() == 1}">
 
-            function updatePaginator() {
-                $('#pag').smartpaginator({
-                    totalrecords : ${contigSets[0].contigs.size()},
-                    recordsperpage:10,
-                    datacontainer: 'contigTableBody',
-                    dataelement: 'tr',
-                    theme: 'green'
-                });
-            }
-
 
             setUpEditInPlace(
                     ${contigSets[0].id},
@@ -79,7 +69,6 @@
 //                updatePaginator();
 //            });
 
-            updatePaginator();
 
             </g:if>
 
@@ -126,25 +115,32 @@ To make a bit of text editable we need to
             <h3>Description</h3>
 
             <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
-            <g:if test="${isOwner}">
-                <p>
-                    <g:form action="buildBlastDatabase" method="get">
-                        <g:hiddenField name="id" value="${contigSetInstance.id}"/>
-                        <input type="submit" class="submit long" value="Make BLASTable"/>
-                    </g:form>
+
+            <form id="contigSetForm" method="get">
+
+                <input type="hidden" name="idList" value="${contigSetInstance.id}">
+
+                <input class="doSomethingButton submit long" id="searchContigSetAnnotationButton" onclick="showSearchBox();
+                return false;" type="submit" class="submit long" value="search contigs">
+                <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" onclick="showBLASTBox();
+                return false;" type="submit" class="submit long" value="blast vs contigs">
+
+                <br/>
+
+                <p id="blastForm" style="display:none">
+                    <label>BLAST query sequence:</label> <br/><br/>
+                    <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
+                    <br/><br/>
+                    <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
                 </p>
-            </g:if>
 
-            <g:if test="${contigSetInstance.blastHeaderFile}">
+                <p id="searchForm" style="display:none">
+                    <label>Search query:</label> <br/><br/>
+                    <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>
+                    <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
+                </p>
+            </form>
 
-                <g:form action="blastAgainstContigSet" method="get">
-                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
-                    <p><textarea rows="5" cols="80" name="inputSequence"></textarea></p>
-
-                    <p><input type="submit" class="submit long" value="Search contig set"/></p>
-                </g:form>
-
-            </g:if>
         </div>        <!-- .block_content ends -->
 
         <div class="bendl"></div>
@@ -164,41 +160,9 @@ To make a bit of text editable we need to
             </div>        <!-- .block_head ends -->
 
             <div class="block_content">
+
                 %{--<p>Click table headers to sort</p>--}%
-                <table cellpadding="0" cellspacing="0" width="100%" class="sortable" id="contigTable">
-
-                    <thead>
-                    <tr>
-
-                        <th width="100px;">Contig ID</th>
-                        <th width="50px;">Length</th>
-                        <th width="50px;">Reads</th>
-                        <th width="50px;">Coverage</th>
-                        <th width="50px;">Quality</th>
-                        <th width="50px;">GC%</th>
-                        <th>Top BLAST hit</th>
-                    </tr>
-                    </thead>
-
-                    <tbody id="contigTableBody">
-                    <g:each var="contig" in="${contigSetInstance.contigs.sort({-it.averageCoverage})}" status="index">
-
-                        <tr style="display:none;">
-                            <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-                            <td>${contig.length()}</td>
-                            <td>${contig.reads.size()}</td>
-                            <td>${contig.averageCoverage.toInteger()}</td>
-                            <td>${contig.averageQuality.toInteger()}</td>
-                            <td>${(contig.gc() * 100).toInteger()}</td>
-                            <td>${contig.topBlastHit}</td>
-
-                        </tr>
-                    </g:each>
-                    </tbody>
-
-                </table>
-
-                <div id="pag"></div>
+                <g:render template="contigTable" model="['contigCollection' : contigSetInstance.contigs.sort({-it.averageCoverage}), 'contigsPerPage' : 10]"/>
 
             </div>        <!-- .block_content ends -->
             <div class="bendl"></div>

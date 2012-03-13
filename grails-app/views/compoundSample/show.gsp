@@ -53,6 +53,31 @@ To make a bit of text editable we need to
 
         <p class="edit_in_place" name="name">${compoundSample.name}</p>
 
+        <form id="contigSetForm" method="get">
+
+            <input type="hidden" name="idList" value="${compoundSample.defaultContigSet.id}">
+            <input class="doSomethingButton submit long" id="showContigSetsButton" type="submit" value="view contigs" onclick="submitCompare();"/>
+
+            <input class="doSomethingButton submit long" id="searchContigSetAnnotationButton" onclick="showSearchBox();
+            return false;" type="submit" class="submit long" value="search contigs">
+            <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" onclick="showBLASTBox();
+            return false;" type="submit" class="submit long" value="blast contigs">
+
+            <br/>
+
+            <p id="blastForm" style="display:none">
+                <label>BLAST query sequence:</label> <br/><br/>
+                <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
+                <br/><br/>
+                <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
+            </p>
+
+            <p id="searchForm" style="display:none">
+                <label>Search query:</label> <br/><br/>
+                <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>
+                <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
+            </p>
+        </form>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
@@ -168,14 +193,6 @@ To make a bit of text editable we need to
             </g:form>
         </p>
 
-        <g:if test="${compoundSample.defaultContigSet}">
-            <p>
-                <g:form controller="contigSet" action="compareContigSets" method="get">
-                    <g:hiddenField name="idList" value="${compoundSample.defaultContigSet.id}"/>
-                    <input type="submit" class="submit long" value="View contigs"/>
-                </g:form>
-            </p>
-        </g:if>
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>

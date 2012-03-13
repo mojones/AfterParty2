@@ -33,7 +33,7 @@ class BackgroundJobController {
 
     def list = {
      //  don't do anything here - just render the list view - all the work is done by the listAjax method
-        [studyId : params.studyId]
+        [userId : springSecurityService.isLoggedIn() ? springSecurityService?.principal.id : null]
     }
 
     def listAjax = {

@@ -1,3 +1,26 @@
+function showSearchBox() {
+    $('.doSomethingButton').slideUp('slow');
+    $('#searchForm').slideDown('slow');
+    return false;
+}
+
+function showBLASTBox() {
+    $('.doSomethingButton').slideUp('slow');
+    $('#blastForm').slideDown('slow');
+    return false;
+}
+
+function submitSearchForm() {
+    $('#contigSetForm').attr('action', '/contigSet/searchContigSets');
+}
+function submitBLASTForm() {
+    $('#contigSetForm').attr('action', '/contigSet/blastAgainstContigSets');
+}
+function submitCompare() {
+    $('#contigSetForm').attr('action', '/contigSet/compareContigSets');
+}
+
+
 function doCreate(idList, studyId) {
     var name = prompt("Enter a name for the new contig set", "");
     $.post(

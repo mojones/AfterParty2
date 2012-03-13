@@ -8,6 +8,8 @@ class BackgroundJob {
 
     String label  //for drawing workflows
 
+    String destinationUrl
+
     String progress
     String commandLine
 
@@ -37,7 +39,7 @@ class BackgroundJob {
         }
     }
 
-    static belongsTo = [study: Study]
+    static belongsTo = [user: AfterpartyUser]
 
     static hasMany = [sources: Long, sinks: Long]
 
@@ -45,6 +47,7 @@ class BackgroundJob {
         label(nullable: true) // we will add the label after the job is done, so it needs to be null at the start
         commandLine(nullable: true)
         startedTime()
+        destinationUrl(nullable:true)
     }
 
     static mapping = {

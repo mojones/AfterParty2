@@ -135,7 +135,7 @@ class BootStrap {
                                 progress: 'queued',
                                 status: afterparty.BackgroundJobStatus.QUEUED,
                                 type: afterparty.BackgroundJobType.TRIM,
-                                study: litoStudy
+                                user: normalUser
                         )
                         job.save(flush: true)
                         sessionFactory.getCurrentSession().flush()
@@ -168,7 +168,7 @@ class BootStrap {
                         progress: 'queued',
                         status: afterparty.BackgroundJobStatus.QUEUED,
                         type: afterparty.BackgroundJobType.UPLOAD_BLAST_ANNOTATION,
-                        study: litoStudy
+                        user: normalUser
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()

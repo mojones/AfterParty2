@@ -145,13 +145,20 @@ class ContigSetController {
     }
 
     def blastAgainstContigSets = {
-        def idList = getIdsFromCheckbox(params)
+        def idList
+        if (!params.idList) {
+            idList = getIdsFromCheckbox(params)
+        }
+        else {
+            idList = params.idList.split(',')
+        }
+        println "idlist is $idList"
         def allResults = []
         def studyId = 0
         idList.each {
             studyId = ContigSet.get(it).study.id
             println "\tblasting against contig set ${ContigSet.get(it).name}"
-            def blastResults = blastAgainstSingleContigSet(it, params.blastQuery)
+            def blastResults = blastAgainstSingleContigSet(it.toLong(), params.blastQuery)
             println "\tgot ${blastResults.size()} results"
             allResults.addAll(blastResults)
         }
@@ -184,10 +191,10 @@ class ContigSetController {
 
     def compareContigSets = {
         def idList
-        if (!params.idList){
+        if (!params.idList) {
             idList = getIdsFromCheckbox(params)
         }
-        else{
+        else {
             idList = params.idList.split(',')
         }
         println "idlist is $idList"
@@ -264,10 +271,10 @@ class ContigSetController {
 
     def searchContigSets = {
         def idList
-        if (!params.idList){
+        if (!params.idList) {
             idList = getIdsFromCheckbox(params)
         }
-        else{
+        else {
             idList = params.idList.split(',')
         }
         println "idlist is $idList"
