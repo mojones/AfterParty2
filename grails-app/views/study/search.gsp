@@ -90,7 +90,7 @@
                     </g:else>
 
                 </g:if>
-                <g:form controller="contigSet" action="createFromSearch" method="get">
+                <g:form controller="contigSet" action="createFromContigList" method="get">
                     <g:hiddenField name="q" value="${finalQueryString}"/>
                     <g:hiddenField name="studyId" value="${studyInstance.id}"/>
                     <input type="submit" class="submit long" value="Save as contigSet"/>

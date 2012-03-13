@@ -209,7 +209,7 @@ class ContigSetController {
         [contigSets: contigSetListResult, isOwner: contigSetListResult[0].study.user.id == userId]
     }
 
-    def createFromSearch = {
+    def createFromContigList = {
 
         ContigSet cs = new ContigSet(name: params.q, description: "automatically generated contig set from query ${params.q}", study: Study.get(params.studyId), type: ContigSetType.USER)
         params.contigList.split(',').each {

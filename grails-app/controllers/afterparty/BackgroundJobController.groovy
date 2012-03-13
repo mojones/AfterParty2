@@ -3,6 +3,7 @@ package afterparty
 class BackgroundJobController {
 
     def overviewService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -43,9 +44,9 @@ class BackgroundJobController {
         render(
                 template: 'jobsTemplate',
                 model: [
-                        runningJobList: BackgroundJob.findAllByStatus(afterparty.BackgroundJobStatus.RUNNING, [sort: 'id']),
-                        completedJobList: BackgroundJob.findAllByStatus(afterparty.BackgroundJobStatus.FINISHED, [sort: 'id']),
-                        queuedJobList: BackgroundJob.findAllByStatus(afterparty.BackgroundJobStatus.QUEUED, [sort: 'id'])
+                        runningJobList: BackgroundJob.findAllByUserAndStatus(AfterpartyUser.get(springSecurityService.principal.id), afterparty.BackgroundJobStatus.RUNNING, [sort: 'id']),
+                        completedJobList: BackgroundJob.findAllByUserAndStatus(AfterpartyUser.get(springSecurityService.principal.id), afterparty.BackgroundJobStatus.FINISHED, [sort: 'id']),
+                        queuedJobList: BackgroundJob.findAllByUserAndStatus(AfterpartyUser.get(springSecurityService.principal.id), afterparty.BackgroundJobStatus.QUEUED, [sort: 'id'])
                 ]
         )
     }

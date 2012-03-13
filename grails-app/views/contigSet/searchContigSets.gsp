@@ -33,7 +33,7 @@
                 <g:render template="contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 30]"/>
                 <p>
 
-                    <g:form controller="contigSet" action="createFromSearch" method="post">
+                    <g:form controller="contigSet" action="createFromContigList" method="post">
                         <g:hiddenField name="q" value="${query}"/>
                         <g:hiddenField name="contigList" value="${contigs*.id.join(',')}"/>
                         <g:hiddenField name="studyId" value="${studyId}"/>

@@ -66,11 +66,12 @@ class AssemblyController {
         def assemblyId = params.id.toInteger()
 
 
+        println "logged-in user is ${AfterpartyUser.get(springSecurityService.principal.id)}"
 
         BackgroundJob job = new BackgroundJob(
                 name: 'uploading ACE file',
                 progress: 'queued',
-                study: Assembly.get(assemblyId).compoundSample.study,
+                user: AfterpartyUser.get(springSecurityService.principal.id),
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_CONTIGS)
         job.save(flush: true)
