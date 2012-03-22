@@ -25,6 +25,8 @@ class ContigSet {
     static mapping = {
         name type: 'text'
         description type: 'text'
+        contigs(index: 'martin9')
+
     }
 
     def isPublished() {

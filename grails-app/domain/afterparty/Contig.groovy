@@ -22,12 +22,12 @@ class Contig {
         quality type: 'text'
     }
 
-    static belongsTo = [Assembly, ContigSet]
+    static belongsTo = [Assembly]
 
     static transients = ['topBlastHit', 'topBlastBitscore']
 
 
-    static hasMany = [blastHits: BlastHit, reads: Read, contigSets : ContigSet]
+    static hasMany = [blastHits: BlastHit, reads: Read]
 
     String getTopBlastHit() {
         if (this.blastHits && this.blastHits.size() > 0) {

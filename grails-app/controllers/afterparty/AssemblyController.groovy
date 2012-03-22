@@ -2,6 +2,7 @@ package afterparty
 
 import grails.plugin.springcache.annotations.CacheFlush
 import grails.plugins.springsecurity.Secured
+import groovy.sql.Sql
 
 class AssemblyController {
 
@@ -73,7 +74,9 @@ class AssemblyController {
                 progress: 'queued',
                 user: AfterpartyUser.get(springSecurityService.principal.id),
                 status: BackgroundJobStatus.QUEUED,
-                type: BackgroundJobType.UPLOAD_CONTIGS)
+                type: BackgroundJobType.UPLOAD_CONTIGS,
+                destinationUrl: g.createLink(controllerName: 'assembly', actionName: 'show', params: [id: assemblyId])
+        )
         job.save(flush: true)
 
 
@@ -89,9 +92,16 @@ class AssemblyController {
             assembly.defaultContigSet = null
             assembly.save(flush: true)
 
-            assembly.contigs.each {
-                it.delete()
-            }
+
+            println "deleting individual contigs"
+
+            def sqlAfterparty = Sql.newInstance("jdbc:postgresql://localhost:5432/afterparty", 'mysuperuser', 'jukur6ai', 'org.postgresql.Driver')
+            sqlAfterparty.execute("delete from blast_hit using contig where blast_hit.contig_id = contig.id and contig.assembly_id = $assemblyId")
+            sqlAfterparty.execute("delete from read using contig where read.contig_id = contig.id and contig.assembly_id = $assemblyId")
+            sqlAfterparty.execute("delete from contig_set_contig using contig where contig_set_contig.contig_id = contig.id and contig.assembly_id = $assemblyId")
+            sqlAfterparty.execute("delete from contig where contig.assembly_id = $assemblyId")
+
+            println "done deleting individual contigs"
 
             miraService.attachContigsFromMiraInfo(f.inputStream, assembly)
 

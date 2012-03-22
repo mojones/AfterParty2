@@ -157,7 +157,7 @@ class StatisticsService {
     }
 
     @Cacheable("contigSetCache")
-    Map getStatsForContigSet(Long  contigSetId) {
+    Map getStatsForContigSet(Long contigSetId) {
         Map cs = [
                 id: [],
                 length: [],
@@ -258,9 +258,14 @@ class StatisticsService {
                 study: a.compoundSample.study,
                 type: ContigSetType.ASSEMBLY
         )
+
+        Integer count = 0
+
         a.contigs.each {
+            println "adding ${count++} / ${a.contigs.size()}"
             cs.addToContigs(it)
         }
+
         if (a.defaultContigSet) {
             println "deleting old contig set"
             def currentDefaultContigSet = a.defaultContigSet
@@ -269,7 +274,7 @@ class StatisticsService {
         a.defaultContigSet = cs
 
         blastService.attachBlastDatabaseToContigSet(cs)
-        cs.save(flush: true)
+        cs.save()
 
         // now update the compound sample that owns this assembly
         createContigSetForCompoundSample(a.compoundSample.id)

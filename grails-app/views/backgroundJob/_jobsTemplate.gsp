@@ -109,6 +109,7 @@
                 <tr>
                     <th>Description</th>
                     <th>Progress</th>
+                    <th>Destination</th>
                 </tr>
                 </thead>
 
@@ -119,6 +120,7 @@
                         <td>
                             ${fieldValue(bean: backgroundJobInstance, field: "progress")}
                         </td>
+                        <td>${backgroundJobInstance.destinationUrl}</td>
 
                     </tr>
                 </g:each>
