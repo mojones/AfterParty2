@@ -114,7 +114,7 @@
                 </thead>
 
                 <tbody>
-                <g:each in="${completedJobList}" status="i" var="backgroundJobInstance">
+                <g:each in="${completedJobList.sort({-it.startedTime})}" status="i" var="backgroundJobInstance">
                     <tr>
                         <td>${fieldValue(bean: backgroundJobInstance, field: "name")}</td>
                         <td>

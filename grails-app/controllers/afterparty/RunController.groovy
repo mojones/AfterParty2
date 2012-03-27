@@ -7,6 +7,7 @@ class RunController {
     def miraService
     def springSecurityService
     def executorService
+    def trimReadsService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -108,7 +109,33 @@ class RunController {
 
     def show = {
         def runInstance = Run.get(params.id)
-        [runInstance: runInstance]
+        def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
+        [runInstance: runInstance, isOwner: runInstance.experiment.sample.compoundSample.study.user.id == userId]
+
+    }
+
+
+    @Secured(['ROLE_USER'])
+    def trim = {
+
+        def id = params.id
+        println "id is $id"
+
+        BackgroundJob job = new BackgroundJob(
+                name: "trimming FASTQ file ${Run.get(id).rawReadsFile.name}",
+                progress: 'queued',
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.TRIM,
+                user: AfterpartyUser.get(springSecurityService.principal.id)
+
+        )
+        job.save(flush: true)
+
+
+        trimReadsService.trimReads(id, job.id)
+
+        redirect(controller: 'backgroundJob', action: 'list')
+
 
     }
 

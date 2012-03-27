@@ -1,4 +1,5 @@
 package afterparty
+
 import grails.plugins.springsecurity.Secured
 
 class ReadsFileController {
@@ -8,6 +9,7 @@ class ReadsFileController {
     def trimReadsService
     def miraService
     def overviewService
+    def springSecurityService
 
 
     def graph = {
@@ -19,30 +21,6 @@ class ReadsFileController {
         response.outputStream.flush()
     }
 
-    @Secured(['ROLE_USER'])
-    def trim = {
-
-        def id = params.id
-        println "id is $id"
-
-        BackgroundJob job = new BackgroundJob(
-                name: "trimming FASTQ file ${ReadsFile.get(id).name}",
-                progress: 'queued',
-                status: BackgroundJobStatus.QUEUED,
-                type: BackgroundJobType.TRIM,
-                study: Run.get(id).experiment.sample.study
-        )
-        job.save(flush: true)
-
-
-        runAsync {
-            trimReadsService.trimReads(id, job.id)
-        }
-
-        redirect(controller: 'backgroundJob', action: list)
-
-
-    }
 
     def download = {
         def read = ReadsFile.get(params.id)

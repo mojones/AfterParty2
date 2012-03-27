@@ -99,21 +99,23 @@
 
 
         <div class="sidebar_content" id="sb2_raw">
-            <g:form action="attachRawReads" method="post" enctype="multipart/form-data">
-                <p class="fileupload" style="clear:none;">
-                    <label>Select new file:</label><br/>
-                    <input type="file" name="myFile"/>
-                </p>
-                <g:hiddenField name="id" value="${runInstance?.id}"/>
-                <p style="clear:none;">
-                    <input type="submit" class="submit long" value="Upload new file"/>
-                </p>
-            </g:form>
+            <g:if test="${isOwner}">
+                <g:form action="attachRawReads" method="post" enctype="multipart/form-data">
+                    <p class="fileupload" style="clear:none;">
+                        <label>Select new file:</label><br/>
+                        <input type="file" name="myFile"/>
+                    </p>
+                    <g:hiddenField name="id" value="${runInstance?.id}"/>
+                    <p style="clear:none;">
+                        <input type="submit" class="submit long" value="Upload new file"/>
+                    </p>
+                </g:form>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
 
         <div class="sidebar_content" id="sb3_raw">
-            <g:if test="${runInstance.rawReadsFile}">
+            <g:if test="${runInstance.rawReadsFile && isOwner}">
 
                 <p>
                     <g:form controller="readsFile" action="download">
@@ -123,22 +125,12 @@
                 </p>
 
                 <p>
-                    <g:form controller="readsFile" action="trim">
-                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                    <g:form controller="run" action="trim">
+                        <g:hiddenField name="id" value="${runInstance.id}"/>
                         <input type="submit" class="submit long" value="Trim reads"/>
                     </g:form>
                 </p>
-
-                <p>
-                    <g:form controller="run" action="runMira">
-                        <g:hiddenField name="id" value="${runInstance.id}"/>
-                        <input type="submit" class="submit long" value="Assemble reads"/>
-                    </g:form>
-                </p>
             </g:if>
-            <g:else>
-                <h3>No raw reads file uploaded yet</h3>
-            </g:else>
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
