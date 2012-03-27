@@ -4,7 +4,7 @@ import grails.plugin.springcache.annotations.Cacheable
 
 class StatisticsService {
 
-    static transactional = true
+    static transactional = false
 
     def grailsApplication
     def blastService
@@ -197,8 +197,12 @@ class StatisticsService {
         )
 
         c.assemblies.each { assembly ->
-            assembly.defaultContigSet.contigs.each { contig ->
-                cs.addToContigs(contig)
+            println "adding contigs from assembly $assembly"
+            if (assembly.defaultContigSet != null) {
+                assembly.defaultContigSet.contigs.each { contig ->
+                    println "adding contig $contig"
+                    cs.addToContigs(contig)
+                }
             }
         }
 
@@ -272,12 +276,13 @@ class StatisticsService {
             currentDefaultContigSet.delete()
         }
         a.defaultContigSet = cs
+        a.save()
 
         blastService.attachBlastDatabaseToContigSet(cs)
         cs.save()
 
         // now update the compound sample that owns this assembly
-//        createContigSetForCompoundSample(a.compoundSample.id)
+        createContigSetForCompoundSample(a.compoundSample.id)
 
     }
 
