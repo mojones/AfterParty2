@@ -223,9 +223,6 @@ class BootStrap {
                 println System.currentTimeMillis() - start
             }
 
-            development {
-                springSecurityService.reauthenticate('martin')
-            }
         }
 
 

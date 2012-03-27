@@ -21,10 +21,10 @@ class BlastService {
         def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl".split(" "))
         blastProcess.redirectErrorStream(true)
         blastProcess = blastProcess.start()
-//        blastProcess.in.eachLine({
-        //            println "blast : $it"
-        //        })
-        blastProcess.waitFor()
+        blastProcess.in.eachLine({
+                    println "blast : $it"
+                })
+//        blastProcess.waitFor()
         cs.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
         cs.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
         cs.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()

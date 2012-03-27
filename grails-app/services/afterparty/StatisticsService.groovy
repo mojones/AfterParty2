@@ -262,7 +262,7 @@ class StatisticsService {
         Integer count = 0
 
         a.contigs.each {
-            println "adding ${count++} / ${a.contigs.size()}"
+//            println "adding ${count++} / ${a.contigs.size()}"
             cs.addToContigs(it)
         }
 
@@ -277,7 +277,7 @@ class StatisticsService {
         cs.save()
 
         // now update the compound sample that owns this assembly
-        createContigSetForCompoundSample(a.compoundSample.id)
+//        createContigSetForCompoundSample(a.compoundSample.id)
 
     }
 

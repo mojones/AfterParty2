@@ -120,7 +120,7 @@
                         <td>
                             ${fieldValue(bean: backgroundJobInstance, field: "progress")}
                         </td>
-                        <td>${backgroundJobInstance.destinationUrl}</td>
+                        <td><a href="${backgroundJobInstance.destinationUrl}">go to result</a></td>
 
                     </tr>
                 </g:each>

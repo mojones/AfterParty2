@@ -9,6 +9,7 @@ class miraService {
     def statisticsService
     def executorService
 
+    def grailsLinkGenerator
 
     def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
 
@@ -227,22 +228,22 @@ class miraService {
             )
             a.save()
             s.addToAssemblies(a)
-            println "attaching contigs to new assembly"
+            String destination = grailsLinkGenerator.link(controller: 'assembly', action: 'show', id: a.id)
+
+            println "attaching contigs to new assembly, destination is $destination"
             attachContigsFromMiraInfo(new FileInputStream(aceFile), a)
 
 //        update the job to show that we 're finished and set the sink and source ids
             job.progress = 'finished'
             job.status = BackgroundJobStatus.FINISHED
-            String destination = g.createLink(controller: 'assembly', action: 'show', id: a.id)
             println "destination is $destination"
             job.destinationUrl = destination
-            readsFileIds.each { readsFileId ->
-                job.addToSources(readsFileId.toLong())
-            }
-            job.addToSinks(a.id)
+
             job.label = 'mira'
             job.save(flush: true)
+            println "done with runMira"
         }
+
 
     }
 
