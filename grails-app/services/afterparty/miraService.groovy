@@ -2,11 +2,12 @@ package afterparty
 
 class miraService {
 
-    static transactional = false
+    static transactional = true
 
     def sessionFactory
 
     def statisticsService
+    def executorService
 
 
     def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
@@ -37,12 +38,12 @@ class miraService {
             if (line.startsWith(/CO /)) {
                 // if we already have a contig then update it
                 if (currentContig) {
-                    println "updating contig with ${currentContig.reads.size()} reads"
+//                    println "updating contig with ${currentContig.reads.size()} reads"
                     currentContig.averageCoverage = currentContig.calculateAverageCoverage()
-                    def start = System.currentTimeMillis()
+//                    def start = System.currentTimeMillis()
                     currentContig.save()
-                    println System.currentTimeMillis() - start
-                    if (++added % 100 == 0) {
+//                    println System.currentTimeMillis() - start
+                    if (++added % 1000 == 0) {
                         println added
                     }
 //
@@ -50,7 +51,7 @@ class miraService {
                 }
                 currentContigString = []
                 currentContigName = line.split(/ /)[1]
-                println currentContigName
+//                println currentContigName
                 inContigString = true
 
                 currentContig = new Contig()
@@ -168,68 +169,80 @@ class miraService {
 
     def runMira(def readsFileIds, def jobId, def compoundSampleId) {
 
-        println " ${new Date()} running mira on reads file with id $readsFileIds"
+        runAsync {
+            println "i am running mira!"
+            println " ${new Date()} running mira on reads file with id $readsFileIds"
 
-        // update the job to show that it's running
-        BackgroundJob job = BackgroundJob.get(jobId)
-        job.progress = "running mira"
-        job.status = BackgroundJobStatus.RUNNING
-        job.save(flush: true)
+//        update the job to show that it 's running
+            BackgroundJob job = BackgroundJob.get(jobId)
+            job.progress = "running mira"
+            job.status = BackgroundJobStatus.RUNNING
+            job.save(flush: true)
 
-        // generate a uuid for the project and create an input file
-        String projectName = UUID.randomUUID().toString()
-        File procInput = new File("/tmp/${projectName}_in.454.fastq")
-        procInput.delete()
+            // generate a uuid for the project and create an input file
+            String projectName = UUID.randomUUID().toString()
+            File procInput = new File("/tmp/${projectName}_in.454.fastq")
+            procInput.delete()
+            assert procInput.createNewFile()
 
-        // write the reads to the input file
-        readsFileIds.each { readsFileId ->
-            ReadsFile readsFile = ReadsFile.get(readsFileId)
-            println "reads file is $readsFile"
-            println "run of reads file is " + readsFile.run
-            def readData = readsFile.data.fileData
-            procInput.append(readData)
-        }
-
-        // construct the mira command line, set the working directory to /tmp, and start the process
-        println "starting process"
-        def p = new ProcessBuilder("/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
-        job.commandLine = p.command().join('')
-        p.directory(new File("/tmp"))
-        p.redirectErrorStream(true)
-        p = p.start()
-
-        // monitor stdout of the mira process and update the job to show which pass we are on
-        p.in.eachLine({
-//            println it
-            if (it.contains('Pass')) {
-                job.progress = it
-                job.save(flush: true)
+            // write the reads to the input file
+            readsFileIds.each { readsFileId ->
+                ReadsFile readsFile = ReadsFile.get(readsFileId)
+                byte[] myData = readsFile.data.fileData
+                println "reads file is $readsFile"
+                println "run of reads file is " + readsFile.run
+                println "process input is ${procInput.absolutePath}"
+//            println "process data is $myData"
+                def readData = readsFile.data.fileData
+                procInput.append(readData)
             }
-        })
 
-        File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
+            // construct the mira command line, set the working directory to /tmp, and start the process
+            println "starting process"
+            def p = new ProcessBuilder("/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
+            job.commandLine = p.command().join('')
+            p.directory(new File("/tmp"))
+            p.redirectErrorStream(true)
+            p = p.start()
 
-        CompoundSample s = CompoundSample.get(compoundSampleId)
+            // monitor stdout of the mira process and update the job to show which pass we are on
+            p.in.eachLine({
+//            println it
+                if (it.contains('Pass')) {
+                    println it
+                    job.progress = it
+                    job.save(flush: true)
+                }
+            })
 
-        Assembly a = new Assembly(
-                name: 'automatic assembly using mira',
-                description: (new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")).text
+            println "done!!"
+            File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
 
-        )
-        a.save()
-        s.addToAssemblies(a)
-        attachContigsFromMiraInfo(aceFile, a)
+            CompoundSample s = CompoundSample.get(compoundSampleId)
 
-        // update the job to show that we're finished and set the sink and source ids
-        job.progress = 'finished'
-        job.status = BackgroundJobStatus.FINISHED
-        readsFileIds.each { readsFileId ->
-            job.addToSources(readsFileId.toLong())
+            Assembly a = new Assembly(
+                    name: 'automatic assembly using mira',
+                    description: (new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")).text,
+                    compoundSample: s
+            )
+            a.save()
+            s.addToAssemblies(a)
+            println "attaching contigs to new assembly"
+            attachContigsFromMiraInfo(new FileInputStream(aceFile), a)
+
+//        update the job to show that we 're finished and set the sink and source ids
+            job.progress = 'finished'
+            job.status = BackgroundJobStatus.FINISHED
+            String destination = g.createLink(controller: 'assembly', action: 'show', id: a.id)
+            println "destination is $destination"
+            job.destinationUrl = destination
+            readsFileIds.each { readsFileId ->
+                job.addToSources(readsFileId.toLong())
+            }
+            job.addToSinks(a.id)
+            job.label = 'mira'
+            job.save(flush: true)
         }
-        job.addToSinks(a.id)
-        job.label = 'mira'
-        job.save(flush: true)
-
 
     }
 

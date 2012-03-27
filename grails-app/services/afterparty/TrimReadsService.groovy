@@ -52,11 +52,11 @@ class TrimReadsService {
         job.save()
 
         ReadsFileData d = new ReadsFileData(fileData: file.toString().getBytes())
-        ReadsFile trimmedReadsFile = new ReadsFile(name: "trimmed version of $rawReadsFile.name", data: d, description: p.err.text, status: ReadsFileStatus.TRIMMED)
+        ReadsFile trimmedReadsFile = new ReadsFile(name: "trimmed version of $rawReadsFile.name", data: d, description: p.err.text, status: ReadsFileStatus.TRIMMED, run: run)
         run.trimmedReadsFile = trimmedReadsFile
-        run.save(flush:true)
-        trimmedReadsFile.run = run
-        trimmedReadsFile.save(flush:true)
+
+        run.save(flush: true)
+        trimmedReadsFile.save(flush: true)
 
 
         job.progress = 'finished'

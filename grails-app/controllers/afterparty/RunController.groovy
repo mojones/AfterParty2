@@ -5,6 +5,8 @@ import grails.plugins.springsecurity.Secured
 class RunController {
 
     def miraService
+    def springSecurityService
+    def executorService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -93,13 +95,11 @@ class RunController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.ASSEMBLE,
-                study: study
+                user: AfterpartyUser.get(springSecurityService.principal.id)
         )
         job.save(flush: true)
 
-        runAsync {
-            miraService.runMira([run.trimmedReadsFile.id], job.id, run.experiment.sample.compoundSample.id)
-        }
+        miraService.runMira([run.trimmedReadsFile.id], job.id, run.experiment.sample.compoundSample.id)
 
         redirect(controller: 'backgroundJob', action: 'list')
 

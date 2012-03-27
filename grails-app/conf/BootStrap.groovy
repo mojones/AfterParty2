@@ -16,9 +16,8 @@ class BootStrap {
 
     def init = { servletContext ->
 
-
-        executorService.executor.setMaximumPoolSize(6)
-        executorService.executor.setCorePoolSize(6)
+        //executorService.executor.setMaximumPoolSize(6)
+        //executorService.executor.setCorePoolSize(6)
 
         // remove stale background jobs
         BackgroundJob.findAllByStatus(BackgroundJobStatus.RUNNING).each {it.delete(flush: true)}
@@ -88,44 +87,41 @@ class BootStrap {
                 Run femaleRun = new Run(name: '454 GS FLX sequencing (16-APR-2009)')
                 femaleExperiment.addToRuns(femaleRun)
                 ReadsFileData femaleRawData = new ReadsFileData(fileData: (new File('/home/martin/Downloads/afterPartydata/litoData/female.fastq')).getBytes())
-                ReadsFile femaleReads = new ReadsFile(name: 'female run 1', data: smallRawData, status: ReadsFileStatus.RAW)
+                ReadsFile femaleReads = new ReadsFile(name: 'female run 1', data: smallRawData, status: ReadsFileStatus.RAW, run: femaleRun)
 //                ReadsFile femaleReads = new ReadsFile(name: 'female run 1', data: femaleRawData, status: ReadsFileStatus.RAW)
-                femaleRun.rawReadsFile = femaleReads
+                //                femaleRun.rawReadsFile = femaleReads
 
                 Run maleRun = new Run(name: '454 GS FLX sequencing (21-APR-2009)')
                 maleExperiment.addToRuns(maleRun)
                 ReadsFileData maleRawData = new ReadsFileData(fileData: (new File('/home/martin/Downloads/afterPartydata/litoData/male.fastq')).getBytes())
-                ReadsFile maleReads = new ReadsFile(name: 'male run 1', data: smallRawData, status: ReadsFileStatus.RAW)
+                ReadsFile maleReads = new ReadsFile(name: 'male run 1', data: smallRawData, status: ReadsFileStatus.RAW, run: maleRun)
 //                ReadsFile maleReads = new ReadsFile(name: 'male run 1', data: maleRawData, status: ReadsFileStatus.RAW)
-                maleRun.rawReadsFile = maleReads
+                //                maleRun.rawReadsFile = maleReads
 
                 Run microfilariaRunOne = new Run(name: '454 GS FLX Titanium sequencing (08-DEC-2009)')
                 microfilariaExperiment.addToRuns(microfilariaRunOne)
                 ReadsFileData microfilariaRawDataOne = new ReadsFileData(fileData: (new File('/home/martin/Downloads/afterPartydata/litoData/mf1.fastq')).getBytes())
-                ReadsFile microfilariaReadsOne = new ReadsFile(name: 'microfilaria run 1', data: smallRawData, status: ReadsFileStatus.RAW)
+                ReadsFile microfilariaReadsOne = new ReadsFile(name: 'microfilaria run 1', data: smallRawData, status: ReadsFileStatus.RAW, run: microfilariaRunOne)
 //                ReadsFile microfilariaReadsOne = new ReadsFile(name: 'microfilaria run 1', data: microfilariaRawDataOne, status: ReadsFileStatus.RAW)
-                microfilariaRunOne.rawReadsFile = microfilariaReadsOne
+                //                microfilariaRunOne.rawReadsFile = microfilariaReadsOne
 
                 Run microfilariaRunTwo = new Run(name: '454 GS FLX Titanium sequencing (21-DEC-2009)')
                 microfilariaExperiment.addToRuns(microfilariaRunTwo)
                 ReadsFileData microfilariaRawDataTwo = new ReadsFileData(fileData: (new File('/home/martin/Downloads/afterPartydata/litoData/mf2.fastq')).getBytes())
-                ReadsFile microfilariaReadsTwo = new ReadsFile(name: 'microfilaria run 2', data: smallRawData, status: ReadsFileStatus.RAW)
+                ReadsFile microfilariaReadsTwo = new ReadsFile(name: 'microfilaria run 2', data: smallRawData, status: ReadsFileStatus.RAW, run: microfilariaRunTwo)
 //                ReadsFile microfilariaReadsTwo = new ReadsFile(name: 'microfilaria run 2', data: microfilariaRawDataTwo, status: ReadsFileStatus.RAW)
-                microfilariaRunTwo.rawReadsFile = microfilariaReadsTwo
+                //                microfilariaRunTwo.rawReadsFile = microfilariaReadsTwo
 
                 Run microfilariaRunThree = new Run(name: '454 GS FLX Titanium sequencing (17-DEC-2009)')
                 microfilariaExperiment.addToRuns(microfilariaRunThree)
                 ReadsFileData microfilariaRawDataThree = new ReadsFileData(fileData: (new File('/home/martin/Downloads/afterPartydata/litoData/mf3.fastq')).getBytes())
-                ReadsFile microfilariaReadsThree = new ReadsFile(name: 'microfilaria run 3', data: smallRawData, status: ReadsFileStatus.RAW)
+                ReadsFile microfilariaReadsThree = new ReadsFile(name: 'microfilaria run 3', data: smallRawData, status: ReadsFileStatus.RAW, run: microfilariaRunThree)
 //                ReadsFile microfilariaReadsThree = new ReadsFile(name: 'microfilaria run 3', data: microfilariaRawDataThree, status: ReadsFileStatus.RAW)
-                microfilariaRunThree.rawReadsFile = microfilariaReadsThree
+                //                microfilariaRunThree.rawReadsFile = microfilariaReadsThree
 
-                AdaptersFile maleLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes())
-                AdaptersFile femaleLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes())
-                AdaptersFile microfilariaLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes())
-                maleExperiment.adapters = maleLitoAdapters
-                femaleExperiment.adapters = femaleLitoAdapters
-                microfilariaExperiment.adapters = microfilariaLitoAdapters
+                AdaptersFile maleLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes(), experiment: maleExperiment)
+                AdaptersFile femaleLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes(), experiment: femaleExperiment)
+                AdaptersFile microfilariaLitoAdapters = new AdaptersFile(name: 'lito MINT adapters', data: (new File('/home/martin/Downloads/afterPartydata/adapters.fasta')).getBytes(), experiment: microfilariaExperiment)
 
                 [maleExperiment, femaleExperiment, microfilariaExperiment].each { experiment ->
                     experiment.runs.each { run ->
@@ -152,8 +148,8 @@ class BootStrap {
                 lSig.addToAssemblies(a)
 
                 miraService.attachContigsFromMiraInfo(
-                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
-//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
+//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
+                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
                         a
                 )
 
@@ -172,7 +168,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
+//                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
                 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',
@@ -225,6 +221,10 @@ class BootStrap {
                 }
                 sessionFactory.getCurrentSession().flush()
                 println System.currentTimeMillis() - start
+            }
+
+            development {
+                springSecurityService.reauthenticate('martin')
             }
         }
 

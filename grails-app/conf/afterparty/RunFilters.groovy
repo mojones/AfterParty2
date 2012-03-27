@@ -1,10 +1,24 @@
 package afterparty
 
+import grails.util.Environment
+
 class RunFilters {
 
     def springSecurityService
 
     def filters = {
+
+        autoLogin(controller: '*', action: '*') {
+            before = {
+//                println "filter environment is ${Environment.current}"
+                if (Environment.current == Environment.DEVELOPMENT) {
+//                    println "auto-login power!"
+//                    println "current user is ${springSecurityService.principal}"
+                    springSecurityService.reauthenticate('martin')
+
+                }
+            }
+        }
 
         uploadedFileExists(controller: 'run', action: '(attachRawReads|attachTrimmedReads)') {
             before = {
@@ -26,7 +40,7 @@ class RunFilters {
                 Run a = Run.get(params.id)
                 if (!a) {
                     flash.error = "Run doesn't exist"
-                    redirect(controller: 'study', action:'listPublished')
+                    redirect(controller: 'study', action: 'listPublished')
                     return false
                 }
             }
@@ -40,7 +54,7 @@ class RunFilters {
 
                 if (!r.isPublished() && !r.isOwnedBy(springSecurityService.principal)) {
                     flash.error = "Run is not published and you are not the owner"
-                    redirect(controller: 'study', action:'listPublished')
+                    redirect(controller: 'study', action: 'listPublished')
                     return false
                 }
             }
@@ -58,8 +72,6 @@ class RunFilters {
                 }
             }
         }
-
-
 
 
     }

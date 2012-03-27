@@ -1,3 +1,4 @@
+
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -51,25 +52,28 @@ grails.spring.bean.packages = []
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
+// run in root context
+grails.app.context = "/"
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
         grails.serverURL = "http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
         grails.gorm.failOnError = true
     }
     development_rebuild {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
         grails.gorm.failOnError = true
     }
     big_test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
         grails.gorm.failOnError = true
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
     }
 
 }
@@ -96,7 +100,7 @@ log4j = {
             'net.sf.ehcache.hibernate'
 
 //    debug 'org.codehaus.groovy.grails.plugins.searchable'
-//    debug 'org.compass'
+    //    debug 'org.compass'
     warn 'org.mortbay.log'
 
     warn 'grails.plugin.springcache'
@@ -118,9 +122,9 @@ grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'afterparty.Af
 grails.plugins.springsecurity.authority.className = 'afterparty.AfterPartyRole'
 
 // password options
-grails.plugins.springsecurity.ui.password.minLength=4
-grails.plugins.springsecurity.ui.password.maxLength=10
-grails.plugins.springsecurity.ui.password.validationRegex='^.*$'
+grails.plugins.springsecurity.ui.password.minLength = 4
+grails.plugins.springsecurity.ui.password.maxLength = 10
+grails.plugins.springsecurity.ui.password.validationRegex = '^.*$'
 
 conf.ui.password.minLength = 4
 conf.ui.password.validationRegex = '.*'
