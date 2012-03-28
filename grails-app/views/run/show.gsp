@@ -100,12 +100,13 @@
 
         <div class="sidebar_content" id="sb2_raw">
             <g:if test="${isOwner}">
-                <g:form action="attachRawReads" method="post" enctype="multipart/form-data">
+                <g:form action="attachReads" method="post" enctype="multipart/form-data">
                     <p class="fileupload" style="clear:none;">
                         <label>Select new file:</label><br/>
                         <input type="file" name="myFile"/>
                     </p>
                     <g:hiddenField name="id" value="${runInstance?.id}"/>
+                    <g:hiddenField name="type" value="raw"/>
                     <p style="clear:none;">
                         <input type="submit" class="submit long" value="Upload new file"/>
                     </p>
@@ -186,12 +187,14 @@
 
 
         <div class="sidebar_content" id="sb2_trimmed">
-            <g:form action="attachTrimmedReads" method="post" enctype="multipart/form-data">
+            <g:form action="attachReads" method="post" enctype="multipart/form-data">
                 <p class="fileupload" style="clear:none;">
                     <label>Select new file:</label><br/>
                     <input type="file" name="myFile"/>
                 </p>
                 <g:hiddenField name="id" value="${runInstance?.id}"/>
+                <g:hiddenField name="type" value="trimmed"/>
+
                 <p style="clear:none;">
                     <input type="submit" class="submit long" value="Upload new file"/>
                 </p>

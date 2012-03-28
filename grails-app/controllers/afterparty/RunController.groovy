@@ -4,16 +4,25 @@ import grails.plugins.springsecurity.Secured
 
 class RunController {
 
+
     def miraService
     def springSecurityService
-    def executorService
     def trimReadsService
+    def grailsLinkGenerator
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+
+
     @Secured(['ROLE_USER'])
-    def attachRawReads = {
+    def attachReads = {
+
+        // we must get all the data from the request before we enter the async block
         def f = request.getFile('myFile')
+        def realData = f.inputStream.bytes
+        def realFilename = f.originalFilename
+
+        def type = params.type
 
         def runId = params.id
         BackgroundJob job = new BackgroundJob(
@@ -21,67 +30,47 @@ class RunController {
                 status: BackgroundJobStatus.QUEUED,
                 progress: 'queued',
                 type: BackgroundJobType.UPLOAD_READS,
-                study: Run.get(runId).experiment.sample.study
+                user: AfterpartyUser.get(springSecurityService.principal.id)
         )
         job.save(flush: true)
-        runAsync {
 
+
+
+        runAsync({
+
+            // we must get() these domain objects inside the runAsync block
             Run run = Run.get(runId)
-
+            BackgroundJob realJob = BackgroundJob.get(job.id)
 
             println "attaching FASTQ file to run ${run}"
-            job.status = BackgroundJobStatus.RUNNING
-            job.progress = "attaching FASTQ file to run ${run}"
-            job.save(flush: true)
-            ReadsFileData d = new ReadsFileData(fileData: f)
-            ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${f.originalFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW)
-            run.rawReadsFile = r
-            run.save()
-            job.status = BackgroundJobStatus.FINISHED
-
-            job.save(flush: true)
-        }
+            realJob.status = BackgroundJobStatus.RUNNING
+            realJob.progress = "attaching FASTQ file to run ${run}"
+            realJob.save(flush: true)
+            println "creating rfd"
+            ReadsFileData d = new ReadsFileData(fileData: realData)
+            println "creating..."
+            ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${realFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW, run: run)
+            println "saving...."
+            r.save(flush: true, failOnError: true)
+            println "done saving"
+            if (type == 'raw') {
+                run.rawReadsFile = r
+            }
+            if (type == 'trimmed') {
+                run.trimmedReadsFile = r
+            }
+            run.save(flush: true, failOnError: true)
+            realJob.status = BackgroundJobStatus.FINISHED
+            realJob.destinationUrl = grailsLinkGenerator.link(controller: 'run', action: 'show', id: run.id)
+            realJob.save(flush: true)
+            println "done everything"
+        })
 
         redirect(controller: 'backgroundJob', action: 'list')
 
     }
 
 
-    @Secured(['ROLE_USER'])
-    def attachTrimmedReads = {
-        def f = request.getFile('myFile')
-
-        def runId = params.id
-        BackgroundJob job = new BackgroundJob(
-                name: 'adding trimmed reads file',
-                status: BackgroundJobStatus.QUEUED,
-                progress: 'queued',
-                type: BackgroundJobType.UPLOAD_READS,
-                study: Run.get(runId).experiment.sample.compoundSample.study
-        )
-        job.save(flush: true)
-        runAsync {
-
-            Run run = Run.get(runId)
-
-
-            println "attaching FASTQ file to run ${run}"
-            job.status = BackgroundJobStatus.RUNNING
-            job.progress = "attaching FASTQ file to run ${run}"
-            job.save(flush: true)
-            ReadsFileData d = new ReadsFileData(fileData: f)
-            ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${f.originalFilename} for ${run.name}", data: d, status: ReadsFileStatus.TRIMMED)
-            r.run = run
-            run.trimmedReadsFile = r
-            run.save()
-            job.status = BackgroundJobStatus.FINISHED
-
-            job.save(flush: true)
-        }
-
-        redirect(controller: 'backgroundJob', action: 'list')
-
-    }
 
     @Secured(['ROLE_USER'])
     def runMira = {

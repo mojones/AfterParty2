@@ -20,7 +20,7 @@ class RunFilters {
             }
         }
 
-        uploadedFileExists(controller: 'run', action: '(attachRawReads|attachTrimmedReads)') {
+        uploadedFileExists(controller: 'run', action: '(attachReads|attachTrimmedReads)') {
             before = {
                 println "running uploaded file filter"
                 def f = request.getFile('myFile')
@@ -34,7 +34,7 @@ class RunFilters {
 
         }
 
-        runExists(controller: 'run', action: '(attachRawReads|attachTrimmedReads|show)') {
+        runExists(controller: 'run', action: '(attachReads|attachTrimmedReads|show)') {
             before = {
                 println "checking if run exists"
                 Run a = Run.get(params.id)
@@ -61,7 +61,7 @@ class RunFilters {
         }
 
 
-        runIsOwnedByUser(controller: 'run', action: '(attachTrimmedReads|attachRawReads)') {
+        runIsOwnedByUser(controller: 'run', action: '(attachTrimmedReads|attachReads)') {
             before = {
                 println "checking if run is owned by user"
                 Run r = Run.get(params.id)

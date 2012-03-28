@@ -1,4 +1,3 @@
-
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
@@ -128,3 +127,5 @@ grails.plugins.springsecurity.ui.password.validationRegex = '^.*$'
 
 conf.ui.password.minLength = 4
 conf.ui.password.validationRegex = '.*'
+
+grails.gorm.failOnError = true
