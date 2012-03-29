@@ -170,79 +170,77 @@ class miraService {
 
     def runMira(def readsFileIds, def jobId, def compoundSampleId) {
 
-        runAsync {
-            println "i am running mira!"
-            println " ${new Date()} running mira on reads file with id $readsFileIds"
+        println "i am running mira!"
+        println " ${new Date()} running mira on reads file with id $readsFileIds"
 
 //        update the job to show that it 's running
-            BackgroundJob job = BackgroundJob.get(jobId)
-            job.progress = "running mira"
-            job.status = BackgroundJobStatus.RUNNING
-            job.save(flush: true)
+        BackgroundJob job = BackgroundJob.get(jobId)
+        job.progress = "running mira"
+        job.status = BackgroundJobStatus.RUNNING
+        job.save(flush: true)
 
-            // generate a uuid for the project and create an input file
-            String projectName = UUID.randomUUID().toString()
-            File procInput = new File("/tmp/${projectName}_in.454.fastq")
-            procInput.delete()
-            assert procInput.createNewFile()
+        // generate a uuid for the project and create an input file
+        String projectName = UUID.randomUUID().toString()
+        File procInput = new File("/tmp/${projectName}_in.454.fastq")
+        procInput.delete()
+        assert procInput.createNewFile()
 
-            // write the reads to the input file
-            readsFileIds.each { readsFileId ->
-                ReadsFile readsFile = ReadsFile.get(readsFileId)
-                byte[] myData = readsFile.data.fileData
-                println "reads file is $readsFile"
-                println "run of reads file is " + readsFile.run
-                println "process input is ${procInput.absolutePath}"
+        // write the reads to the input file
+        readsFileIds.each { readsFileId ->
+            ReadsFile readsFile = ReadsFile.get(readsFileId)
+            byte[] myData = readsFile.data.fileData
+            println "reads file is $readsFile"
+            println "run of reads file is " + readsFile.run
+            println "process input is ${procInput.absolutePath}"
 //            println "process data is $myData"
-                def readData = readsFile.data.fileData
-                procInput.append(readData)
-            }
+            def readData = readsFile.data.fileData
+            procInput.append(readData)
+        }
 
-            // construct the mira command line, set the working directory to /tmp, and start the process
-            println "starting process"
-            def p = new ProcessBuilder("/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
-            job.commandLine = p.command().join('')
-            p.directory(new File("/tmp"))
-            p.redirectErrorStream(true)
-            p = p.start()
+        // construct the mira command line, set the working directory to /tmp, and start the process
+        println "starting process"
+        def p = new ProcessBuilder("/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
+        job.commandLine = p.command().join('')
+        p.directory(new File("/tmp"))
+        p.redirectErrorStream(true)
+        p = p.start()
 
-            // monitor stdout of the mira process and update the job to show which pass we are on
-            p.in.eachLine({
+        // monitor stdout of the mira process and update the job to show which pass we are on
+        p.in.eachLine({
 //            println it
-                if (it.contains('Pass')) {
-                    println it
-                    job.progress = it
-                    job.save(flush: true)
-                }
-            })
+            if (it.contains('Pass')) {
+                println it
+                job.progress = it
+                job.save(flush: true)
+            }
+        })
 
-            println "done!!"
-            File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
+        println "done!!"
+        File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
 
-            CompoundSample s = CompoundSample.get(compoundSampleId)
+        CompoundSample s = CompoundSample.get(compoundSampleId)
 
-            Assembly a = new Assembly(
-                    name: 'automatic assembly using mira',
-                    description: (new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")).text,
-                    compoundSample: s
-            )
-            a.save()
-            s.addToAssemblies(a)
-            String destination = grailsLinkGenerator.link(controller: 'assembly', action: 'show', id: a.id)
+        Assembly a = new Assembly(
+                name: 'automatic assembly using mira',
+                description: (new File("/tmp/${projectName}_assembly/${projectName}_d_info/${projectName}_info_assembly.txt")).text,
+                compoundSample: s
+        )
+        a.save()
+        s.addToAssemblies(a)
+        String destination = grailsLinkGenerator.link(controller: 'assembly', action: 'show', id: a.id)
 
-            println "attaching contigs to new assembly, destination is $destination"
-            attachContigsFromMiraInfo(new FileInputStream(aceFile), a)
+        println "attaching contigs to new assembly, destination is $destination"
+        attachContigsFromMiraInfo(new FileInputStream(aceFile), a)
 
 //        update the job to show that we 're finished and set the sink and source ids
-            job.progress = 'finished'
-            job.status = BackgroundJobStatus.FINISHED
-            println "destination is $destination"
-            job.destinationUrl = destination
+        job.progress = 'finished'
+        job.status = BackgroundJobStatus.FINISHED
+        println "destination is $destination"
+        job.destinationUrl = destination
 
-            job.label = 'mira'
-            job.save(flush: true)
-            println "done with runMira"
-        }
+        job.label = 'mira'
+        job.save(flush: true)
+        println "done with runMira"
 
 
     }

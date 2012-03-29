@@ -19,7 +19,8 @@
             var base, interval, xPos;
             this.pixelsPerBase = this.drawingWidth / length;
 
-            interval = 100;
+            interval = length / 20;
+            interval = Math.round(interval / 10) * 10
             this.paper.rect(this.padding, this.yPos, this.drawingWidth, 2).attr({
                 fill: 'black',
                 'stroke-width': '0'
@@ -62,10 +63,10 @@
             var textYPosition = this.yPos + (height / 2);
             var textColour;
 
-            if ($.inArray(colour, ['black', 'teal', 'olive', 'navy', 'blue', 'green', 'maroon']) > -1){
+            if ($.inArray(colour, ['black', 'teal', 'olive', 'navy', 'blue', 'green', 'maroon']) > -1) {
                 textColour = 'white';
             }
-            else{
+            else {
                 textColour = 'black';
             }
             var title = this.paper.text(textPosition, textYPosition, text).attr({
@@ -96,19 +97,21 @@
             return this.yPos = this.yPos + pixels;
         };
         BioDrawing.prototype.getBLASTColour = function(bitscore) {
-            var bitScoreToColour, colour, hitColour, score;
-            bitScoreToColour = new Array();
-            bitScoreToColour[1000000000] = 'red';
-            bitScoreToColour[200] = 'magenta';
-            bitScoreToColour[80] = 'lime';
-            bitScoreToColour[50] = 'blue';
-            bitScoreToColour[40] = 'black';
-            hitColour = 'none';
-            for (score in bitScoreToColour) {
-                colour = bitScoreToColour[score];
-                if (score > bitscore) {
-                    hitColour = colour;
-                }
+            var hitColour;
+            if (bitscore < 1000000) {
+                hitColour = 'red';
+            }
+            if (bitscore < 200) {
+                hitColour = 'magenta';
+            }
+            if (bitscore < 80) {
+                hitColour = 'lime';
+            }
+            if (bitscore < 50) {
+                hitColour = 'blue';
+            }
+            if (bitscore < 40) {
+                hitColour = 'black';
             }
             return hitColour;
         };

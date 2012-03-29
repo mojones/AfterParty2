@@ -37,9 +37,9 @@ class RunController {
 
 
         runAsync({
+            Run run = Run.get(runId)
 
             // we must get() these domain objects inside the runAsync block
-            Run run = Run.get(runId)
             BackgroundJob realJob = BackgroundJob.get(job.id)
 
             println "attaching FASTQ file to run ${run}"
@@ -59,7 +59,8 @@ class RunController {
             if (type == 'trimmed') {
                 run.trimmedReadsFile = r
             }
-            run.save(flush: true, failOnError: true)
+//            run.name =  'martin'
+            run.save()
             realJob.status = BackgroundJobStatus.FINISHED
             realJob.destinationUrl = grailsLinkGenerator.link(controller: 'run', action: 'show', id: run.id)
             realJob.save(flush: true)
@@ -89,8 +90,9 @@ class RunController {
         )
         job.save(flush: true)
 
-        miraService.runMira([run.trimmedReadsFile.id], job.id, run.experiment.sample.compoundSample.id)
-
+        runAsync {
+            miraService.runMira([run.trimmedReadsFile.id], job.id, run.experiment.sample.compoundSample.id)
+        }
         redirect(controller: 'backgroundJob', action: 'list')
 
     }
