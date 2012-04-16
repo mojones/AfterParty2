@@ -28,7 +28,7 @@ class StatisticsService {
         def a = criteria.get({
             eq('id', id)
 //            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-            //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            //            fetchMode 'contigs.annotations', org.hibernate.FetchMode.JOIN
             //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println "got raw assembly object : " + (System.currentTimeMillis() - start)
@@ -116,7 +116,7 @@ class StatisticsService {
         def cs = criteria.get({
             eq('id', id)
 //            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-            //            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            //            fetchMode 'contigs.annotations', org.hibernate.FetchMode.JOIN
         })
         println "got $cs"
         println "got contigs : " + (System.currentTimeMillis() - start)
@@ -129,7 +129,7 @@ class StatisticsService {
                 coverage: contigs*.averageCoverage,
                 gc: contigs*.gc(),
                 topBlast: contigs.collect({
-                    it.blastHits.size() > 0 ? it.blastHits.toArray()[0].description : 'no blast hit'
+                    it.annotations.size() > 0 ? it.annotations.toArray()[0].description : 'no blast hit'
                 })
         ]
         println "built return : " + (System.currentTimeMillis() - start)
@@ -143,7 +143,7 @@ class StatisticsService {
         def a = criteria.get({
             eq('id', id)
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+            fetchMode 'contigs.annotations', org.hibernate.FetchMode.JOIN
         })
 
         def lines = afterparty.Contig.list().blastHits*.description.flatten()

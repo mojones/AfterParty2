@@ -23,7 +23,7 @@ environments {
     development_rebuild {
         dataSource {
             dbCreate = "create" // one of 'create', 'create-drop','update'
-            //            loggingSql = true
+//                        loggingSql = true
         }
     }
 

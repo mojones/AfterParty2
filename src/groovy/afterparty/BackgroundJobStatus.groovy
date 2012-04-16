@@ -24,4 +24,12 @@ enum ContigSetType {
     STUDY, COMPOUND_SAMPLE, ASSEMBLY, USER
 }
 
+enum AnnotationType {
+    BLAST, PFAM
+}
+
+
+
+
+
 

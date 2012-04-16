@@ -20,6 +20,7 @@ class Contig {
     static mapping = {
         sequence type: 'text'
         quality type: 'text'
+        name(index: 'findbyname')
     }
 
     static belongsTo = [Assembly]
@@ -27,11 +28,11 @@ class Contig {
     static transients = ['topBlastHit', 'topBlastBitscore']
 
 
-    static hasMany = [blastHits: BlastHit, reads: Read]
+    static hasMany = [annotations: Annotation, reads: Read]
 
     String getTopBlastHit() {
-        if (this.blastHits && this.blastHits.size() > 0) {
-            return this.blastHits.toArray().sort({-it.bitscore})[0].description
+        if (this.annotations && this.annotations.size() > 0) {
+            return this.annotations.toArray().sort({-it.bitscore})[0].description
         }
         else {
             return null
@@ -39,8 +40,8 @@ class Contig {
     }
 
     Float getTopBlastBitscore() {
-        if (this.blastHits && this.blastHits.size() > 0) {
-            return this.blastHits.toArray().sort({-it.bitscore})[0].bitscore
+        if (this.annotations && this.annotations.size() > 0) {
+            return this.annotations.toArray().sort({-it.bitscore})[0].bitscore
         }
         else {
             return null
@@ -49,7 +50,7 @@ class Contig {
 
     // TODO change this
     def topBlastHitMatching(String query) {
-        return this?.blastHits.sort({-it.bitscore})[0] ?: new BlastHit(description: 'none', bitscore: 0)
+        return this?.annotations.sort({-it.bitscore})[0] ?: new Annotation(description: 'none', bitscore: 0)
     }
 
 

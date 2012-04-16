@@ -8,6 +8,7 @@ class BootStrap {
     def statisticsService
     def blastService
     def taxonomyService
+    def pfamService
 
     def sessionFactory
     def dataSource
@@ -168,6 +169,7 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
+                pfamService.addPfamFromInput(new FileInputStream(new File("/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/pfam.out")))
                 blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
                 //                BackgroundJob j = new BackgroundJob(

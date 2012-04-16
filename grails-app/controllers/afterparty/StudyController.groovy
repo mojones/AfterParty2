@@ -67,7 +67,7 @@ class StudyController {
                         def result = afterparty.Contig.withCriteria {
                             eq('assembly', ass)
                             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-                            fetchMode 'contigs.blastHits', org.hibernate.FetchMode.JOIN
+                            fetchMode 'contigs.annotations', org.hibernate.FetchMode.JOIN
                             fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
                             firstResult(offset)
                             maxResults(thisBatch)

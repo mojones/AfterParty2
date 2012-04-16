@@ -65,7 +65,8 @@ class ContigController {
             length = contigInstance.length()
             quality = contigInstance.quality.split(' ')
             coverage = contigInstance.coverage()
-            blastHits = contigInstance.blastHits.sort({-it.bitscore})
+            blastHits = contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})
+            pfamHits = contigInstance.annotations.findAll({it.type == AnnotationType.PFAM}).sort({-it.bitscore})
             reads = readCollection   // sort the reads by start position so they pile up nicely
             readColours = description2colour
         }

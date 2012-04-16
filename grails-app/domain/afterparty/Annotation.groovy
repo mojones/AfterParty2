@@ -1,16 +1,18 @@
 package afterparty
 
-class BlastHit {
+class Annotation {
 
     String description
     Float bitscore
+    Float evalue
     int start
     int stop
     String accession
+    AnnotationType type
 
     // mark this class as NOT a searchable root, so that it doesn't get returned in searches - instead, we want to always return the contig
     static searchable = {
-    except = ['start', 'stop']
+        except = ['start', 'stop']
     }
 
     static constraints = {
@@ -18,17 +20,17 @@ class BlastHit {
     }
 
     static mapping = {
-       // sort bitscore:'desc'
-        contig (index:'blasthit_contig')
+        // sort bitscore:'desc'
+        contig(index: 'blasthit_contig')
     }
 
-    static belongsTo = [contig : Contig]
+    static belongsTo = [contig: Contig]
 
-    def isPublished(){
+    def isPublished() {
         return this.contig.isPublished()
     }
 
-    def isOwnedBy(def user){
-         return this.contig.isOwnedBy(user)
+    def isOwnedBy(def user) {
+        return this.contig.isOwnedBy(user)
     }
 }

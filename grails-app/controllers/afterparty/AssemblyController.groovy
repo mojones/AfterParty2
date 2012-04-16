@@ -231,7 +231,7 @@ class AssemblyController {
         println "got ${a.contigs.size()} contigs for download";
 
         a.contigs.each {
-            response.outputStream << ">${it.id}\n${it.sequence}\n"
+            response.outputStream << ">${it.name}\n${it.sequence}\n"
         }
     }
 
@@ -256,6 +256,8 @@ class AssemblyController {
         redirect(controller: 'backgroundJob', action: 'list')
 
     }
+
+
 
     def scatterplotAjax = {
 
@@ -294,6 +296,7 @@ class AssemblyController {
         def criteria = Assembly.createCriteria()
         def start = System.currentTimeMillis()
 
+        // todo should we get all contigs here and dump them in a data table?
         def a = criteria.get({
             eq('id', params.id.toLong())
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN

@@ -36,6 +36,11 @@ class miraService {
 
         aceFile.eachLine { line ->
 
+            // for quick testing
+            if (added > 100000){
+                return
+            }
+
             if (line.startsWith(/CO /)) {
                 // if we already have a contig then update it
                 if (currentContig) {
@@ -44,7 +49,7 @@ class miraService {
 //                    def start = System.currentTimeMillis()
                     currentContig.save()
 //                    println System.currentTimeMillis() - start
-                    if (++added % 1000 == 0) {
+                    if (++added % 100 == 0) {
                         println added
                     }
 //

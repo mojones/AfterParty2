@@ -59,16 +59,29 @@
                 'title': description,
                 'cursor': 'pointer'
             });
-            var textPosition = ((start * this.pixelsPerBase) + (stop * this.pixelsPerBase)) / 2;
-            var textYPosition = this.yPos + (height / 2);
-            var textColour;
 
+            // if the colour of the bar is dark, then make the text white, otherwise it is black
             if ($.inArray(colour, ['black', 'teal', 'olive', 'navy', 'blue', 'green', 'maroon']) > -1) {
                 textColour = 'white';
             }
             else {
                 textColour = 'black';
             }
+
+            var textPosition;
+
+            // if the bar is likely too small to contain the text, put it after and make it black to show up
+            if (width > 200) {
+                textPosition = ((start * this.pixelsPerBase) + (stop * this.pixelsPerBase)) / 2;
+            }
+            else {
+                textColour = 'black';
+                textPosition = (stop * this.pixelsPerBase) + 50;
+            }
+            var textYPosition = this.yPos + (height / 2);
+            var textColour;
+
+
             var title = this.paper.text(textPosition, textYPosition, text).attr({
                 'font-size': (height * 0.9),
                 'fill' : textColour

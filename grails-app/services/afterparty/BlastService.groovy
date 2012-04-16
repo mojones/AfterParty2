@@ -17,8 +17,8 @@ class BlastService {
         }
         println "running formatblasdb"
 
-        println("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type 'fasta' -dbtype 'nucl'".split(" "))
-        def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl".split(" "))
+        println("/home/martin/Dropbox/downloads/apps/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type 'fasta' -dbtype 'nucl'".split(" "))
+        def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/apps/ncbi-blast-2.2.25+/bin/makeblastdb -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl".split(" "))
         blastProcess.redirectErrorStream(true)
         blastProcess = blastProcess.start()
         blastProcess.in.eachLine({

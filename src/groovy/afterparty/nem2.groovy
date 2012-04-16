@@ -116,13 +116,14 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     def blastStop = blastRow.b_end
 //                    println "\t\tfound a blast hit from $blastStart to $blastStop with $blastDescription"
 
-                    def b = new BlastHit()
+                    def b = new Annotation()
 
                     b.accession = blastAcc
                     b.description = blastDescription.length() > 999 ? blastDescription[0..980] : blastDescription
                     b.bitscore = blastBitscore
                     b.start = blastStart
                     b.stop = blastStop
+                    b.type = AnnotationType.BLAST
                     c.addToBlastHits(b)
                 }
 
@@ -132,7 +133,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
             }
 
         }
-
+        a.save(flush:true)
         statisticsService.createContigSetForAssembly(a.id)
         nembaseStudy.save(flush: true)
 

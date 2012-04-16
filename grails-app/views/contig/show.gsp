@@ -1,4 +1,4 @@
-<%@ page import="afterparty.Contig" %>
+<%@ page import="afterparty.AnnotationType; javassist.bytecode.annotation.Annotation; afterparty.Contig" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -61,6 +61,25 @@
                 drawing.drawTitle('BLAST hits vs uniprot');
                 for (var i = 0; i < data.blastHits.length; i++) {
                     var hit = data.blastHits[i];
+                    var hitColour = drawing.getBLASTColour(hit.bitscore);
+                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
+                    blastRect.hover(
+                            function(event) {
+                                this.attr({stroke: 'black', 'stroke-width' : '5'});
+                                $('#' + hit.accession).css("background-color", "bisque");
+
+                            },
+                            function(event) {
+                                this.attr({stroke: 'black', 'stroke-width' : '0'});
+                                $('#' + hit.accession).css("background-color", "white");
+                            }
+                    );
+                }
+                drawing.drawSpacer(50);
+
+                drawing.drawTitle('Pfam hits');
+                for (var i = 0; i < data.pfamHits.length; i++) {
+                    var hit = data.pfamHits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
                     var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
                     blastRect.hover(
@@ -167,9 +186,55 @@
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.blastHits.sort({-it.bitscore})}" var="b">
+            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})}" var="b">
                 <tr id="${b.accession}">
-                    <td>${b.accession}</td>
+                    <td><a href="http://www.uniprot.org/uniprot/${b.accession}">${b.accession}</a></td>
+                    <td>${b.bitscore}</td>
+                    <td>${b.description}</td>
+                    <td>${b.start}</td>
+                    <td>${b.stop}</td>
+                </tr>
+            </g:each>
+            </tbody>
+
+        </table>
+
+    </div>        <!-- .block_content ends -->
+
+    <div class="bendl"></div>
+
+    <div class="bendr"></div>
+</div>
+
+<div class="block">
+
+    <div class="block_head">
+        <div class="bheadl"></div>
+
+        <div class="bheadr"></div>
+
+        <h2>PFAM matches</h2>
+    </div>        <!-- .block_head ends -->
+
+    <div class="block_content">
+
+        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+
+            <thead>
+            <tr>
+                <th>Accession</th>
+                <th>Bitscore</th>
+                <th>Decription</th>
+                <th>Start</th>
+                <th>Stop</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.PFAM}).sort({-it.bitscore})}" var="b">
+                <tr id="${b.accession}">
+                    <td><a href="http://pfam.sanger.ac.uk/family/${b.accession}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>
