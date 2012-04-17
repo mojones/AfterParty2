@@ -81,7 +81,7 @@
                 for (var i = 0; i < data.pfamHits.length; i++) {
                     var hit = data.pfamHits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
+                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.accession, hit.accession);
                     blastRect.hover(
                             function(event) {
                                 this.attr({stroke: 'black', 'stroke-width' : '5'});

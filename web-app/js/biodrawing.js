@@ -76,7 +76,7 @@
             }
             else {
                 textColour = 'black';
-                textPosition = (stop * this.pixelsPerBase) + 50;
+                textPosition = (stop * this.pixelsPerBase) + 20 + (text.length * 4);
             }
             var textYPosition = this.yPos + (height / 2);
             var textColour;
