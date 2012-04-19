@@ -31,8 +31,8 @@ class Contig {
     static hasMany = [annotations: Annotation, reads: Read]
 
     String getTopBlastHit() {
-        if (this.annotations && this.annotations.size() > 0) {
-            return this.annotations.toArray().sort({-it.bitscore})[0].description
+        if (this.annotations && this.annotations.findAll({it.type == AnnotationType.BLAST}).size() > 0) {
+            return this.annotations.toArray().findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})[0].description
         }
         else {
             return null

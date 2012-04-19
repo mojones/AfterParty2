@@ -5,6 +5,7 @@ import org.xml.sax.InputSource
 
 class BlastService {
     def sessionFactory
+    def grailsApplication
 
 
     static transactional = false
@@ -22,8 +23,8 @@ class BlastService {
         blastProcess.redirectErrorStream(true)
         blastProcess = blastProcess.start()
         blastProcess.in.eachLine({
-                    println "blast : $it"
-                })
+            println "blast : $it"
+        })
 //        blastProcess.waitFor()
         cs.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
         cs.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
@@ -72,7 +73,19 @@ class BlastService {
 
             if (n < 10 * 1000) {
 
-                def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/blastx -db /home/martin/Downloads/uniprot_sprot.fasta -outfmt 5 -window_size 0 -num_threads 6 -max_target_seqs 10".split(" "))
+                println "blast path is ${grailsApplication.config.blastxPath}"
+
+                println "running blast on contig $n"
+
+
+
+
+                File contigFastaFile = File.createTempFile('contig', '.fasta')
+                println "temporary file is ${contigFastaFile.absolutePath}"
+
+                contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
+
+                def blastProcess = new ProcessBuilder("${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 6 -max_target_seqs 10".split(" "))
                 blastProcess.redirectErrorStream(true)
                 blastProcess = blastProcess.start()
 
@@ -82,6 +95,9 @@ class BlastService {
                 writer.close()
 
                 addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
+//                blastProcess.in.eachLine({
+                //                    println "blast : $it"
+                //                })
 
             }
             n++
