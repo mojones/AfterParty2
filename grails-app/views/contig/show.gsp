@@ -246,7 +246,6 @@
             <tbody>
             <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST}).sort({it.evalue}).reverse()}" var="b">
                 <tr style="cursor: pointer" id="${b.id}_row" onclick="
-                    $('rect').css('stroke-width', '0');
                     var bar = $('#${b.id}_bar');
 
                     $.scrollTo(bar, 200, {offset : -300});

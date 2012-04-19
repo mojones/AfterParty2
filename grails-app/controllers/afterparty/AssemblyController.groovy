@@ -246,7 +246,7 @@ class AssemblyController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
-                study: Assembly.get(assemblyId).compoundSample.study
+                user: AfterpartyUser.get(springSecurityService.principal.id)
         )
         job.save(flush: true)
 
@@ -268,7 +268,7 @@ class AssemblyController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
-                study: Assembly.get(assemblyId).compoundSample.study
+                user: AfterpartyUser.get(springSecurityService.principal.id)
         )
         job.save(flush: true)
 

@@ -146,6 +146,11 @@
                     <g:hiddenField name="id" value="${assemblyInstance.id}"/>
                     <input type="submit" class="submit long" value="BLAST contigs"/>
                 </g:form>
+
+                <g:form controller="assembly" action="runPfam">
+                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                    <input type="submit" class="submit long" value="Interproscan contigs"/>
+                </g:form>
             </p>
             <br/>
 
