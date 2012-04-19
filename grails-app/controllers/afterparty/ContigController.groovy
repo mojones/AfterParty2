@@ -1,5 +1,7 @@
 package afterparty
 
+import grails.converters.JSON
+
 class ContigController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -58,18 +60,26 @@ class ContigController {
         }
 
 
-
-
-
-        render(contentType: "text/json") {
-            length = contigInstance.length()
-            quality = contigInstance.quality.split(' ')
-            coverage = contigInstance.coverage()
-            blastHits = contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})
-            pfamHits = contigInstance.annotations.findAll({it.type == AnnotationType.PFAM}).sort({-it.bitscore})
-            reads = readCollection   // sort the reads by start position so they pile up nicely
-            readColours = description2colour
+        Map annotationsMap = [:]
+        AnnotationType.each { type ->
+            if (type != AnnotationType.BLAST) {
+                annotationsMap.put(type, contigInstance.annotations.findAll({it.type == type}).sort({it.evalue}).reverse())
+            }
         }
+
+        def result = [
+                length: contigInstance.length(),
+                quality: contigInstance.quality.split(' '),
+                coverage: contigInstance.coverage(),
+                blastHits: contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore}),
+                annotations: annotationsMap,
+                reads: readCollection,   // sort the reads by start position so they pile up nicely
+                readColours: description2colour
+        ]
+
+        render result as JSON
+
+
     }
 
 }

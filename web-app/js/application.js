@@ -1,3 +1,4 @@
+
 function showSearchBox() {
     $('.doSomethingButton').slideUp('slow');
     $('#searchForm').slideDown('slow');

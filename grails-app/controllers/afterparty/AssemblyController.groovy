@@ -15,6 +15,7 @@ class AssemblyController {
     def miraService
     def springSecurityService
     def dataSource
+    def pfamService
 
     def makeHybridAssembly = {
         def ids = []
@@ -251,6 +252,28 @@ class AssemblyController {
 
         runAsync {
             blastService.runBlast(assemblyId, job.id)
+        }
+
+        redirect(controller: 'backgroundJob', action: 'list')
+
+    }
+
+    @Secured(['ROLE_USER'])
+    def runPfam = {
+        def assemblyId = params.id
+        println "id is $assemblyId"
+
+        BackgroundJob job = new BackgroundJob(
+                name: "Running Pfam on ${assemblyId}",
+                progress: 'queued',
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.BLAST,
+                study: Assembly.get(assemblyId).compoundSample.study
+        )
+        job.save(flush: true)
+
+        runAsync {
+            pfamService.runPfam(assemblyId, job.id)
         }
 
         redirect(controller: 'backgroundJob', action: 'list')

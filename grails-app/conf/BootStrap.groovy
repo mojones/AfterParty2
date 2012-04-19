@@ -149,8 +149,8 @@ class BootStrap {
                 lSig.addToAssemblies(a)
 
                 miraService.attachContigsFromMiraInfo(
-                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
-//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
+//                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
+                        new FileInputStream(new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace')),
                         a
                 )
 
@@ -169,8 +169,8 @@ class BootStrap {
                 )
                 job.save(flush: true)
                 sessionFactory.getCurrentSession().flush()
-                pfamService.addPfamFromInput(new FileInputStream(new File("/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/pfam.out")))
-                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
+//                pfamService.addPfamFromInput(new FileInputStream(new File("/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/seqs.fasta.raw")))
+//                blastService.addBlastHitsFromInput(blastInput, job.id, a.id)
 
                 //                BackgroundJob j = new BackgroundJob(
                 //                        progress: '',

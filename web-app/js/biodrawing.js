@@ -50,7 +50,7 @@
             });
             return this.yPos = this.yPos + height + 20;
         };
-        BioDrawing.prototype.drawBar = function(start, stop, height, colour, description, text) {
+        BioDrawing.prototype.drawBar = function(start, stop, height, colour, description, text, id) {
             var bar, width;
             width = (stop * this.pixelsPerBase) - (start * this.pixelsPerBase);
             bar = this.paper.rect((start * this.pixelsPerBase) + this.padding, this.yPos, width, height).attr({
@@ -59,6 +59,7 @@
                 'title': description,
                 'cursor': 'pointer'
             });
+            bar.node.id = id + '_bar';
 
             // if the colour of the bar is dark, then make the text white, otherwise it is black
             if ($.inArray(colour, ['black', 'teal', 'olive', 'navy', 'blue', 'green', 'maroon']) > -1) {
@@ -86,6 +87,7 @@
                 'font-size': (height * 0.9),
                 'fill' : textColour
             })
+            title.node.id = id + '_text';
             this.yPos = this.yPos + (height * 1.5); //the spacing between bars
             return bar;
         };

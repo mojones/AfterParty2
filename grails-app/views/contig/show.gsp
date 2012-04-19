@@ -12,6 +12,8 @@
     <script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'coffee-script.js')}"></script>
 
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollTo-1.4.2-min.js')}"></script>
+
 </head>
 
 <body>
@@ -42,6 +44,8 @@
 
             var drawContig = function(data) {
 
+                window.contigData = data;
+
                 var paperWidth = $('#coffeescript_annotation').width() - 40;
                 var drawing = new BioDrawing();
                 drawing.start(paperWidth, 'coffeescript_annotation');
@@ -63,38 +67,45 @@
                     var hit = data.blastHits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
                     var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
-                    blastRect.hover(
-                            function(event) {
-                                this.attr({stroke: 'black', 'stroke-width' : '5'});
-                                $('#' + hit.accession).css("background-color", "bisque");
-
-                            },
-                            function(event) {
-                                this.attr({stroke: 'black', 'stroke-width' : '0'});
-                                $('#' + hit.accession).css("background-color", "white");
-                            }
+                    blastRect.click(
+                            function(a) {
+                                return function(event) {
+                                    $('tr').css('background-color', 'white');
+                                    var row = $('#' + a);
+                                    row.css("background-color", "bisque");
+                                    $.scrollTo(row);
+                                }
+                            }(hit.id)
                     );
                 }
                 drawing.drawSpacer(50);
 
-                drawing.drawTitle('Pfam hits');
-                for (var i = 0; i < data.pfamHits.length; i++) {
-                    var hit = data.pfamHits[i];
-                    var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.accession, hit.accession);
-                    blastRect.hover(
-                            function(event) {
-                                this.attr({stroke: 'black', 'stroke-width' : '5'});
-                                $('#' + hit.accession).css("background-color", "bisque");
+                drawing.drawTitle('Interproscan annotations');
+                for (type in data.annotations) {
+                    var hits = data.annotations[type];
+                    for (var i = 0; i < hits.length; i++) {
 
-                            },
-                            function(event) {
-                                this.attr({stroke: 'black', 'stroke-width' : '0'});
-                                $('#' + hit.accession).css("background-color", "white");
-                            }
-                    );
+                        var hit = hits[i];
+                        var hitColour = drawing.getBLASTColour(hit.bitscore);
+                        var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue', hit.accession, hit.description + ' (' + type + ')', hit.id);
+
+                        $('#' + hit.id + '_bar, #' + hit.id + '_text').css('cursor', 'pointer');
+
+                        $('#' + hit.id + '_bar, #' + hit.id + '_text').click(
+                                function(a) {
+                                    return function(event) {
+                                        $('tr').css('background-color', 'white');
+                                        var row = $('#' + a + '_row');
+                                        row.css("background-color", "bisque");
+                                        $.scrollTo(row, 800, {offset : -300});
+                                    }
+                                }(hit.id)
+                        );
+                    }
+
+                    var hits = data.annotations[type];
+                    drawing.drawSpacer(50);
                 }
-                drawing.drawSpacer(50);
 
                 drawing.drawTitle('Reads');
 
@@ -187,7 +198,7 @@
 
             <tbody>
             <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})}" var="b">
-                <tr id="${b.accession}">
+                <tr id="${b.id}">
                     <td><a href="http://www.uniprot.org/uniprot/${b.accession}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
                     <td>${b.description}</td>
@@ -213,7 +224,7 @@
 
         <div class="bheadr"></div>
 
-        <h2>PFAM matches</h2>
+        <h2>Interproscan matches</h2>
     </div>        <!-- .block_head ends -->
 
     <div class="block_content">
@@ -223,7 +234,8 @@
             <thead>
             <tr>
                 <th>Accession</th>
-                <th>Bitscore</th>
+                <th>Type</th>
+                <th>Evalue</th>
                 <th>Decription</th>
                 <th>Start</th>
                 <th>Stop</th>
@@ -232,10 +244,22 @@
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.PFAM}).sort({-it.bitscore})}" var="b">
-                <tr id="${b.accession}">
-                    <td><a href="http://pfam.sanger.ac.uk/family/${b.accession}">${b.accession}</a></td>
-                    <td>${b.bitscore}</td>
+            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST}).sort({it.evalue}).reverse()}" var="b">
+                <tr style="cursor: pointer" id="${b.id}_row" onclick="
+                    $('rect').css('stroke-width', '0');
+                    var bar = $('#${b.id}_bar');
+
+                    $.scrollTo(bar, 200, {offset : -300});
+                    setTimeout(function() {
+                        $('#${b.id}_bar, #${b.id}_text').hide(500, function() {
+                            $('#${b.id}_bar, #${b.id}_text').show();
+                        });
+                    }, 300);
+
+                ">
+                    <td><a href="${b.generateUrl()}">${b.accession}</a></td>
+                    <td>${b.type}</td>
+                    <td>${b.evalue}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>
                     <td>${b.stop}</td>

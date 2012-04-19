@@ -12,7 +12,7 @@ def sqlAfterparty = Sql.newInstance("jdbc:postgresql://localhost:5432/afterparty
 
 println "deleting old study"
 println "deleting blast hits"
-sqlAfterparty.execute("delete from blast_hit using contig, assembly, compound_sample, study where blast_hit.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
+sqlAfterparty.execute("delete from annotation using contig, assembly, compound_sample, study where annotation.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
 println "deleting reads"
 sqlAfterparty.execute("delete from read using contig, assembly, compound_sample, study where read.contig_id = contig.id and contig.assembly_id = assembly.id and assembly.compound_sample_id = compound_sample.id and compound_sample.study_id = study.id and study.name='Nembase'")
 println "deleting contigsets"
@@ -114,6 +114,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     def blastBitscore = blastRow.score
                     def blastStart = blastRow.b_start
                     def blastStop = blastRow.b_end
+                    def evalue = blastRow.eval
 //                    println "\t\tfound a blast hit from $blastStart to $blastStop with $blastDescription"
 
                     def b = new Annotation()
@@ -124,7 +125,14 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     b.start = blastStart
                     b.stop = blastStop
                     b.type = AnnotationType.BLAST
-                    c.addToBlastHits(b)
+                    b.evalue = evalue
+                    c.addToAnnotations(b)
+                }
+
+                println "cluster id is $clusterId and contig id is $contigId"
+                sqlData.rows("select * from p4e_ind where clus_id=$clusterId and contig=$contigId").eachWithIndex {p4eRow, i5 ->
+                    def peptideId = p4eRow.pept_id
+                    println "peptide id is $peptideId"
                 }
 
                 if (++contigsAdded % 100 == 0) {

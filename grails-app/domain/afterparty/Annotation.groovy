@@ -17,11 +17,14 @@ class Annotation {
 
     static constraints = {
         description(maxSize: 1000)
+        evalue(nullable: true)
+        bitscore(nullable: true)
     }
 
     static mapping = {
         // sort bitscore:'desc'
         contig(index: 'blasthit_contig')
+
     }
 
     static belongsTo = [contig: Contig]
@@ -32,5 +35,15 @@ class Annotation {
 
     def isOwnedBy(def user) {
         return this.contig.isOwnedBy(user)
+    }
+
+    def generateUrl() {
+        switch (type) {
+            case AnnotationType.PFAM:
+                return "http://pfam.sanger.ac.uk/family/$accession"
+                break
+            default:
+                return "#"
+        }
     }
 }

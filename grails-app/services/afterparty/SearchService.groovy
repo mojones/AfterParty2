@@ -39,7 +39,7 @@ class SearchService {
 
         def c = Contig.createCriteria()
         def result = c.listDistinct() {
-            blastHits {
+            annotations {
                 order('bitscore')
                 ilike('description', "%$query%")
             }
