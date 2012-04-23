@@ -21,6 +21,7 @@ class Contig {
         sequence type: 'text'
         quality type: 'text'
         name(index: 'findbyname')
+        assembly(index: 'findbyassembly')
     }
 
     static belongsTo = [Assembly]
@@ -40,8 +41,8 @@ class Contig {
     }
 
     Float getTopBlastBitscore() {
-        if (this.annotations && this.annotations.size() > 0) {
-            return this.annotations.toArray().sort({-it.bitscore})[0].bitscore
+        if (this.annotations && this.annotations.findAll({it.type == AnnotationType.BLAST}).size() > 0) {
+            return this.annotations.findAll({it.type == AnnotationType.BLAST}).toArray().sort({-it.bitscore})[0].bitscore
         }
         else {
             return null
@@ -50,7 +51,7 @@ class Contig {
 
     // TODO change this
     def topBlastHitMatching(String query) {
-        return this?.annotations.sort({-it.bitscore})[0] ?: new Annotation(description: 'none', bitscore: 0)
+        return this?.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})[0] ?: new Annotation(description: 'none', bitscore: 0)
     }
 
 

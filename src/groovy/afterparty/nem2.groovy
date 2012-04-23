@@ -130,9 +130,43 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                 }
 
                 println "cluster id is $clusterId and contig id is $contigId"
-                sqlData.rows("select * from p4e_ind where clus_id=$clusterId and contig=$contigId").eachWithIndex {p4eRow, i5 ->
-                    def peptideId = p4eRow.pept_id
-                    println "peptide id is $peptideId"
+                def peptideId = clusterId.toString().replace('C', 'P') + '_' + contigId
+                println "checking for peptide id $peptideId"
+
+
+                def type2type = [
+                        'HMMPfam': AnnotationType.PFAM,
+                        'FPrintScan': AnnotationType.FPRINTSCAN,
+                        'Seg': AnnotationType.SEG,
+                        'HMMPanther': AnnotationType.HMMPANTHER,
+                        'Superfamily': AnnotationType.SUPERFAMILY,
+                        'Gene3D': AnnotationType.GENE3D,
+                        'HMMSmart': AnnotationType.HMMSMART,
+                        'Coil': AnnotationType.COIL,
+                        'BLASTProDom': AnnotationType.BLASTPRODOM,
+                        'HMMTIGR': AnnotationType.HMMTIGR
+                ]
+
+
+                sqlData.rows("select * from interpro inner join interpro_key on (interpro.dom_id = interpro_key.dom_id) where interpro.pept_id=$peptideId").eachWithIndex {p4eRow, i5 ->
+                    def acc = p4eRow.dom_id
+                    def start = p4eRow.d_start * 3
+                    def stop = p4eRow.d_end * 3
+                    def evalue = p4eRow.score
+                    def description = p4eRow.description
+                    def type = type2type.get(p4eRow.database)
+
+                    if (type != null) {
+                        Annotation an = new Annotation()
+                        an.accession = acc
+                        an.start = start
+                        an.stop = stop
+                        an.evalue = evalue
+                        an.description = description
+                        an.type = type
+                        c.addToAnnotations(an)
+                    }
+
                 }
 
                 if (++contigsAdded % 100 == 0) {
@@ -141,7 +175,7 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
             }
 
         }
-        a.save(flush:true)
+        a.save(flush: true)
         statisticsService.createContigSetForAssembly(a.id)
         nembaseStudy.save(flush: true)
 

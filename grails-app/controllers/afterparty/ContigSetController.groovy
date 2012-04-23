@@ -289,11 +289,10 @@ class ContigSetController {
             println "got ${contigs.size()} results for ${params.searchQuery}"
             allContigs.addAll(contigs)
         }
+        println "rendering view...."
         [
-                contigs: allContigs.sort({-it.topBlastBitscore}),
+                contigs: allContigs,
                 query: params.searchQuery,
-                offset: offset,
-                max: [allContigs.size() - 1, offset + 100.toInteger()].min(),
                 studyId: studyId
         ]
     }

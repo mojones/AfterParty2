@@ -11,7 +11,7 @@ class Assembly {
 
     static hasMany = [contigs: Contig]
 
-    static fetchMode = [contigs: "eager"]
+//    static fetchMode = [contigs: "eager"]
 
     static constraints = {
         defaultContigSet(nullable: true)

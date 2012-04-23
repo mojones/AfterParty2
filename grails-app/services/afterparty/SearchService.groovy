@@ -41,11 +41,16 @@ class SearchService {
         def result = c.listDistinct() {
             annotations {
                 order('bitscore')
-                ilike('description', "%$query%")
+                or {
+                    ilike('description', "%$query%")
+                    ilike('accession', "%$query%")
+                }
             }
-            inList('id', idList)
+            fetchMode 'annotation', org.hibernate.FetchMode.JOIN
+            fetchMode 'reads', org.hibernate.FetchMode.JOIN
         }
-        println "got $result.size() results"
+        result = result.findAll({idList.contains(it.id)})
+        println "got $result.size results"
         return result
     }
 
