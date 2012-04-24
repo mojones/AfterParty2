@@ -1,10 +1,16 @@
 package afterparty
 
 import grails.plugin.springcache.annotations.Cacheable
+import groovy.sql.Sql
 
 class SearchService {
 
     static transactional = true
+
+
+    javax.sql.DataSource dataSource
+
+
 
     def buildQueryString(List assemblies, String query) {
         StringBuilder queryStringBuilder = new StringBuilder()
@@ -34,23 +40,27 @@ class SearchService {
     }
 
     @Cacheable('annotationSearchCache')
-    def searchInContigSet(ContigSet set, String query) {
-        def idList = set.contigs*.id
+    def searchInContigSet(ContigSet set, String query, Integer max) {
 
-        def c = Contig.createCriteria()
-        def result = c.listDistinct() {
-            annotations {
-                order('bitscore')
-                or {
-                    ilike('description', "%$query%")
-                    ilike('accession', "%$query%")
-                }
-            }
-            fetchMode 'annotation', org.hibernate.FetchMode.JOIN
-            fetchMode 'reads', org.hibernate.FetchMode.JOIN
+//        enter raw sql territory
+        def sql = new Sql(dataSource)
+        def t = new Timer()
+        def result = []
+        sql.rows("""
+        select distinct contig.id from contig
+        inner join contig_set_contig on contig.id = contig_set_contig.contig_id
+        inner join annotation on contig.id=annotation.contig_id
+        where
+        contig_set_contig.contig_set_contigs_id=$set.id and
+        (to_tsvector('english', annotation.description) @@ to_tsquery('english', $query) or annotation.accession = $query)
+        limit $max
+        """).each {
+            result.add(Contig.get(it.id))
         }
-        result = result.findAll({idList.contains(it.id)})
+        t.log("got list of ids")
+
         println "got $result.size results"
+        t.log("made all results")
         return result
     }
 

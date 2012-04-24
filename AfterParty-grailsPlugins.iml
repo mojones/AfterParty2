@@ -76,6 +76,13 @@
       <excludeFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/mail-1.0/target/test-classes" />
       <excludeFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/mail-1.0/web-app/plugins" />
     </content>
+    <content url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4/grails-app/taglib" isTestSource="false" />
+      <excludeFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4/target/classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4/target/test-classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/profiler-0.4/web-app/plugins" />
+    </content>
     <content url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/searchable-0.6.3">
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/searchable-0.6.3/src/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.0.1/projects/AfterParty/plugins/searchable-0.6.3/src/groovy" isTestSource="false" />
@@ -130,6 +137,7 @@
     <orderEntry type="jdk" jdkName="1.6 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="grails-2.0.1" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="log4jdbc" level="project" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (AfterParty-grailsPlugins)">
         <CLASSES>

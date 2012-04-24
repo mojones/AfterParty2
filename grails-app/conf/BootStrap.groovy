@@ -1,3 +1,4 @@
+import groovy.sql.Sql
 import afterparty.*
 
 class BootStrap {
@@ -11,7 +12,7 @@ class BootStrap {
     def pfamService
 
     def sessionFactory
-    def dataSource
+    javax.sql.DataSource dataSource
 
     def springSecurityService
 
@@ -25,8 +26,13 @@ class BootStrap {
         BackgroundJob.findAllByStatus(BackgroundJobStatus.QUEUED).each {it.delete(flush: true)}
 
 
+
         environments {
             development_rebuild {
+
+                def sql = new Sql(dataSource)
+                sql.execute("CREATE INDEX annotation_desc_idx ON annotation USING gin(to_tsvector('english', description));")
+                sql.execute("CREATE INDEX annotation_idx ON annotation USING gin(to_tsvector('english', description));")
 
                 // add roles and user
                 def userRole = afterparty.AfterPartyRole.findByAuthority('ROLE_USER') ?: new AfterPartyRole(authority: 'ROLE_USER').save(failOnError: true)

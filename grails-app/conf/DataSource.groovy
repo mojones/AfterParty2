@@ -1,10 +1,12 @@
 dataSource {
     pooled = true
-    driverClassName = "org.postgresql.Driver"
+    driverClassName = "net.sf.log4jdbc.DriverSpy"
+
+//    driverClassName = "org.postgresql.Driver"
     username = "mysuperuser"
     password = "jukur6ai"
     dbCreate = "create"
-    url = "jdbc:postgresql://localhost:5432/afterparty"
+    url = "jdbc:log4jdbc:postgresql://localhost:5432/afterparty"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -16,14 +18,14 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop','update'
-            loggingSql = true
+            loggingSql = false
         }
     }
 
     development_rebuild {
         dataSource {
             dbCreate = "create" // one of 'create', 'create-drop','update'
-//                        loggingSql = true
+            //                        loggingSql = true
         }
     }
 

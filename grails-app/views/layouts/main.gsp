@@ -99,6 +99,8 @@
         <p id="log"></p>
 
         <g:layoutBody/>
+        <p>profiler:</p>
+        <pre><g:profilerOutput/></pre>
 
 </body>
 </html>

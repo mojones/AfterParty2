@@ -103,6 +103,8 @@ log4j = {
     warn 'org.mortbay.log'
 
     warn 'grails.plugin.springcache'
+
+    warn 'jdbc.sqltiming'
 }
 
 // use jquery for ajax purposes
@@ -129,4 +131,7 @@ conf.ui.password.minLength = 4
 conf.ui.password.validationRegex = '.*'
 
 grails.gorm.failOnError = true
+
+// log slow sql queries
+log4jdbc.sqltiming.warn.threshold = 100
 

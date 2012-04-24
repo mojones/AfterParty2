@@ -102,35 +102,23 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6 (1)" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6 (2)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
   </component>
   <component name="libraryTable">
-    <library name="biojava">
+    <library name="log4jdbc">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../downloads/biojava3.0.1-all/biojava3-core/target/biojava3-core-3.0.1-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../downloads/biojava3.0.1-all/biojava3-core/target/biojava3-core-3.0.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../downloads/biojava3.0.1-all/biojava3-core/target/biojava3-core-3.0.1-javadoc.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="jfreechart">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../downloads/jfreechart-1.0.13/lib/jfreechart-1.0.13.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../downloads/jfreechart-1.0.13/lib/jfreechart-1.0.13-experimental.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../downloads/jfreechart-1.0.13/lib/jfreechart-1.0.13-swt.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../downloads/jfreechart-1.0.13/lib/jcommon-1.0.16.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/log4jdbc4-1.2.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
     <library name="postgresql jdbc driver">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/postgresql-8.3-604.jdbc3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/postgresql-9.1-901.jdbc4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

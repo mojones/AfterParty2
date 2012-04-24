@@ -54,6 +54,7 @@
     </orderEntry>
     <orderEntry type="module" module-name="AfterParty-grailsPlugins" />
     <orderEntry type="library" name="grails-2.0.1" level="application" />
+    <orderEntry type="library" name="log4jdbc" level="project" />
   </component>
 </module>
 

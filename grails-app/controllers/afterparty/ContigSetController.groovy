@@ -270,6 +270,7 @@ class ContigSetController {
 
 
     def searchContigSets = {
+
         def idList
         if (!params.idList) {
             idList = getIdsFromCheckbox(params)
@@ -279,13 +280,17 @@ class ContigSetController {
         }
         println "idlist is $idList"
         Integer offset = params.offset?.toInteger() ?: 0
+        Integer max = params.numberOfResults.toInteger()
+        println "max is $max"
         def allContigs = []
         def studyId = 0
         idList.each {
             println "searching in contig set $it"
             ContigSet set = ContigSet.get(it)
             studyId = set.study.id
-            def contigs = searchService.searchInContigSet(set, params.searchQuery)
+            def t = new Timer()
+            def contigs = searchService.searchInContigSet(set, params.searchQuery, max)
+            t.log("called search service")
             println "got ${contigs.size()} results for ${params.searchQuery}"
             allContigs.addAll(contigs)
         }

@@ -24,6 +24,7 @@ class Annotation {
     static mapping = {
         // sort bitscore:'desc'
         contig(index: 'blasthit_contig')
+        accession(index: 'annotation_acc_idx')
 
     }
 
