@@ -80,31 +80,34 @@
                 }
                 drawing.drawSpacer(50);
 
-                drawing.drawTitle('Interproscan annotations');
                 for (type in data.annotations) {
                     var hits = data.annotations[type];
-                    for (var i = 0; i < hits.length; i++) {
+                    if (hits.length > 0) {
+                        drawing.drawTitle(type + ' annotations');
 
-                        var hit = hits[i];
-                        var hitColour = drawing.getBLASTColour(hit.bitscore);
-                        var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue', hit.accession, hit.description + ' (' + type + ')', hit.id);
 
-                        $('#' + hit.id + '_bar, #' + hit.id + '_text').css('cursor', 'pointer');
+                        for (var i = 0; i < hits.length; i++) {
 
-                        $('#' + hit.id + '_bar, #' + hit.id + '_text').click(
-                                function(a) {
-                                    return function(event) {
-                                        $('tr').css('background-color', 'white');
-                                        var row = $('#' + a + '_row');
-                                        row.css("background-color", "bisque");
-                                        $.scrollTo(row, 800, {offset : -300});
-                                    }
-                                }(hit.id)
-                        );
+                            var hit = hits[i];
+                            var hitColour = drawing.getBLASTColour(hit.bitscore);
+                            var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue', hit.accession, hit.description + ' (' + type + ')', hit.id);
+
+                            $('#' + hit.id + '_bar, #' + hit.id + '_text').css('cursor', 'pointer');
+
+                            $('#' + hit.id + '_bar, #' + hit.id + '_text').click(
+                                    function(a) {
+                                        return function(event) {
+                                            $('tr').css('background-color', 'white');
+                                            var row = $('#' + a + '_row');
+                                            row.css("background-color", "bisque");
+                                            $.scrollTo(row, 800, {offset : -300});
+                                        }
+                                    }(hit.id)
+                            );
+                        }
+
+                        drawing.drawSpacer(50);
                     }
-
-                    var hits = data.annotations[type];
-                    drawing.drawSpacer(50);
                 }
 
                 drawing.drawTitle('Reads');

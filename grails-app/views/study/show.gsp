@@ -245,6 +245,9 @@ To make a bit of text editable we need to
                     <option value="10000">10000</option>
                 </select>
                 <br/><br/>
+                Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.
+                <br/><br/>
+
                 <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
             </p>
         </form>
