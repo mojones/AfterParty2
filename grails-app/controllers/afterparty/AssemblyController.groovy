@@ -218,23 +218,7 @@ class AssemblyController {
     }
 
 
-    def download = {
 
-        response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
-        response.flushBuffer()
-
-        def criteria = Assembly.createCriteria()
-        def a = criteria.get({
-            eq('id', params.id.toLong())
-            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-        })
-
-        println "got ${a.contigs.size()} contigs for download";
-
-        a.contigs.each {
-            response.outputStream << ">${it.name}\n${it.sequence}\n"
-        }
-    }
 
     @Secured(['ROLE_USER'])
     def runBlast = {

@@ -267,7 +267,23 @@ class ContigSetController {
         render(c.id)
     }
 
+    def download = {
 
+        response.setHeader("Content-disposition", "attachment; filename=contigs.fasta");
+        response.flushBuffer()
+
+        def criteria = ContigSet.createCriteria()
+        def a = criteria.get({
+            eq('id', params.id.toLong())
+            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+        })
+
+        println "got ${a.contigs.size()} contigs for download";
+
+        a.contigs.each {
+            response.outputStream << ">${it.name}\n${it.sequence}\n"
+        }
+    }
 
     def searchContigSets = {
 

@@ -124,6 +124,10 @@ To make a bit of text editable we need to
                 return false;" type="submit" class="submit long" value="search contigs">
                 <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" onclick="showBLASTBox();
                 return false;" type="submit" class="submit long" value="blast vs contigs">
+                <g:form controller="contigSet" action="download" method="get">
+                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                    <input type="submit" class="submit long" value="Download contigs"/>
+                </g:form>
 
                 <br/>
 
@@ -139,6 +143,7 @@ To make a bit of text editable we need to
                     <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>
                     <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
                 </p>
+
             </form>
 
         </div>        <!-- .block_content ends -->
