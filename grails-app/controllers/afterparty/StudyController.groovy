@@ -177,7 +177,7 @@ class StudyController {
         def user = AfterpartyUser.get(springSecurityService.principal.id)
         user.addToStudies(studyInstance)
         studyInstance.save()
-        redirect(action: show, id: studyInstance.id)
+        redirect(action: 'show', id: studyInstance.id)
     }
 
     @Secured(['ROLE_USER'])
