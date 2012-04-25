@@ -101,13 +101,6 @@ To make a bit of text editable we need to
             </p>
         </g:if>
 
-        <g:if test="${isOwner}">
-            <g:form controller="study" action="indexForSearching" method="get">
-                <g:hiddenField name="id" value="${studyInstance.id}"/>
-                <input type="submit" class="submit long" value="Index contigs for searching"/>
-            </g:form>
-        </g:if>
-
     </div>        <!-- .block_content ends -->
 
     <div class="bendl"></div>
