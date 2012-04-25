@@ -62,23 +62,29 @@
                 drawing.drawTitle('Coverage');
                 drawing.drawChart(data.coverage, 100);
 
-                drawing.drawTitle('BLAST hits vs uniprot');
-                for (var i = 0; i < data.blastHits.length; i++) {
-                    var hit = data.blastHits[i];
-                    var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession);
-                    blastRect.click(
-                            function(a) {
-                                return function(event) {
-                                    $('tr').css('background-color', 'white');
-                                    var row = $('#' + a);
-                                    row.css("background-color", "bisque");
-                                    $.scrollTo(row);
-                                }
-                            }(hit.id)
-                    );
+                if (data.blastHits.length > 0) {
+                    drawing.drawTitle('BLAST hits vs uniprot');
+                    for (var i = 0; i < data.blastHits.length; i++) {
+                        var hit = data.blastHits[i];
+                        var hitColour = drawing.getBLASTColour(hit.bitscore);
+                        var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession, hit.id);
+
+                        $('#' + hit.id + '_bar, #' + hit.id + '_text').css('cursor', 'pointer');
+
+                        $('#' + hit.id + '_bar, #' + hit.id + '_text').click(
+                                function(a) {
+                                    return function(event) {
+                                        console.log('clicked ' + a);
+                                        $('tr').css('background-color', 'white');
+                                        var row = $('#' + a + '_row');
+                                        row.css("background-color", "bisque");
+                                        $.scrollTo(row, 800, {offset : -300});
+                                    }
+                                }(hit.id)
+                        );
+                    }
+                    drawing.drawSpacer(50);
                 }
-                drawing.drawSpacer(50);
 
                 for (type in data.annotations) {
                     var hits = data.annotations[type];
@@ -201,7 +207,17 @@
 
             <tbody>
             <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore})}" var="b">
-                <tr id="${b.id}">
+                <tr style="cursor: pointer" id="${b.id}_row" onclick="
+                    var bar = $('#${b.id}_bar');
+
+                    $.scrollTo(bar, 200, {offset : -300});
+                    setTimeout(function() {
+                        $('#${b.id}_bar, #${b.id}_text').hide(500, function() {
+                            $('#${b.id}_bar, #${b.id}_text').show();
+                        });
+                    }, 300);
+
+                ">
                     <td><a href="http://www.uniprot.org/uniprot/${b.accession}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
                     <td>${b.description}</td>

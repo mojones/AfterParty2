@@ -2,7 +2,7 @@ package afterparty
 
 class miraService {
 
-    static transactional = true
+    static transactional = false
 
     def sessionFactory
 

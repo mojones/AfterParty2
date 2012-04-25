@@ -195,42 +195,9 @@
         </div>        <!-- .block_head ends -->
 
         <div class="block_content">
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
 
-                <thead>
-                <tr>
+            <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
 
-                    <th>Contig ID</th>
-                    <th>Length</th>
-                    <th>Reads</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <g:each var="contig" in="${contigs[0..10]}" status="index">
-
-                    <tr>
-                        <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-                        <td>${contig.length()}</td>
-                        <td>${contig.reads.size()}</td>
-
-                    </tr>
-                </g:each>
-                </tbody>
-
-            </table>
-
-            <g:set var="totalPages" value="${assemblyInstance.contigs.size() / 10}"/>
-            <g:if test="${totalPages == 1}"><span class="currentStep">1</span></g:if>
-            <g:else>
-
-                <div class="pagination left">
-                    <g:paginate controller="assembly" action="show" params="[id: assemblyInstance.id]"
-                                total="${assemblyInstance.contigs.size()}"
-                                prev="&lt; previous" next="next &gt;"/>
-                </div>        <!-- .pagination ends -->
-
-            </g:else>
         </div>        <!-- .block_content ends -->
         <div class="bendl"></div>
 

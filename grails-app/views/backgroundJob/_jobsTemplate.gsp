@@ -28,7 +28,7 @@
                         <td>${fieldValue(bean: backgroundJobInstance, field: "name")}</td>
                         <td>
                             ${fieldValue(bean: backgroundJobInstance, field: "progress")}
-                            ${backgroundJobInstance.ETA()}
+                            &nbsp;(${backgroundJobInstance.ETA()})
                             <img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
                         </td>
 
