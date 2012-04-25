@@ -19,10 +19,10 @@ class CompoundSampleController {
         def compoundSampleInstance = CompoundSample.get(params.id)
         def newSample = new Sample(name: 'sample name', description: 'sample description')
         compoundSampleInstance.addToSamples(newSample)
-        compoundSampleInstance.save()
+        compoundSampleInstance.save(flush:true)
 
         flash.success = "added a new sample"
-        redirect(controller: 'sample', action: show, id: newSample.id)
+        redirect(controller: 'sample', action: 'show', id: newSample.id)
     }
 
     @Secured(['ROLE_USER'])

@@ -17,9 +17,9 @@ class SampleController {
         def sampleInstance = Sample.get(params.id)
         def newExperiment = new Experiment(name: 'experiment name')
         sampleInstance.addToExperiments(newExperiment)
-        sampleInstance.save()
+        sampleInstance.save(flush:true)
         flash.success = "added a new experiment"
-        redirect(action: show, id: sampleInstance.id)
+        redirect(controller: 'experiment', action: 'show', id: newExperiment.id)
     }
 
 

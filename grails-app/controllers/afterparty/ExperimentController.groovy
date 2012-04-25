@@ -69,9 +69,9 @@ class ExperimentController {
         def experimentInstance = Experiment.get(params.id)
         def newRun = new Run(name: 'run name')
         experimentInstance.addToRuns(newRun)
-        experimentInstance.save()
+        experimentInstance.save(flush:true)
         flash.success = "added a new run"
-        redirect(action: show, id: experimentInstance.id)
+        redirect(controller: 'run', action: 'show', id: newRun.id)
     }
 
 
