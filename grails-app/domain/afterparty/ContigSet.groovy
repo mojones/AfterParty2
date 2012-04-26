@@ -37,4 +37,8 @@ class ContigSet {
         return this.study.isOwnedBy(user)
     }
 
+    def numberOfContigs(){
+        return statisticsService.countContigsForContigSet(this.id)
+    }
+
 }

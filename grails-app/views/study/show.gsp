@@ -202,7 +202,7 @@ To make a bit of text editable we need to
                     <tr class='compoundSampleRow ${contigSet.type}'>
                         <td>
                             <g:checkBox name="check_${contigSet.id}" value="${false}" class="checkbox"/> ${contigSet.name}</td>
-                        <td>${contigSet.contigs.size()}</td>
+                        <td>${contigSet.numberOfContigs()}</td>
                     </tr>
                 </g:each>
                 </tbody>

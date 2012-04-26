@@ -286,5 +286,10 @@ class StatisticsService {
 
     }
 
+    @Cacheable('contigSetContigCountCache')
+    def countContigsForContigSet(Long id){
+          return ContigSet.get(id).contigs.size()
+    }
+
 
 }
