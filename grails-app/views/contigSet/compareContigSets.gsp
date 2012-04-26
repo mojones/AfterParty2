@@ -140,7 +140,18 @@ To make a bit of text editable we need to
 
                 <p id="searchForm" style="display:none">
                     <label>Search query:</label> <br/><br/>
-                    <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>
+                    <input name="searchQuery" id="searchQuery" type="text" class="text small">
+                    <label>Results to show:</label>
+                    <select name="numberOfResults">
+                        <option value="10">10</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                        <option value="10000">10000</option>
+                    </select>
+                    <br/><br/>
+                    Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.
+                    <br/><br/>
+
                     <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
                 </p>
 

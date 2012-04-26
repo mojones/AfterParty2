@@ -21,6 +21,10 @@
 
             interval = length / 20;
             interval = Math.round(interval / 10) * 10
+            if (interval == 0) {
+                interval = 5;
+            }
+            console.log("interval is " + interval);
             this.paper.rect(this.padding, this.yPos, this.drawingWidth, 2).attr({
                 fill: 'black',
                 'stroke-width': '0'

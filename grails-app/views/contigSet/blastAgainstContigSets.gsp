@@ -33,22 +33,21 @@
             $(document).ready(function () {
 
                 var data = ${resultsJSON};
-
+                window.mydata = data;
+                %{----}%
                 var paperWidth = $('#coffeescript_annotation').width() - 20;
                 var drawing = new BioDrawing();
                 drawing.start(paperWidth, 'coffeescript_annotation');
                 drawing.drawSpacer(50);
                 drawing.drawTitle('BLAST hits');
-
                 drawing.drawScale(data.query.length);
+                console.log(data.query.length);
 
                 for (var i = 0; i < data.hits.length; i++) {
                     var hit = data.hits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
                     var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.contigId, hit.contigId);
-
                 }
-
                 drawing.end();
                 $('#spinner').hide();
             });
@@ -136,7 +135,8 @@
 
         </table>
 
-        <p><input type="submit" class="submit long" value="Save as contig set" onclick="doCreate(${results*.contigId}, ${studyId})"/></p>
+        <p><input type="submit" class="submit long" value="Save as contig set" onclick="doCreate(${results*.contigId}, ${studyId})"/>
+        </p>
 
     </div>        <!-- .block_content ends -->
 

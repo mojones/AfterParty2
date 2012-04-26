@@ -115,7 +115,7 @@ class ContigSetController {
 
         println "temp blast directory is ${temporaryBlastDirectory.absolutePath}"
 
-        def blastProcess = new ProcessBuilder("/home/martin/Dropbox/downloads/ncbi-blast-2.2.25+/bin/blastn -outfmt 5 -db ${temporaryBlastDirectory.absolutePath}/blast".split(" "))
+        def blastProcess = new ProcessBuilder("${grailsApplication.config.blastnPath} -outfmt 5 -db ${temporaryBlastDirectory.absolutePath}/blast".split(" "))
         blastProcess.redirectErrorStream(true)
         blastProcess = blastProcess.start()
 
@@ -218,7 +218,7 @@ class ContigSetController {
         }
         blastService.attachBlastDatabaseToContigSet(cs)
         cs.save()
-        redirect(action: compareContigSets, params: [idList: [cs.id]])
+        redirect(action: 'compareContigSets', 'params': ['idList': [cs.id]])
 
     }
 
