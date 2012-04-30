@@ -104,7 +104,7 @@ log4j = {
 
     warn 'grails.plugin.springcache'
 
-    info 'jdbc.sqltiming'
+    warn 'jdbc.sqltiming'
 }
 
 // use jquery for ajax purposes

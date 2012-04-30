@@ -1,12 +1,9 @@
 dataSource {
-    pooled = true
-    driverClassName = "net.sf.log4jdbc.DriverSpy"
-
-//    driverClassName = "org.postgresql.Driver"
-    username = "mysuperuser"
-    password = "jukur6ai"
-    dbCreate = "create"
-    url = "jdbc:log4jdbc:postgresql://localhost:5432/afterparty"
+    dbCreate = "update"
+    driverClassName = "com.myorg.jdbcDriverNotExists"
+    url = ""
+    username = ""
+    password = ""
 }
 hibernate {
     cache.use_second_level_cache = true
