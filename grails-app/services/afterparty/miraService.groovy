@@ -204,7 +204,7 @@ class miraService {
 
         // construct the mira command line, set the working directory to /tmp, and start the process
         println "starting process"
-        def p = new ProcessBuilder("/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
+        def p = new ProcessBuilder("${grailsApplication.config.miraPath} --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
         job.commandLine = p.command().join('')
         p.directory(new File("/tmp"))
         p.redirectErrorStream(true)

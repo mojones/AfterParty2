@@ -192,7 +192,14 @@ class StudyController {
 
 
     def show = {
-        def studyInstance = Study.get(params.id)
+        def criteria = Study.createCriteria()
+        def studyInstance = criteria.get({
+            eq('id', params.id.toLong())
+            fetchMode 'compoundSamples', org.hibernate.FetchMode.JOIN
+            fetchMode 'compoundSamples.samples', org.hibernate.FetchMode.JOIN
+            fetchMode 'compoundSamples.samples.experiments', org.hibernate.FetchMode.JOIN
+            fetchMode 'compoundSamples.samples.assemblies', org.hibernate.FetchMode.JOIN
+        })
         session.studyId = params.id
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
         [studyInstance: studyInstance, isOwner: studyInstance.user.id == userId]

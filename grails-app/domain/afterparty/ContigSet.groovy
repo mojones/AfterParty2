@@ -6,6 +6,8 @@ class ContigSet {
 
     String name
     String description
+
+    //TODO move these big fields into a separate domain object so that they can be loaded lazily
     byte[] blastHeaderFile
     byte[] blastIndexFile
     byte[] blastSequenceFile

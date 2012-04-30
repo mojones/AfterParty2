@@ -95,7 +95,7 @@ class PfamService {
 
             contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
 
-            def pfamProcess = new ProcessBuilder("/home/martin/interproscan/iprscan/bin/iprscan -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup".split(" "))
+            def pfamProcess = new ProcessBuilder("${grailsApplication.config.interproscanPath} -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup".split(" "))
             pfamProcess.redirectErrorStream(true)
             pfamProcess = pfamProcess.start()
             pfamProcess.in.eachLine({
