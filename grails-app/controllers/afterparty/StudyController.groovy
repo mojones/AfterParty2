@@ -1,7 +1,6 @@
 package afterparty
 
 import grails.plugins.springsecurity.Secured
-import org.compass.core.engine.SearchEngineQueryParseException
 
 class StudyController {
 
@@ -99,44 +98,40 @@ class StudyController {
             // if there is no query then we will just return the assemblies
             return [assemblies: study.compoundSamples.assemblies.flatten(), studyInstance: study, showResults: false]
         }
-        try {
-            // comment
-            List assemblies = []
-            //which assemblies are we looking at?
-            params.entrySet().findAll({it.key.startsWith('check_')}).each {
-                Integer assemblyId = it.key.split(/_/)[1].toInteger()
-                assemblies.add(Assembly.get(assemblyId))
-            }
 
-            // set up colours for assemblies
-            //            def assemblyToColour = [:]
-            //            assemblies.eachWithIndex { assembly, index ->
-            //                assemblyToColour.put(assembly, StatisticsService.paleAssemblyColours.get(index))
-            //            }
-
-
-            Integer offset = params.offset ? params.offset.toInteger() : 0
-
-            def query = searchService.buildQueryString(assemblies, params.q)
-            def searchResult = searchService.getContigsForSearch(query, offset, 50)
-
-            println searchResult.contigs
-            // we will return a lot of data to render the search results...
-            return [
-//                    assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
-                    searchedAssemblies: assemblies,         // the list of assemblies that was involved in the search
-                    searchResultContigs: searchResult.contigs,         // the list of results, as full Contig domain objects
-                    searchResult: searchResult.rawSearch,                    // the result object that contains the query, offset, etc
-                    assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
-                    studyInstance: study, // the study that we are looking at
-                    showResults: true,                                          // tell the gsp to show the results
-                    finalQueryString: query    // so that we can pass it on in case we want to create a contig set
-            ]
-
-
-        } catch (SearchEngineQueryParseException ex) {
-            return [parseException: true]
+        // comment
+        List assemblies = []
+        //which assemblies are we looking at?
+        params.entrySet().findAll({it.key.startsWith('check_')}).each {
+            Integer assemblyId = it.key.split(/_/)[1].toInteger()
+            assemblies.add(Assembly.get(assemblyId))
         }
+
+        // set up colours for assemblies
+        //            def assemblyToColour = [:]
+        //            assemblies.eachWithIndex { assembly, index ->
+        //                assemblyToColour.put(assembly, StatisticsService.paleAssemblyColours.get(index))
+        //            }
+
+
+        Integer offset = params.offset ? params.offset.toInteger() : 0
+
+        def query = searchService.buildQueryString(assemblies, params.q)
+        def searchResult = searchService.getContigsForSearch(query, offset, 50)
+
+        println searchResult.contigs
+        // we will return a lot of data to render the search results...
+        return [
+//                    assemblyToColour: assemblyToColour,    // allows us to colour each contig to show which assembly it came from
+                searchedAssemblies: assemblies,         // the list of assemblies that was involved in the search
+                searchResultContigs: searchResult.contigs,         // the list of results, as full Contig domain objects
+                searchResult: searchResult.rawSearch,                    // the result object that contains the query, offset, etc
+                assemblies: study.compoundSamples.assemblies.flatten(),     // the list of available assemblies so that we can draw the checkbox for the next search
+                studyInstance: study, // the study that we are looking at
+                showResults: true,                                          // tell the gsp to show the results
+                finalQueryString: query    // so that we can pass it on in case we want to create a contig set
+        ]
+
     }
 
 
