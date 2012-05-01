@@ -96,7 +96,7 @@ class PfamService {
             println "temporary file is ${contigFastaFile.absolutePath}"
 
             contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
-
+            println "${grailsApplication.config.interproscanPath} -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup"
             def pfamProcess = new ProcessBuilder("${grailsApplication.config.interproscanPath} -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup".split(" "))
             pfamProcess.redirectErrorStream(true)
             pfamProcess = pfamProcess.start()
