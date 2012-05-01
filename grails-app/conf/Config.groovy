@@ -1,10 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-grails.config.locations = ["classpath:${appName}-config.properties",
-        "classpath:afterparty.config.groovy",
-        "file:${userHome}/.grails/${appName}-config.properties",
-        "file:${userHome}/afterparty.config.groovy"]
+grails.config.locations = ["file:/home/martin/afterparty.config.groovy"]
 
 // if(System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
