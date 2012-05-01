@@ -9,6 +9,8 @@ class PfamService {
 
     javax.sql.DataSource dataSource
 
+    def grailsApplication
+
     def addPfamFromInput(InputStream input) {
         input.eachLine { line ->
             def startTime = System.currentTimeMillis()
