@@ -140,7 +140,7 @@ class StudyController {
         def studyInstance = Study.get(params.id)
         def newCompoundSample = new CompoundSample(name: 'compound sample name')
         studyInstance.addToCompoundSamples(newCompoundSample)
-        studyInstance.save()
+        studyInstance.save(flush:true)
         newCompoundSample.save(flush: true)
         flash.success = "added a new compound sample"
         redirect(controller: 'compoundSample', action: show, id: newCompoundSample.id)

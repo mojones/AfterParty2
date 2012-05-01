@@ -129,9 +129,9 @@ sqlSpecies.rows('select * from species').eachWithIndex {speciesRow, i ->
                     c.addToAnnotations(b)
                 }
 
-                println "cluster id is $clusterId and contig id is $contigId"
+//                println "cluster id is $clusterId and contig id is $contigId"
                 def peptideId = clusterId.toString().replace('C', 'P') + '_' + contigId
-                println "checking for peptide id $peptideId"
+//                println "checking for peptide id $peptideId"
 
 
                 def type2type = [

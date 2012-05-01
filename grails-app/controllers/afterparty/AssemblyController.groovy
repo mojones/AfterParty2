@@ -17,6 +17,10 @@ class AssemblyController {
     def dataSource
     def pfamService
 
+    def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
+
+
+
     def makeHybridAssembly = {
         def ids = []
         params.idList.split(/,/).sort().each {

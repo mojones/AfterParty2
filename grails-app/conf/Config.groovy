@@ -55,27 +55,27 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.app.context = "/"
 
 // set per-environment serverURL stem for creating absolute links
-environments {
-    production {
-        grails.serverURL = "http://www.changeme.com"
-    }
-    development {
-        grails.serverURL = "http://localhost:8080"
-        grails.gorm.failOnError = true
-    }
-    development_rebuild {
-        grails.serverURL = "http://localhost:8080"
-        grails.gorm.failOnError = true
-    }
-    big_test {
-        grails.serverURL = "http://localhost:8080"
-        grails.gorm.failOnError = true
-    }
-    test {
-        grails.serverURL = "http://localhost:8080"
-    }
-
-}
+//environments {
+//    production {
+//        grails.serverURL = "http://www.changeme.com"
+//    }
+//    development {
+//        grails.serverURL = "http://localhost:8080"
+//        grails.gorm.failOnError = true
+//    }
+//    development_rebuild {
+//        grails.serverURL = "http://localhost:8080"
+//        grails.gorm.failOnError = true
+//    }
+//    big_test {
+//        grails.serverURL = "http://localhost:8080"
+//        grails.gorm.failOnError = true
+//    }
+//    test {
+//        grails.serverURL = "http://localhost:8080"
+//    }
+//
+//}
 
 // log4j configuration
 log4j = {
