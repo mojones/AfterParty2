@@ -100,8 +100,8 @@ class AssemblyController {
 
             println "deleting individual contigs"
 
-            def sqlAfterparty = Sql.newInstance("jdbc:postgresql://localhost:5432/afterparty", 'mysuperuser', 'jukur6ai', 'org.postgresql.Driver')
-            sqlAfterparty.execute("delete from blast_hit using contig where blast_hit.contig_id = contig.id and contig.assembly_id = $assemblyId")
+            def sqlAfterparty = Sql.newInstance("jdbc:log4jdbc:postgresql://localhost:5432/afterparty", 'mysuperuser', 'jukur6ai', 'net.sf.log4jdbc.DriverSpy')
+            sqlAfterparty.execute("delete from annotation using contig where annotation.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from read using contig where read.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from contig_set_contig using contig where contig_set_contig.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from contig where contig.assembly_id = $assemblyId")

@@ -3,7 +3,7 @@ package afterparty
 class AsyncMethodFilters {
 
     def filters = {
-        dontFinishBeforeAsyncThreadStarts(controller: '*', action: '(runMira|attachReads|runBlast|runPfam)') {
+        dontFinishBeforeAsyncThreadStarts(controller: '*', action: '(runMira|attachReads|runBlast|runPfam|uploadAce)') {
             before = {
 
             }

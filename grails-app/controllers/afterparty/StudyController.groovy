@@ -143,7 +143,7 @@ class StudyController {
         studyInstance.save(flush:true)
         newCompoundSample.save(flush: true)
         flash.success = "added a new compound sample"
-        redirect(controller: 'compoundSample', action: show, id: newCompoundSample.id)
+        redirect(controller: 'compoundSample', action: 'show', id: newCompoundSample.id)
     }
 
 
