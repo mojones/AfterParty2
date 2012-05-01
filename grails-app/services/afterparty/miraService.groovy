@@ -5,6 +5,7 @@ class miraService {
     static transactional = false
 
     def sessionFactory
+    def grailsApplication
 
     def statisticsService
     def executorService
