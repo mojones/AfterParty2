@@ -84,7 +84,7 @@
                                                                                   action="index">Logout</g:link></p>
             </sec:ifLoggedIn>
             <sec:ifNotLoggedIn>
-                <p class="user"><g:link controller="login" action="index">Click here to log in</g:link></p>
+                <p class="user"><g:link controller="login" action="auth">Click here to log in</g:link></p>
             </sec:ifNotLoggedIn>
 
         </div>        <!-- #header ends -->
