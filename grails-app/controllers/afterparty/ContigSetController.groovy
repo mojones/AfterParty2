@@ -295,7 +295,6 @@ class ContigSetController {
             idList = params.idList.split(',')
         }
         println "idlist is $idList"
-        Integer offset = params.offset?.toInteger() ?: 0
         Integer max = params.numberOfResults.toInteger()
         println "max is $max"
         def allContigs = []

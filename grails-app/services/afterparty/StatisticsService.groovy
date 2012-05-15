@@ -291,5 +291,9 @@ class StatisticsService {
           return ContigSet.get(id).contigs.size()
     }
 
+    @Cacheable('contigSetCache')
+    ContigSet getContigSet(Long id){
+        return ContigSet.get(id)
+    }
 
 }

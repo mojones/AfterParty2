@@ -97,14 +97,12 @@ To make a bit of text editable we need to
 
 
     <div class="block">
-
         <div class="block_head">
             <div class="bheadl"></div>
 
             <div class="bheadr"></div>
 
             <h2>Contig Set details <span style="font-size: small;">(click to edit)</span></h2>
-
         </div>        <!-- .block_head ends -->
 
         <div class="block_content">
@@ -116,46 +114,7 @@ To make a bit of text editable we need to
 
             <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
 
-            <form id="contigSetForm" method="get">
-
-                <input type="hidden" name="idList" value="${contigSetInstance.id}">
-
-                <input class="doSomethingButton submit long" id="searchContigSetAnnotationButton" onclick="showSearchBox();
-                return false;" type="submit" class="submit long" value="search contigs">
-                <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" onclick="showBLASTBox();
-                return false;" type="submit" class="submit long" value="blast vs contigs">
-                <g:form controller="contigSet" action="download" method="get">
-                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
-                    <input type="submit" class="submit long" value="Download contigs"/>
-                </g:form>
-
-                <br/>
-
-                <p id="blastForm" style="display:none">
-                    <label>BLAST query sequence:</label> <br/><br/>
-                    <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
-                    <br/><br/>
-                    <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
-                </p>
-
-                <p id="searchForm" style="display:none">
-                    <label>Search query:</label> <br/><br/>
-                    <input name="searchQuery" id="searchQuery" type="text" class="text small">
-                    <label>Results to show:</label>
-                    <select name="numberOfResults">
-                        <option value="10">10</option>
-                        <option value="100">100</option>
-                        <option value="1000">1000</option>
-                        <option value="10000">10000</option>
-                    </select>
-                    <br/><br/>
-                    Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.
-                    <br/><br/>
-
-                    <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
-                </p>
-
-            </form>
+            <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id]"/>
 
         </div>        <!-- .block_content ends -->
 

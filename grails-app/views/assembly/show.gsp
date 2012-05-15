@@ -8,22 +8,13 @@
 
 
     <script type="text/javascript">
-
-
         $(document).ready(function() {
-
-
             setUpEditInPlace(
                     ${assemblyInstance.id},
                     "<g:createLink controller="update" action="updateField"/>",
                     'Assembly'
             );
-
-
         });
-
-
-
     </script>
 
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -71,6 +62,9 @@
                 Max contig length : ${assemblyInstance.maxContigLength}<br/>
                 N50 : ${assemblyInstance.n50}
             </p>
+            <g:if test="${assemblyInstance.defaultContigSet}">
+                <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id]"/>
+            </g:if>
         </div>        <!-- .sidebar_content ends -->
 
 
