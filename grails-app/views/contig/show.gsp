@@ -218,7 +218,7 @@
                     }, 300);
 
                 ">
-                    <td><a href="http://www.uniprot.org/uniprot/${b.accession}">${b.accession}</a></td>
+                    <td><a href="${b.generateUrl()}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>

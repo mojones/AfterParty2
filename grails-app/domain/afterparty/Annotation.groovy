@@ -43,6 +43,9 @@ class Annotation {
             case AnnotationType.PFAM:
                 return "http://pfam.sanger.ac.uk/family/$accession"
                 break
+            case AnnotationType.BLAST:
+                def cleanAccession = accession.replace('UniRef100_','')
+                return "http://www.uniprot.org/uniprot/$cleanAccession"
             default:
                 return "#"
         }
