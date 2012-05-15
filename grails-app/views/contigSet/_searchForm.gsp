@@ -47,7 +47,7 @@
         return false;
     });
 
-    document.addEventListener('touchstart', function(e) {
+    document.addEventListener('touch', function(e) {
         e.preventDefault();
         var touch = e.touches[0];
         alert(touch.pageX + " - " + touch.pageY);
