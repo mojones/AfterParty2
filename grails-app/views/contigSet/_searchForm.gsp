@@ -33,7 +33,7 @@
 
 <script type="text/javascript">
     var ua = navigator.userAgent, event = (ua.match(/iPad/i)) ? "touchstart" : "click";
-    alert('user agent is ' + ua)
+//    alert('user agent is ' + ua)
     $("#blastContigSetAnnotationButton").bind(event, function(e) {
         console.log('showing blast box');
         showBLASTBox();
