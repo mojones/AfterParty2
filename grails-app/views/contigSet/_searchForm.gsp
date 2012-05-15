@@ -1,12 +1,10 @@
 <form id="contigSetForm" method="get">
 
     <input type="hidden" name="idList" value="${contigSetId}">
-    <input class="submit long" id="showContigSetsButton" type="submit" value="view contigs" onclick="submitCompare();"/>
+    <input class="submit long" id="showContigSetsButton" type="submit" value="view contigs"/>
 
-    <input class="submit long" id="searchContigSetAnnotationButton" onclick="showSearchBox();
-    return false;" type="submit" class="submit long" value="search contigs">
-    <input class="submit long" id="blastContigSetAnnotationButton" onclick="showBLASTBox();
-    return false;" type="submit" class="submit long" value="blast contigs">
+    <input class="submit long" id="searchContigSetAnnotationButton" type="submit" class="submit long" value="search contigs">
+    <input class="submit long" id="blastContigSetAnnotationButton" type="submit" class="submit long" value="blast contigs">
 
     <br/>
 
@@ -32,3 +30,20 @@
         <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
     </p>
 </form>
+
+<script type="text/javascript">
+    var ua = navigator.userAgent, event = (ua.match(/iPad/i)) ? "touchstart" : "click";
+    $("#blastContigSetAnnotationButton").bind(event, function(e) {
+        console.log('showing blast box');
+        showBLASTBox();
+        return false;
+    });
+    $("#showContigSetsButton").bind(event, function(e) {
+        submitCompare();
+    });
+    $("#searchContigSetAnnotationButton").bind(event, function(e) {
+        showSearchBox();
+        return false;
+    });
+
+</script>
