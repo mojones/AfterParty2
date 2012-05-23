@@ -173,19 +173,18 @@ class StatisticsService {
                 gc: []
         ]
 
-        ContigSet.get(contigSetId).contigs.each { contig ->
-
-            def sequence = contig.sequence.toLowerCase()
-            cs.id.push(contig.id)
-            cs.length.push(sequence.length())
-            def lengthWithoutN = sequence.replaceAll('n', '').length()
-            cs.lengthwithoutn.push(lengthWithoutN)
-            cs.quality.push(contig.averageQuality)
-            cs.coverage.push(contig.averageCoverage)
-            cs.topBlast.push(contig.topBlastHit)
-            cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+        getContigInfoForContigSet(contigSetId).each{
+            cs.id.push(it.id)
+            cs.length.push(it.length)
+            cs.lengthwithoutn.push(it.lengthWithoutN)
+            cs.quality.push(it.quality)
+            cs.coverage.push(it.coverage)
+            cs.topBlast.push('replaceme')
+            cs.gc.push(it.gc)
 
         }
+
+
         return cs
 
     }
@@ -317,6 +316,7 @@ class StatisticsService {
                     'coverage' : row.average_coverage,
                     'quality':row.average_quality,
                     'length' : row.sequence.length(),
+                    'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
                    // 'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
                     'gc' : 0.5
                     ]
