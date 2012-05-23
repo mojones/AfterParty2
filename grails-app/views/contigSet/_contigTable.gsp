@@ -4,13 +4,10 @@
     <tr>
 
         <th width="100px;">Contig ID</th>
-        <th width="150px;">Assembly</th>
         <th width="50px;">Length</th>
-        <th width="50px;">Reads</th>
         <th width="50px;">Coverage</th>
         <th width="50px;">Quality</th>
-        <th width="50px;">GC%</th>
-        <th>Top BLAST hit</th>
+        <th width="50px;">GC</th>
     </tr>
     </thead>
 
@@ -19,14 +16,10 @@
 
         <tr style="display:none;">
             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-            <td>${contig.assembly.name}</td>
-            <td>${contig.length()}</td>
-            <td>${contig.reads.size()}</td>
-            <td>${contig.averageCoverage.toInteger()}</td>
-            <td>${contig.averageQuality.toInteger()}</td>
-            <td>${(contig.gc() * 100).toInteger()}</td>
-            <td>${contig.topBlastHit}</td>
-
+            <td>${contig.length}</td>
+            <td>${contig.coverage}</td>
+            <td>${contig.quality}</td>
+            <td>${contig.gc}</td>
         </tr>
     </g:each>
     </tbody>

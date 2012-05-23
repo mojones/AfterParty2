@@ -3,6 +3,9 @@ package afterparty
 import javax.xml.parsers.SAXParserFactory
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.xml.sax.InputSource
+import groovy.sql.Sql
+
+
 
 class ContigSetController {
 
@@ -199,14 +202,19 @@ class ContigSetController {
         }
         println "idlist is $idList"
         def contigSetListResult = []
+        def contigSetDataResult = []
         idList.each {
             println "getting a contig set with id $it"
             contigSetListResult.add(ContigSet.get(it.toLong()))
+            contigSetDataResult.add(statisticsService.getContigInfoForContigSet(it.toLong()))
         }
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
 
         // comment
-        [contigSets: contigSetListResult, isOwner: contigSetListResult[0].study.user.id == userId]
+        [
+        contigSets: contigSetListResult, 
+        isOwner: contigSetListResult[0].study.user.id == userId,
+        contigData : contigSetDataResult]
     }
 
     def createFromContigList = {

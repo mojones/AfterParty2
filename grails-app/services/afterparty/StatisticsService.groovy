@@ -1,10 +1,15 @@
 package afterparty
 
 import grails.plugin.springcache.annotations.Cacheable
+import groovy.sql.Sql
+
 
 class StatisticsService {
 
     static transactional = false
+
+    javax.sql.DataSource dataSource
+
 
     def grailsApplication
     def blastService
@@ -294,6 +299,32 @@ class StatisticsService {
     @Cacheable('contigSetCache')
     ContigSet getContigSet(Long id){
         return ContigSet.get(id)
+    }
+
+    def getContigInfoForContigSet(Long id){
+        println "id is $id"
+        def sql = new Sql(dataSource)
+        println "sql is $sql"
+        def result = []
+        def sqlString = "select * from contig,contig_set_contig where contig_set_contigs_id=${id} and contig_set_contig.contig_id=contig.id order by average_coverage desc"
+        println sqlString
+        sql.rows(sqlString).each({ row ->
+          //  println row
+            result.add(
+                    [
+                    'id' : row.id, 
+                    'name': row.name,
+                    'coverage' : row.average_coverage,
+                    'quality':row.average_quality,
+                    'length' : row.sequence.length(),
+                   // 'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
+                    'gc' : 0.5
+                    ]
+                )
+        })
+        return result
+
+
     }
 
 }

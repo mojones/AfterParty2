@@ -137,7 +137,7 @@ To make a bit of text editable we need to
             <div class="block_content">
 
                 %{--<p>Click table headers to sort</p>--}%
-                <g:render template="contigTable" model="['contigCollection' : contigSetInstance.contigs.sort({-it.averageCoverage}), 'contigsPerPage' : 10]"/>
+                <g:render template="contigTable" model="['contigCollection' : contigData[0], 'contigsPerPage' : 10]"/>
 
             </div>        <!-- .block_content ends -->
             <div class="bendl"></div>

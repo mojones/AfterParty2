@@ -1,0 +1,165 @@
+
+===
+test 1 Fri May  4 10:56:21 2012
+from: martin@martin-S5000XVN
+to: martin.jones@ed.ac.uk
+
+Subject: Error in InterProScan job iprscan-20120504-10553903
+To: martin.jones@ed.ac.uk
+From: martin.jones@ed.ac.uk
+
+Tool:  iprscan
+JobID: iprscan-20120504-10553903
+Time:  Fri May  4 10:56:21 2012
+Error:
+
+supervise: doRawResults: error running system command /home/martin/interproscan/iprscan/bin/converter.pl -format xml -input /home/martin/interproscan/iprscan/tmp/20120504/iprscan-20120504-10553903/chunk_1/merged.raw -jobid iprscan-20120504-10553903: <br><br><br>To help us solve the problem, please copy and paste this error<br>and email it to the administrator <a href="mailto:martin.jones@ed.ac.uk?subject=Error in InterProScan job iprscan-20120504-10553903">martin.jones@ed.ac.uk</a>.<br><br>Sorry about the inconvenience and thank you for using InterProScan.<br><br>
+
+Job submission parameters:
+DD              04
+MM              05
+YYYY            2012
+appl            blastprodom,coils,gene3d,hmmpanther,hmmpfam,hmmsmart,hmmtigr,fprintscan,patternscan,profilescan,seg
+cmd             submit
+crc             1
+format          raw
+frame           6
+hh              10
+iprlookup       1
+jobid           iprscan-20120504-10553903
+mm              55
+nseqs           14
+onego           1
+remotehost      martin-S5000XVN
+seq.1.1.crc64   E7B16495BE87925C
+seq.1.1.id      isotig03178_1_ORF1
+seq.1.1.len     43
+seq.1.10.crc64  7B771D9E22F36A3E
+seq.1.10.id     isotig03178_4_ORF3
+seq.1.10.len    41
+seq.1.11.crc64  73D4356702928902
+seq.1.11.id     isotig03178_5_ORF2
+seq.1.11.len    31
+seq.1.12.crc64  87E5E56C32D38E6A
+seq.1.12.id     isotig03178_5_ORF3
+seq.1.12.len    35
+seq.1.13.crc64  207BD89107AC6463
+seq.1.13.id     isotig03178_6_ORF2
+seq.1.13.len    27
+seq.1.14.crc64  2525D3166509E241
+seq.1.14.id     isotig03178_6_ORF3
+seq.1.14.len    23
+seq.1.2.crc64   C0387B7055714271
+seq.1.2.id      isotig03178_1_ORF2
+seq.1.2.len     24
+seq.1.3.crc64   8BA7E076CEFD43BF
+seq.1.3.id      isotig03178_1_ORF3
+seq.1.3.len     22
+seq.1.4.crc64   0F710AEB9B27169C
+seq.1.4.id      isotig03178_2_ORF2
+seq.1.4.len     20
+seq.1.5.crc64   7378B49CF07DD734
+seq.1.5.id      isotig03178_2_ORF3
+seq.1.5.len     31
+seq.1.6.crc64   0F983D73AC661728
+seq.1.6.id      isotig03178_2_ORF4
+seq.1.6.len     56
+seq.1.7.crc64   79321E0E2E37CCCB
+seq.1.7.id      isotig03178_3_ORF1
+seq.1.7.len     47
+seq.1.8.crc64   F321C3C6CF889D8D
+seq.1.8.id      isotig03178_3_ORF2
+seq.1.8.len     38
+seq.1.9.crc64   385EC6EE5D00A956
+seq.1.9.id      isotig03178_4_ORF2
+seq.1.9.len     31
+seqtype         N
+srchtype        interactive
+ss              39
+submission      cli
+tool            iprscan
+trlen           20
+
+NOTE: the newlines have been replaced with backslash.
+
+
+===
+test 1 Fri May  4 11:02:56 2012
+from: martin@martin-S5000XVN
+to: martin.jones@ed.ac.uk
+
+Subject: Error in InterProScan job iprscan-20120504-11022296
+To: martin.jones@ed.ac.uk
+From: martin.jones@ed.ac.uk
+
+Tool:  iprscan
+JobID: iprscan-20120504-11022296
+Time:  Fri May  4 11:02:56 2012
+Error:
+
+supervise: doRawResults: error running system command /home/martin/interproscan/iprscan/bin/converter.pl -format xml -input /home/martin/interproscan/iprscan/tmp/20120504/iprscan-20120504-11022296/chunk_1/merged.raw -jobid iprscan-20120504-11022296: <br><br><br>To help us solve the problem, please copy and paste this error<br>and email it to the administrator <a href="mailto:martin.jones@ed.ac.uk?subject=Error in InterProScan job iprscan-20120504-11022296">martin.jones@ed.ac.uk</a>.<br><br>Sorry about the inconvenience and thank you for using InterProScan.<br><br>
+
+Job submission parameters:
+DD              04
+MM              05
+YYYY            2012
+appl            blastprodom,coils,gene3d,hmmpanther,hmmpfam,hmmsmart,hmmtigr,fprintscan,patternscan,profilescan,seg
+cmd             submit
+crc             1
+format          raw
+frame           6
+hh              11
+iprlookup       1
+jobid           iprscan-20120504-11022296
+mm              02
+nseqs           13
+onego           1
+remotehost      martin-S5000XVN
+seq.1.1.crc64   34A58A863BFC70E3
+seq.1.1.id      isotig03102_1_ORF1
+seq.1.1.len     61
+seq.1.10.crc64  F46EDC28B07FE28F
+seq.1.10.id     isotig03102_4_ORF3
+seq.1.10.len    43
+seq.1.11.crc64  1B8B5CD0837B1587
+seq.1.11.id     isotig03102_5_ORF2
+seq.1.11.len    30
+seq.1.12.crc64  95F586E6B33343AF
+seq.1.12.id     isotig03102_5_ORF3
+seq.1.12.len    72
+seq.1.13.crc64  034C555804FBF26F
+seq.1.13.id     isotig03102_6_ORF2
+seq.1.13.len    31
+seq.1.2.crc64   484B7E42AC961E99
+seq.1.2.id      isotig03102_1_ORF2
+seq.1.2.len     26
+seq.1.3.crc64   5A9783897EAD808A
+seq.1.3.id      isotig03102_2_ORF2
+seq.1.3.len     27
+seq.1.4.crc64   37637EC18B4213E1
+seq.1.4.id      isotig03102_2_ORF3
+seq.1.4.len     22
+seq.1.5.crc64   FE14D41AF6DFE7C9
+seq.1.5.id      isotig03102_2_ORF4
+seq.1.5.len     50
+seq.1.6.crc64   FCCD5DED99ADD79A
+seq.1.6.id      isotig03102_3_ORF2
+seq.1.6.len     20
+seq.1.7.crc64   613AEDE6DE77604A
+seq.1.7.id      isotig03102_3_ORF3
+seq.1.7.len     25
+seq.1.8.crc64   3317D612EC386718
+seq.1.8.id      isotig03102_3_ORF4
+seq.1.8.len     51
+seq.1.9.crc64   F77298931690506F
+seq.1.9.id      isotig03102_4_ORF2
+seq.1.9.len     45
+seqtype         N
+srchtype        interactive
+ss              22
+submission      cli
+tool            iprscan
+trlen           20
+
+NOTE: the newlines have been replaced with backslash.
+

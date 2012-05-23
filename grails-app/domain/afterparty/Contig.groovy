@@ -1,5 +1,6 @@
 package afterparty
 
+//TODO add gc, read count and topblasthit as separate fields, then add them back to the contig table
 
 class Contig {
 
