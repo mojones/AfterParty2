@@ -300,6 +300,7 @@ class StatisticsService {
         return ContigSet.get(id)
     }
 
+    @Cacheable('contigInfoCache')
     def getContigInfoForContigSet(Long id){
         println "id is $id"
         def sql = new Sql(dataSource)
