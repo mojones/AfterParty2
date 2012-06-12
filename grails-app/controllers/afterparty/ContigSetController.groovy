@@ -112,9 +112,9 @@ class ContigSetController {
         File temporaryBlastDirectory = File.createTempFile('blastDir', '')
         temporaryBlastDirectory.delete()
         temporaryBlastDirectory.mkdir()
-        (new File(temporaryBlastDirectory, 'blast.nhr')).append(cs.blastHeaderFile)
-        (new File(temporaryBlastDirectory, 'blast.nin')).append(cs.blastIndexFile)
-        (new File(temporaryBlastDirectory, 'blast.nsq')).append(cs.blastSequenceFile)
+        (new File(temporaryBlastDirectory, 'blast.nhr')).append(cs.data.blastHeaderFile)
+        (new File(temporaryBlastDirectory, 'blast.nin')).append(cs.data.blastIndexFile)
+        (new File(temporaryBlastDirectory, 'blast.nsq')).append(cs.data.blastSequenceFile)
 
         println "temp blast directory is ${temporaryBlastDirectory.absolutePath}"
 
@@ -224,6 +224,7 @@ class ContigSetController {
             println "adding contig $it"
             cs.addToContigs(Contig.get(it))
         }
+        cs.data = new ContigSetData()
         blastService.attachBlastDatabaseToContigSet(cs)
         cs.save()
         redirect(action: 'compareContigSets', 'params': ['idList': [cs.id]])
@@ -268,6 +269,7 @@ class ContigSetController {
         ids.each {
             c.addToContigs(Contig.get(it.toLong()))
         }
+        c.data = new ContigSetData()
         blastService.attachBlastDatabaseToContigSet(c)
         c.save(flush: true)
         statisticsService.getStatsForContigSet(c)

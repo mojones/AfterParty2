@@ -26,10 +26,17 @@ class BlastService {
             println "blast : $it"
         })
 //        blastProcess.waitFor()
-        cs.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
-        cs.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
-        cs.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
+        def newData = new ContigSetData()
+        newData.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
+        newData.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
+        newData.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
+        
+        cs.data = newData
+        cs.save()
+        newData.contigSet = cs
+        newData.save(flush:true)
 
+        println('saved some new blast data')
         return cs
     }
 
