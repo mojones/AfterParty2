@@ -16,7 +16,7 @@
 
         <tr style="display:none;">
             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-            <td>${contig.length}</td>
+            <td>${contig.sequence.length()}</td>
             <td>${contig.coverage}</td>
             <td>${contig.quality}</td>
             <td>${contig.gc}</td>
