@@ -323,8 +323,12 @@ class ContigSetController {
             def contigs = searchService.searchInContigSet(set, params.searchQuery, max)
             t.log("called search service")
             println "got ${contigs.size()} results for ${params.searchQuery}"
-            allContigs.addAll(contigs)
+            allContigs.addAll(contigs*.id)
         }
+
+        def contigInfo = statisticsService.getContigInfoForContigList(allContigs)
+
+
         println "rendering view...."
         [
                 contigs: allContigs,

@@ -322,11 +322,42 @@ def getContigInfoForContigSet(Long id){
             'quality':row.average_quality,
             'length' : row.sequence.length(),
             'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
-                    'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
+            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
                    //'gc' : 0.5
                    ]
                    )
           })
+    return result
+
+
+}
+@Cacheable('contigInfoCache')
+def getContigInfoForContigList(def ids){
+
+    def sql = new Sql(dataSource)
+    println "sql is $sql"
+    def result = []
+    // TODO make this one sql call rather than an each{}
+    ids.each{ id ->
+        def sqlString = "select * from contig where id=${id}"
+        println sqlString
+        sql.rows(sqlString).each({ row ->
+          //  println row
+          result.add(
+            [
+            'id' : row.id, 
+            'name': row.name,
+            'coverage' : row.average_coverage,
+            'quality':row.average_quality,
+            'length' : row.sequence.length(),
+            'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
+            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
+                   //'gc' : 0.5
+                   ]
+                   )
+          })
+        
+    }
     return result
 
 
