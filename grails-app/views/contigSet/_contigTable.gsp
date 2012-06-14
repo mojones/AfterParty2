@@ -19,7 +19,7 @@
             <td>${contig.length}</td>
             <td>${contig.averageCoverage}</td>
             <td>${contig.averageQuality}</td>
-            <td>${contig.gc()}</td>
+            <td>${contig.gc}</td>
         </tr>
     </g:each>
     </tbody>
