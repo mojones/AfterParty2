@@ -16,6 +16,9 @@ class ContigSetController {
 
     def miraService
 
+        def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
+
+
     def index = { }
 
 
@@ -90,14 +93,17 @@ class ContigSetController {
         File output = File.createTempFile('standalone', '.html', tempFileDirectory)
         println "output file is $output.absolutePath"
 
-        def templateString = g.render(template: 'uploadContigsStandalone', model: [
+        def templateString = g.render(
+            template: 'uploadContigsStandalone', model: [
                 contigSets: contigSetRawResult,
                 contigSetRawDataJSON: contigSetRawResult.encodeAsJSON(),
                 fileName: output.name
-        ])
+            ]
+        )
 
+        def withLayout = g.applyLayout(name:'standalone', templateString)
 
-        output.append(templateString)
+        output.append(withLayout)
         redirect(uri: "/standalonePages/$output.name")
     }
 
