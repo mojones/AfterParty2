@@ -322,8 +322,8 @@ def getContigInfoForContigSet(Long id){
             'quality':row.average_quality,
             'length' : row.sequence.length(),
             'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
-                   // 'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
-                   'gc' : 0.5
+                    'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
+                   //'gc' : 0.5
                    ]
                    )
           })
