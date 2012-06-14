@@ -331,7 +331,7 @@ class ContigSetController {
 
         println "rendering view...."
         [
-                contigs: allContigs,
+                contigs: contigInfo,
                 query: params.searchQuery,
                 studyId: studyId
         ]
