@@ -188,6 +188,7 @@ class miraService {
         // generate a uuid for the project and create an input file
         String projectName = UUID.randomUUID().toString()
         File procInput = new File("/tmp/${projectName}_in.454.fastq")
+        println "input file is ${procInput}"
         procInput.delete()
         assert procInput.createNewFile()
 
@@ -196,7 +197,6 @@ class miraService {
             ReadsFile readsFile = ReadsFile.get(readsFileId)
             byte[] myData = readsFile.data.fileData
             println "reads file is $readsFile"
-            println "run of reads file is " + readsFile.run
             println "process input is ${procInput.absolutePath}"
 //            println "process data is $myData"
             def readData = readsFile.data.fileData
