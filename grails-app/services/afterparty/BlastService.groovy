@@ -25,7 +25,7 @@ class BlastService {
         blastProcess.in.eachLine({
             println "blast : $it"
         })
-//        blastProcess.waitFor()
+        blastProcess.waitFor()
         def newData = new ContigSetData()
         newData.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
         newData.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()

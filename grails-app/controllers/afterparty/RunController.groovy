@@ -49,18 +49,25 @@ class RunController {
             println "creating rfd"
             ReadsFileData d = new ReadsFileData(fileData: realData)
             println "creating..."
-            ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${realFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW, run: run)
+            ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${realFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW)
             println "saving...."
             r.save(flush: true, failOnError: true)
+
             println "done saving"
+            println "before: raw is ${run.rawReadsFile},trimmed is ${run.trimmedReadsFile}"
             if (type == 'raw') {
+                println "type is raw, attaching to raw"
                 run.rawReadsFile = r
             }
             if (type == 'trimmed') {
+                            println "type is trimmed, attaching to trimmed"
+
                 run.trimmedReadsFile = r
             }
 //            run.name =  'martin'
             run.save()
+            println "after: raw is ${run.rawReadsFile},trimmed is ${run.trimmedReadsFile}"
+
             realJob.status = BackgroundJobStatus.FINISHED
             realJob.destinationUrl = grailsLinkGenerator.link(controller: 'run', action: 'show', id: run.id)
             realJob.save(flush: true)

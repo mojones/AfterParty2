@@ -18,8 +18,6 @@ class ReadsFile {
 
         }
 
-    static belongsTo = [run : Run]
-
 
     def getReadCount() {
         return statisticsService.getReadFileDataStats(data.id.toLong()).readCount
