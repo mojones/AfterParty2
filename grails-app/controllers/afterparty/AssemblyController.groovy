@@ -313,7 +313,7 @@ class AssemblyController {
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
 //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
-        def contigs = Contig.findAllByAssembly(a, [max: 20])
+        def contigs = statisticsService.getContigInfoForContigSet(a.defaultContigSet.id)
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
         [assemblyInstance: a, contigs: contigs]
