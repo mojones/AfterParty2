@@ -45,6 +45,17 @@ class SearchService {
 //        enter raw sql territory
         def sql = new Sql(dataSource)
         def t = new Timer()
+
+        println """
+        select distinct contig.id from contig
+        inner join contig_set_contig on contig.id = contig_set_contig.contig_id
+        inner join annotation on contig.id=annotation.contig_id
+        where
+        contig_set_contig.contig_set_contigs_id=$set.id and
+        (to_tsvector('english', annotation.description) @@ to_tsquery('english', $query) or annotation.accession = $query)
+        limit $max
+        """
+
         def result = []
         sql.rows("""
         select distinct contig.id from contig
