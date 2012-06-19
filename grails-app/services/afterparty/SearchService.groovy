@@ -52,17 +52,19 @@ class SearchService {
             where to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
             and annotation.contig_id = contig_set_contig.contig_id 
             and contig_set_contig.contig_set_contigs_id=${set.id}
-            limit ${max}
         """
 
         def result = []
+        def count = 0
         sql.rows("""select distinct annotation.contig_id 
             from annotation, contig_set_contig 
             where to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
             and annotation.contig_id = contig_set_contig.contig_id 
-            and contig_set_contig.contig_set_contigs_id=${set.id}
-            limit ${max}""").each {
+            and contig_set_contig.contig_set_contigs_id=${set.id}""").each {
+            count++
+            if(count < max){
             result.add(Contig.get(it.contig_id))
+            }
         }
         t.log("got list of ids")
 
