@@ -47,25 +47,16 @@ class SearchService {
         def t = new Timer()
 
         println """
-        select distinct contig.id from contig
-        inner join contig_set_contig on contig.id = contig_set_contig.contig_id
-        inner join annotation on contig.id=annotation.contig_id
-        where
-        contig_set_contig.contig_set_contigs_id=$set.id and
-        (to_tsvector('english', annotation.description) @@ to_tsquery('english', $query) or annotation.accession = $query)
-        limit $max
+        
         """
 
         def result = []
-        sql.rows("""
-        select distinct contig.id from contig
-        inner join contig_set_contig on contig.id = contig_set_contig.contig_id
-        inner join annotation on contig.id=annotation.contig_id
-        where
-        contig_set_contig.contig_set_contigs_id=$set.id and
-        (to_tsvector('english', annotation.description) @@ to_tsquery('english', $query) or annotation.accession = $query)
-        limit $max
-        """).each {
+        sql.rows("""select distinct annotation.contig_id 
+            from annotation, contig_set_contig 
+            where to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+            and annotation.contig_id = contig_set_contig.contig_id 
+            and contig_set_contig.contig_set_contigs_id=${set.id}
+            limit ${max}""").each {
             result.add(Contig.get(it.id))
         }
         t.log("got list of ids")
