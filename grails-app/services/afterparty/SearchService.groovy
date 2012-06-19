@@ -47,7 +47,12 @@ class SearchService {
         def t = new Timer()
 
         println """
-        
+        select distinct annotation.contig_id 
+            from annotation, contig_set_contig 
+            where to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+            and annotation.contig_id = contig_set_contig.contig_id 
+            and contig_set_contig.contig_set_contigs_id=${set.id}
+            limit ${max}
         """
 
         def result = []
@@ -57,7 +62,7 @@ class SearchService {
             and annotation.contig_id = contig_set_contig.contig_id 
             and contig_set_contig.contig_set_contigs_id=${set.id}
             limit ${max}""").each {
-            result.add(Contig.get(it.id))
+            result.add(Contig.get(it.contig_id))
         }
         t.log("got list of ids")
 
