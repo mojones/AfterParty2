@@ -61,10 +61,11 @@ class SearchService {
             where to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
             and annotation.contig_id = contig_set_contig.contig_id 
             and contig_set_contig.contig_set_contigs_id=${set.id}""").each {
-            count++
+            
             if(count < max){
             result.add(Contig.get(it.contig_id))
             }
+            count++
         }
         t.log("got list of ids")
 
