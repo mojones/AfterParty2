@@ -67,6 +67,17 @@ To make a bit of text editable we need to
             }
         }
 
+        function showSearchBox() {
+            $('#blastForm').slideUp('slow');
+            $('#searchForm').slideDown('slow');
+            return false;
+        }
+        function showBLASTBox() {
+            $("#searchForm").slideUp('slow');
+            $('#blastForm').slideDown('slow');
+            return false;
+        } 
+
 
     </script>
 
