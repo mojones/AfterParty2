@@ -154,6 +154,16 @@ class ContigSetController {
     }
 
     def blastAgainstContigSets = {
+
+        println request.getHeader('referer') 
+
+        if (params.blastQuery.toString() == ''){
+            println "error, no blast query"
+            flash.error = 'Error, need a sequence to BLAST against'
+            redirect(url: request.getHeader('referer') )
+            return false
+        }
+
         def idList
         if (!params.idList) {
             idList = getIdsFromCheckbox(params)
@@ -302,6 +312,13 @@ class ContigSetController {
     }
 
     def searchContigSets = {
+
+        if (params.searchQuery.toString() == ''){
+            println "error, no blast query"
+            flash.error = 'Error, need a query to search against'
+            redirect(url: request.getHeader('referer') )
+            return false
+        }
 
         def idList
         if (!params.idList) {
