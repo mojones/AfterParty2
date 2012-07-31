@@ -14,7 +14,7 @@ class AssemblyController {
     def chartService
     def miraService
     def springSecurityService
-    def dataSource
+    javax.sql.DataSource dataSource
     def pfamService
 
     def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
@@ -100,7 +100,8 @@ class AssemblyController {
 
             println "deleting individual contigs"
 
-            def sqlAfterparty = Sql.newInstance("jdbc:log4jdbc:postgresql://localhost:5432/afterparty", 'mysuperuser', 'jukur6ai', 'net.sf.log4jdbc.DriverSpy')
+            def sqlAfterparty = new Sql(dataSource)
+
             sqlAfterparty.execute("delete from annotation using contig where annotation.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from read using contig where read.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from contig_set_contig using contig where contig_set_contig.contig_id = contig.id and contig.assembly_id = $assemblyId")
