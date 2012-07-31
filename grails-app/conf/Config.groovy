@@ -132,3 +132,9 @@ grails.gorm.failOnError = true
 // log slow sql queries
 log4jdbc.sqltiming.warn.threshold = 100
 
+// secure the spring security ui console
+grails.plugins.springsecurity.controllerAnnotations.staticRules = [ 
+   '/user/**': ['ROLE_ADMIN'], 
+   '/role/**': ['ROLE_ADMIN'], 
+   '/aclclass/**': ['ROLE_ADMIN']
+] 
