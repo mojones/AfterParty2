@@ -32,6 +32,7 @@ class CompoundSampleController {
         compoundSampleInstance.addToAssemblies(newAssembly)
         compoundSampleInstance.save()
         newAssembly.save(flush:true)
+
         flash.success = "added a new assembly"
         redirect(controller: 'assembly', action: 'show', id: newAssembly.id)
     }

@@ -295,9 +295,11 @@ class AssemblyController {
 
     @Secured(['ROLE_USER'])
     def create = {
+        println("creating new assembly")
         def assemblyInstance = new Assembly(name: 'Assembly name', description: 'Assembly description')
         Study.get(params.studyId.toLong()).addToAssemblies(assemblyInstance)
-        assemblyInstance.save()
+        assemblyInstance.save(flush:true)
+        println("creating default contigset for ${assemblyInstance.id}")
         redirect(action: show, id: assemblyInstance.id)
 
     }
@@ -313,7 +315,11 @@ class AssemblyController {
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
 //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
-        def contigs = statisticsService.getContigInfoForContigSet(a.defaultContigSet.id)
+        println("contig set is ${a.defaultContigSet}")
+        def contigs = []
+        if (a.defaultContigSet){
+            contigs = statisticsService.getContigInfoForContigSet(a.defaultContigSet.id)
+        }
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
         [assemblyInstance: a, contigs: contigs]

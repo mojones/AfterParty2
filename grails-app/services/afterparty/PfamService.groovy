@@ -28,7 +28,7 @@ class PfamService {
 
             println "evalue : $evalue - type $type $acc from $start to $stop with $description to $contigName ($theContig) (${System.currentTimeMillis() - startTime})"
 
-            Annotation a = new Annotation(accession: acc, evalue: null, bitscore: null, description: description, start: start, stop: stop)
+            Annotation a = new Annotation(accession: acc, evalue: null, bitscore: null, description: description, start: start.toInteger()*3, stop: stop.toInteger()*3)
 
             if (evalue.isNumber()) {
                 a.evalue = new Float(evalue)

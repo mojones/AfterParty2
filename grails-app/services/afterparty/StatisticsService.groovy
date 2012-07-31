@@ -274,8 +274,8 @@ def createContigSetForAssembly(Long id) {
 
     a.contigs.each {
 //            println "adding ${count++} / ${a.contigs.size()}"
-cs.addToContigs(it)
-}
+    cs.addToContigs(it)
+    }
 
 if (a.defaultContigSet) {
     println "deleting old contig set"
@@ -286,7 +286,8 @@ a.defaultContigSet = cs
 a.save()
 cs.data = new ContigSetData()
 
-blastService.attachBlastDatabaseToContigSet(cs)
+    blastService.attachBlastDatabaseToContigSet(cs)
+
 cs.save()
 
         // now update the compound sample that owns this assembly
