@@ -105,7 +105,7 @@ class PfamService {
             })
 
 
-            pfamOutput = new File(contigFastaFile.absolutePath + '.out')
+            def pfamOutput = new File(contigFastaFile.absolutePath + '.out')
             if (pfamOutput.exists()){
                 addPfamFromInput(new FileInputStream(pfamOutput))
             }
