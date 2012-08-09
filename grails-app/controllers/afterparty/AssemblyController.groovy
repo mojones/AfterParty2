@@ -143,8 +143,9 @@ class AssemblyController {
                 progress: 'queued',
                 study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
-                type: BackgroundJobType.UPLOAD_CONTIGS),
+                type: BackgroundJobType.UPLOAD_CONTIGS,
                 user: AfterpartyUser.get(springSecurityService.principal.id)
+                )
 
         job.save(flush: true)
 
