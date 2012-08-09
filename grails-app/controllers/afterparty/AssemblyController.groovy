@@ -149,6 +149,7 @@ class AssemblyController {
 
         job.save(flush: true)
 
+        def contigs = miraService.parseFasta(f.inputStream)
 
         runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
@@ -188,7 +189,6 @@ class AssemblyController {
             println "re-saved assembly"
 
 
-            def contigs = miraService.parseFasta(f.inputStream)
             println "got some contigs: ${contigs.size()}"
 
             def created = 0
@@ -196,7 +196,8 @@ class AssemblyController {
 
                 def contig = new Contig(name: name, sequence: seq)
                 contig.quality = '0 ' * seq.length()
-                contig.searchAssemblyId = assemblyId
+                contig.averageCoverage = 1
+                contig.averageQuality = 1
                 assembly.addToContigs(contig)
                 created++
                 if (created % 10 == 0) {

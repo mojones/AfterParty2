@@ -211,9 +211,20 @@ def createContigSetForCompoundSample(Long id) {
     }
 
     if (c.defaultContigSet) {
-        println "deleting old contig set"
+        println "deleting old contig set for compound sample"
         def currentDefaultContigSet = c.defaultContigSet
-        currentDefaultContigSet.delete()
+
+        def existingStudyContigsSets = []
+        existingStudyContigsSets += c.study.contigSets
+        existingStudyContigsSets.each{
+            if (it.id == currentDefaultContigSet.id){
+                c.study.removeFromContigSets(it)
+                println "\t\tdeleting it!"
+            }
+        }
+
+        c.defaultContigSet = null
+        currentDefaultContigSet.delete(flush:true)
     }
     c.defaultContigSet = cs
     cs.data = new ContigSetData()
@@ -243,16 +254,34 @@ def createContigSetForStudy(Long id) {
     }
 
 
-    if (s.defaultContigSet) {
-        println "deleting old contig set"
-        def currentDefaultContigSet = s.defaultContigSet
-        currentDefaultContigSet.delete()
-    }
+    
+    def oldDefaultContigSet = s.defaultContigSet
+    
     s.defaultContigSet = cs
     cs.data = new ContigSetData()
 
     blastService.attachBlastDatabaseToContigSet(cs)
     cs.save(flush: true)
+
+    if (oldDefaultContigSet){
+
+        println "deleting old contig set for study with id ${oldDefaultContigSet.id}"
+        def existingStudyContigsSets = []
+        existingStudyContigsSets += s.contigSets
+        
+        existingStudyContigsSets.each{
+            println "\tone contig set is ${it.id}"
+            if (it.id == oldDefaultContigSet.id){
+                s.removeFromContigSets(it)
+                println "\t\tdeleting it!"
+            }
+        }
+
+    // this does not work!!!! why??
+    s.removeFromContigSets(oldDefaultContigSet)
+
+    oldDefaultContigSet.delete(flush:true)
+    }
 }
 
 def createContigSetForAssembly(Long id) {
@@ -274,21 +303,23 @@ def createContigSetForAssembly(Long id) {
 
     a.contigs.each {
 //            println "adding ${count++} / ${a.contigs.size()}"
-    cs.addToContigs(it)
-    }
+cs.addToContigs(it)
+}
 
 if (a.defaultContigSet) {
-    println "deleting old contig set"
     def currentDefaultContigSet = a.defaultContigSet
-    currentDefaultContigSet.delete()
+    println "deleting old contig set for assembly with id ${currentDefaultContigSet.id}"
+    a.compoundSample.study.removeFromContigSets(currentDefaultContigSet)
+    currentDefaultContigSet.delete(flush:true)
 }
-a.defaultContigSet = cs
-a.save()
 cs.data = new ContigSetData()
+blastService.attachBlastDatabaseToContigSet(cs)
+a.defaultContigSet = cs
+cs.save(flush:true)
+a.save(flush:true)
 
-    blastService.attachBlastDatabaseToContigSet(cs)
 
-cs.save()
+cs.save(flush:true)
 
         // now update the compound sample that owns this assembly
         createContigSetForCompoundSample(a.compoundSample.id)

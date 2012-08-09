@@ -32,7 +32,8 @@ class BlastService {
         newData.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
         
         cs.data = newData
-        cs.save()
+        println "saving ContigSet ${cs.id}"
+        cs.save(flush:true)
         newData.contigSet = cs
         newData.save(flush:true)
 

@@ -253,9 +253,11 @@ class miraService {
     }
 
     Map parseFasta(InputStream contigsFile) {
+        println "parsing a fasta file"
         Map name2seq = [:]
         StringBuffer seq = new StringBuffer('')
         String name = ""
+        println "looking at lines:"
         contigsFile.eachLine { line ->
             if (line.startsWith('>')) {
                 if (name) {
