@@ -343,7 +343,7 @@ class ContigSetController {
             allContigs.addAll(contigs*.id)
         }
 
-        def contigInfo = statisticsService.getContigInfoForContigList(allContigs)
+        def contigInfo = statisticsService.getFilteredContigInfoForContigList(allContigs, params.searchQuery)
 
 
         println "rendering view...."

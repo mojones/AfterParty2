@@ -8,6 +8,8 @@
         <th width="50px;">Coverage</th>
         <th width="50px;">Quality</th>
         <th width="50px;">GC</th>
+        <th width="50px;">Annotation</th>
+        
     </tr>
     </thead>
 
@@ -20,7 +22,18 @@
             <td>${contig.quality}</td>
             <td>${contig.coverage}</td>
             <td>${contig.gc}</td>
+            <td>
+                <g:if test="${contig.topBlast}">
+                    BLAST: ${contig.topBlast} (${contig.blastBitscore})<br/>
+                </g:if>
+
+                <g:if test="${contig.topPfam}">
+                    PFAM: ${contig.topPfam} (${contig.pfamBitscore})
+                </g:if>
+
+            </td>
         </tr>
+        
     </g:each>
     </tbody>
 

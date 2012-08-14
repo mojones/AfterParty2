@@ -339,12 +339,40 @@ cs.save(flush:true)
 @Cacheable('contigInfoCache')
 def getContigInfoForContigSet(Long id){
     println "id is $id"
-    def sql = new Sql(dataSource)
-    println "sql is $sql"
     def result = []
-    def sqlString = "select * from contig,contig_set_contig where contig_set_contigs_id=${id} and contig_set_contig.contig_id=contig.id order by average_coverage desc"
-    println sqlString
-    sql.rows(sqlString).each({ row ->
+
+    def sql = new Sql(dataSource)
+
+        // scary sql ahead
+        // we need to pull out the annotation for a given contig, then transpose some rows to columns
+
+        def sqlString = """
+            select 
+            id, 
+            name,
+            MAX(CASE WHEN type = 'BLAST' THEN description ELSE NULL END) AS top_blast, 
+            MAX(CASE WHEN type = 'BLAST' THEN bitscore ELSE NULL END) AS blast_bitscore,
+            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
+            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
+            average_coverage,
+            average_quality,
+            sequence 
+        from (
+            select 
+                distinct on (annotation.type, contig.id) 
+                contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
+            from 
+                contig, annotation, contig_set_contig 
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
+            order by annotation.type, contig.id, bitscore desc
+        ) as bar 
+        group by id, name, average_coverage, average_quality, sequence;
+   
+
+        """
+
+        println sqlString
+        sql.rows(sqlString).each({ row ->
           //  println row
           result.add(
             [
@@ -354,11 +382,17 @@ def getContigInfoForContigSet(Long id){
             'quality':row.average_quality,
             'length' : row.sequence.length(),
             'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
-            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
-                   //'gc' : 0.5
-                   ]
+            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length(),
+            'topBlast' : row.top_blast,
+            'blastBitscore' : row.blast_bitscore,
+            'topPfam' : row.top_pfam,
+            'pfamBitscore' : row.pfam_bitscore
+            ]
                    )
           })
+        
+    
+
     return result
 
 
@@ -371,7 +405,34 @@ def getContigInfoForContigList(def ids){
     def result = []
     // TODO make this one sql call rather than an each{}
     ids.each{ id ->
-        def sqlString = "select * from contig where id=${id}"
+
+        // scary sql ahead
+        // we need to pull out the annotation for a given contig, then transpose some rows to columns
+
+        def sqlString = """
+            select 
+            id, 
+            name,
+            MAX(CASE WHEN type = 'BLAST' THEN description ELSE NULL END) AS top_blast, 
+            MAX(CASE WHEN type = 'BLAST' THEN bitscore ELSE NULL END) AS blast_bitscore,
+            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
+            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
+            average_coverage,
+            average_quality,
+            sequence 
+        from (
+            select 
+                distinct on (annotation.type, contig.id) 
+                contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
+            from 
+                contig, annotation 
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig.id = ${id}
+            order by annotation.type, contig.id, bitscore desc
+        ) as bar 
+        group by id, name, average_coverage, average_quality, sequence;
+
+        """
+
         println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
@@ -383,9 +444,73 @@ def getContigInfoForContigList(def ids){
             'quality':row.average_quality,
             'length' : row.sequence.length(),
             'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
-            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length()
-                   //'gc' : 0.5
-                   ]
+            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length(),
+            'topBlast' : row.top_blast,
+            'blastBitscore' : row.blast_bitscore,
+            'topPfam' : row.top_pfam,
+            'pfamBitscore' : row.pfam_bitscore
+            ]
+                   )
+          })
+        
+    }
+    return result
+
+
+}
+
+def getFilteredContigInfoForContigList(def ids, def query){
+
+    def sql = new Sql(dataSource)
+    println "sql is $sql"
+    def result = []
+    // TODO make this one sql call rather than an each{}
+    ids.each{ id ->
+
+        // scary sql ahead
+        // we need to pull out the annotation for a given contig, then transpose some rows to columns
+
+        def sqlString = """
+            select 
+            id, 
+            name,
+            MAX(CASE WHEN type = 'BLAST' THEN description ELSE NULL END) AS top_blast, 
+            MAX(CASE WHEN type = 'BLAST' THEN bitscore ELSE NULL END) AS blast_bitscore,
+            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
+            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
+            average_coverage,
+            average_quality,
+            sequence 
+        from (
+            select 
+                distinct on (annotation.type, contig.id) 
+                contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
+            from 
+                contig, annotation 
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig.id = ${id} and to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query})
+            order by annotation.type, contig.id, bitscore desc
+        ) as bar 
+        group by id, name, average_coverage, average_quality, sequence;
+
+        """
+
+        println sqlString
+        sql.rows(sqlString).each({ row ->
+          //  println row
+          result.add(
+            [
+            'id' : row.id, 
+            'name': row.name,
+            'coverage' : row.average_coverage,
+            'quality':row.average_quality,
+            'length' : row.sequence.length(),
+            'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
+            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length(),
+            'topBlast' : row.top_blast,
+            'blastBitscore' : row.blast_bitscore,
+            'topPfam' : row.top_pfam,
+            'pfamBitscore' : row.pfam_bitscore
+            ]
                    )
           })
         
