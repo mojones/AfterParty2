@@ -46,6 +46,30 @@
 
         </div>
     </g:if>
+    <g:else>
+
+        <div class="block">
+            <div class="block_head">
+                <div class="bheadl"></div>
+
+                <div class="bheadr"></div>
+
+                <h2>
+                    No results for ${query}, hit back to try again.
+                </h2>
+
+            </div>        <!-- .block_head ends -->
+
+            <div class="block_content">
+
+              
+            </div><!-- .block_content ends -->
+            <div class="bendl"></div>
+
+            <div class="bendr"></div>
+
+        </div>
+    </g:else>
 
 </body>
 </html>
