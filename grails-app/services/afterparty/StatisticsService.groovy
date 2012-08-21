@@ -494,7 +494,7 @@ def getFilteredContigInfoForContigList(def ids, def query){
 
         """
 
-        println sqlString
+      //  println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
           result.add(
@@ -519,5 +519,27 @@ def getFilteredContigInfoForContigList(def ids, def query){
 
 
 }
+
+def getReadSourcesForContigSetId(def id){
+
+    def sql = new Sql(dataSource)
+    println "sql is $sql"
+    def result = []
+   
+        def sqlString = """
+    select distinct source from read, contig, contig_set_contig where contig_set_contig.contig_set_contigs_id=${id} and contig.id = contig_set_contig.contig_id and read.contig_id = contig.id
+        """
+
+        println sqlString
+        sql.rows(sqlString).each({ row ->
+          //  println row
+          result.add(row.source)
+          })
+    
+    return result
+}
+
+
+
 
 }

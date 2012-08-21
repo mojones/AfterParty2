@@ -219,18 +219,23 @@ class ContigSetController {
         println "idlist is $idList"
         def contigSetListResult = []
         def contigSetDataResult = []
+        def readSourcesResult = ['any']
         idList.each {
             println "getting a contig set with id $it"
             contigSetListResult.add(ContigSet.get(it.toLong()))
             contigSetDataResult.add(statisticsService.getContigInfoForContigSet(it.toLong()))
+            readSourcesResult.addAll(statisticsService.getReadSourcesForContigSetId(it.toLong()))
         }
+
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
 
         // comment
         [
         contigSets: contigSetListResult, 
         isOwner: contigSetListResult[0].study.user.id == userId,
-        contigData : contigSetDataResult]
+        contigData : contigSetDataResult,
+        readSources : readSourcesResult
+        ]
     }
 
     def createFromContigList = {
@@ -332,12 +337,23 @@ class ContigSetController {
         println "max is $max"
         def allContigs = []
         def studyId = 0
+
+
         idList.each {
             println "searching in contig set $it"
             ContigSet set = ContigSet.get(it)
             studyId = set.study.id
             def t = new Timer()
-            def contigs = searchService.searchInContigSet(set, params.searchQuery, max)
+            def contigs
+            if ('any' in params.readSource){
+                println "searching all read sources"
+                contigs = searchService.searchInContigSet(set, params.searchQuery, max)
+            }
+            else{
+                println "searching only read sources : ${params.readSource}"
+
+                contigs = searchService.searchInContigSetAndLibrary(set, params.searchQuery, max, params.list("readSource"))
+            }
             t.log("called search service")
             println "got ${contigs.size()} results for ${params.searchQuery}"
             allContigs.addAll(contigs*.id)

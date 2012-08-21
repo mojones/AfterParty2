@@ -114,7 +114,7 @@ To make a bit of text editable we need to
 
             <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
 
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id]"/>
+            <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
         </div>        <!-- .block_content ends -->
 
