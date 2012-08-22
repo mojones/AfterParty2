@@ -5,8 +5,8 @@
 
         <th width="100px;">Contig ID</th>
         <th width="50px;">Length</th>
-        <th width="50px;">Coverage</th>
-        <th width="50px;">Quality</th>
+        <th width="50px;">Mean quality</th>
+        <th width="50px;">Mean coverage</th>
         <th width="50px;">GC</th>
         <th width="50px;">Annotation</th>
         
@@ -18,10 +18,10 @@
 
         <tr style="display:none;">
             <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-            <td>${contig.length}</td>
-            <td>${contig.quality}</td>
-            <td>${contig.coverage}</td>
-            <td>${contig.gc}</td>
+            <td><g:formatNumber number="${contig.length}" type="number" maxFractionDigits="0"  /></td>
+            <td><g:formatNumber number="${contig.quality}" type="number" maxFractionDigits="0"  /></td>
+            <td><g:formatNumber number="${contig.coverage}" type="number" maxFractionDigits="0"  /></td>
+            <td><g:formatNumber number="${contig.gc * 100}" type="number" maxFractionDigits="0"  />%</td>
             <td>
                 <g:if test="${contig.topBlast}">
                     BLAST: ${contig.topBlast} (${contig.blastBitscore})<br/>

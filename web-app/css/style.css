@@ -72,7 +72,7 @@ a:hover {
     height: 50px;
     line-height: 50px;
     background: url(../images/hdr.gif) 0 0 repeat-x;
-    color: #999;
+    color: #eee;
     /*font-weight: bold;*/
     margin-bottom: 20px;
 }
@@ -92,7 +92,7 @@ a:hover {
 }
 
 #header a {
-    color: #999;
+    color: #eee;
     text-decoration: none;
 }
 
