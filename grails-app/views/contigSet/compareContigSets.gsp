@@ -116,6 +116,12 @@ To make a bit of text editable we need to
 
             <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
+            <br/><br/>
+            <g:form controller="contigSet" action="download" method="get">
+                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                    <input type="submit" class="submit long" value="Download contigs"/>
+                </g:form>
+
         </div>        <!-- .block_content ends -->
 
         <div class="bendl"></div>
