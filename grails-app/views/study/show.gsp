@@ -53,17 +53,13 @@ To make a bit of text editable we need to
                 $('#noneSelectedMessage').slideUp('slow');
                 $('.doSomethingButton').slideDown('slow');
 
-                $('#showContigSetsButton').val('view contig set');
-                $('#searchContigSetAnnotationButton').val('search contig set');
-                $('#blastContigSetAnnotationButton').val('BLAST vs contig set');
+                $('#showContigSetsButton').html('<i class="icon-eye-open"></i>&nbsp;view contigs');
             }
             if ($("input:checked").length > 1) {
                 $('#noneSelectedMessage').slideUp('slow');
                 $('.doSomethingButton').slideDown('slow');
 
-                $('#showContigSetsButton').val('compare contig sets');
-                $('#searchContigSetAnnotationButton').val('search contig sets');
-                $('#blastContigSetAnnotationButton').val('BLAST vs contig sets');
+                $('#showContigSetsButton').html('<i class="icon-eye-open"></i>&nbsp;compare contig sets');
             }
         }
 

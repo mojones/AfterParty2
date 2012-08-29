@@ -57,15 +57,6 @@
                     'ContigSet'
             );
 
-//            $('#contigTable').tablesorter({debug:true});
-//
-//            $("#contigTable").bind("sortStart", function() {
-//                $('#contigTable').mask('Sorting...');
-//            });
-//            $("#contigTable").bind("sortEnd", function() {
-//                $('#contigTable').unmask();
-//                updatePaginator();
-//            });
 
 
             </g:if>
@@ -121,48 +112,29 @@
 
         </g:if>
         <g:else>
-                <div class="block">
-
-                    <div class="block_head">
-                        <div class="bheadl"></div>
-
-                        <div class="bheadr"></div>
-
-                        <h2>Contig sets</h2>
-
-                    </div>        <!-- .block_head ends -->
-
-                    <div class="block_content">
-
-                        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-                            <thead>
-                            <tr>
-                                <th>Colour</th>
-                                <th>Contig Set name</th>
-                                <th>Number of Contigs</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <g:each in="${contigSets}" var="contigSet" status="index">
-                                <tr>
-                                    <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
-                                    <td>
-                                        ${contigSet.name} &nbsp;&nbsp;
-                                        <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
-                                        <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
-                                    </td>
-                                    <td>${contigSet.contigs.size()}</td>
-                                </tr>
-                            </g:each>
-                            </tbody>
-
-                        </table>
-
-                    </div>        <!-- .block_content ends -->
-                    <div class="bendl"></div>
-
-                    <div class="bendr"></div>
-                </div>
+            <h2>Contig sets</h2>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Colour</th>
+                        <th>Contig Set name</th>
+                        <th>Number of Contigs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <g:each in="${contigSets}" var="contigSet" status="index">
+                        <tr>
+                            <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
+                            <td>
+                                    ${contigSet.name} &nbsp;&nbsp;
+                                    <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
+                                    <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
+                            </td>
+                            <td>${contigSet.contigs.size()}</td>
+                        </tr>
+                    </g:each>
+                </tbody>
+            </table>
         </g:else>
     </div>
 </div>

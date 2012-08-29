@@ -220,7 +220,7 @@ class ContigSetController {
         def contigSetListResult = []
         def contigSetDataResult = []
         def readSourcesResult = ['any']
-        idList.each {
+        idList.sort().each {
             println "getting a contig set with id $it"
             contigSetListResult.add(ContigSet.get(it.toLong()))
             contigSetDataResult.add(statisticsService.getContigInfoForContigSet(it.toLong()))

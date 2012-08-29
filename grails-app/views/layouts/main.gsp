@@ -41,7 +41,7 @@
 </head>
 
 
-<body style="padding-top:40px;">
+<body>
 
     <div class="navbar navbar-static-top navbar-inverse">
         <div class="navbar-inner">
