@@ -2,9 +2,9 @@
 
     <input type="hidden" name="idList" value="${contigSetId}">
      <div class="btn-group">
-        <button class="btn btn-info btn-large" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-list"></i>&nbsp;View contig set</button>
-        <button class="btn btn-info btn-large" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>
-        <button class="btn btn-info btn-large" id="blastContigSetAnnotationButton" type="submit"><i class="icon-align-left"></i>&nbsp;BLAST contigs</button>
+        <button class="btn btn-info" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-eye-open"></i>&nbsp;View contig set</button>
+        <button class="btn btn-info" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>
+        <button class="btn btn-info" id="blastContigSetAnnotationButton" type="submit"><i class="icon-zoom-in"></i>&nbsp;BLAST contigs</button>
     </div>
     <br/><br/>
 
@@ -13,7 +13,9 @@
 
         <div class="input-append">
             <input name="searchQuery" id="searchQuery" type="text" placeholder="Enter search query..." class="search-query input-xlarge">
-            <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">Search</button>    
+            <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">
+            <i class="icon-search"></i>&nbsp;search
+            </button>    
         </div>
         <span class="help-block">Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.</span>
 
@@ -27,7 +29,7 @@
         <br/>
         
         <label>Search in libraries (multiple selection):</label><br/>
-        <select name="readSource" multiple="true" size="10">
+        <select name="readSource" multiple="true" size="10" class="span8">
         <g:each var="sourceName" in="${readSources}">
             <option value="${sourceName}">${sourceName}</option>
         </g:each>
@@ -38,7 +40,9 @@
         <label>BLAST query sequence:</label> <br/>
         <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
         <br/><br/>
-        <input id="submitBLASTButton" type="submit" class="btn btn-large btn-info" value="submit" onclick="submitBLASTForm();">
+        <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
+            <i class="icon-zoom-in"></i>&nbsp;BLAST contigs
+        </button>
     </div>
 </form>
 

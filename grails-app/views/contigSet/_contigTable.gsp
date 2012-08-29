@@ -1,56 +1,49 @@
-<table cellpadding="0" cellspacing="0" width="100%" class="sortable" id="contigTable">
-
+<p>
+    Annotation key: <i class="icon-zoom-in"></i>&nbsp; BLAST vs UniProt&nbsp;&nbsp;&nbsp;<i class="icon-book"></i>&nbsp;PFAM 
+</p>
+<table class="table table-bordered table-hover" id="contigTable">
     <thead>
-    <tr>
-
-        <th width="100px;">Contig ID</th>
-        <th width="50px;">Length</th>
-        <th width="50px;">Mean quality</th>
-        <th width="50px;">Mean coverage</th>
-        <th width="50px;">GC</th>
-        <th width="50px;">Annotation</th>
+        <tr>
+            <th>Contig ID</th>
+            <th>Length</th>
+            <th>Mean quality</th>
+            <th>Mean coverage</th>
+            <th>GC</th>
+            <th>Annotation</th>
         
-    </tr>
+        </tr>
     </thead>
 
     <tbody id="contigTableBody">
-    <g:each var="contig" in="${contigCollection}" status="index">
+        <g:each var="contig" in="${contigCollection}" status="index">
+            <g:link controller="contig" action="show" id="${contig.id}">
+            <tr>
+                <td>${contig.name}</td>
+                <td><g:formatNumber number="${contig.length}" type="number" maxFractionDigits="0"  /></td>
+                <td><g:formatNumber number="${contig.quality}" type="number" maxFractionDigits="0"  /></td>
+                <td><g:formatNumber number="${contig.coverage}" type="number" maxFractionDigits="0"  /></td>
+                <td><g:formatNumber number="${contig.gc * 100}" type="number" maxFractionDigits="0"  />%</td>
+                <td>
+                    <g:if test="${contig.topBlast}">
+                        <i class="icon-zoom-in"></i>&nbsp;${contig.topBlast} (${contig.blastBitscore})<br/>
+                    </g:if>
 
-        <tr style="display:none;">
-            <td><g:link controller="contig" action="show" id="${contig.id}">${contig.name}</g:link></td>
-            <td><g:formatNumber number="${contig.length}" type="number" maxFractionDigits="0"  /></td>
-            <td><g:formatNumber number="${contig.quality}" type="number" maxFractionDigits="0"  /></td>
-            <td><g:formatNumber number="${contig.coverage}" type="number" maxFractionDigits="0"  /></td>
-            <td><g:formatNumber number="${contig.gc * 100}" type="number" maxFractionDigits="0"  />%</td>
-            <td>
-                <g:if test="${contig.topBlast}">
-                    BLAST: ${contig.topBlast} (${contig.blastBitscore})<br/>
-                </g:if>
+                    <g:if test="${contig.topPfam}">
+                        <i class="icon-book"></i>&nbsp;${contig.topPfam} (${contig.pfamBitscore})
+                    </g:if>
 
-                <g:if test="${contig.topPfam}">
-                    PFAM: ${contig.topPfam} (${contig.pfamBitscore})
-                </g:if>
-
-            </td>
-        </tr>
-        
-    </g:each>
+                </td>
+            </tr>
+            </g:link>
+        </g:each>
     </tbody>
-
 </table>
 
-<div id="pag"></div>
-
 <script type="text/javascript">
-    $(document).ready(function() {
-
-        $('#pag').smartpaginator({
-            totalrecords : ${contigCollection.size()},
-            recordsperpage:${contigsPerPage},
-            datacontainer: 'contigTableBody',
-            dataelement: 'tr',
-            theme: 'green'
-        });
-
-    });
+$(document).ready(function() {
+   $('#contigTable').dataTable({
+        "aaSorting": [[ 3, "desc" ]],
+        "asStripeClasses": [ 'strip1', 'strip2', 'strip3' ]    
+   });
+});
 </script>

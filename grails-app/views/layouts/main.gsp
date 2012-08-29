@@ -10,25 +10,23 @@
 
     <title><g:layoutTitle default="Grails"/></title>
 
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.css')}"/>
 
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'bootstrap.js')}"></script>
 
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.dataTables.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.dataTables.bootstrap.js')}"></script>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'jquery.dataTables.css')}"/>
 
     
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.css')}"/>
 
 
     %{--jquery edit in place plugin--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.editinplace.js')}"></script>
 
-    %{--jquery smart paginator stuff--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'smartpaginator.js')}"></script>
-    <link rel="stylesheet" href="${resource(dir: 'js', file: 'smartpaginator.css')}"/>
-
-    %{--table sorter--}%
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.tablesorter.min.js')}"></script>
+   
 
     %{--load mask for long running stuff--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.loadmask.min.js')}"></script>

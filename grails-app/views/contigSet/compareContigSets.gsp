@@ -91,111 +91,81 @@
             <g:set var="contigSetInstance" value="${contigSets[0]}"/>
 
             <h2>Contig Set details</h2>
-            <h3>Name <small>click to edit</small></h3>
-            <p class="edit_in_place" name="name">${contigSetInstance.name}</p>
-            <h3>Description <small>click to edit</small></h3>
-            <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
+            <h3>Name</h3>
+            <p class="edit_in_place" name="name">
+                <g:if test="${isOwner}">
+                    <i class="icon-pencil"></i>&nbsp;
+                </g:if>
+                ${contigSetInstance.name}
+            </p>
+            <h3>Description</h3>
+            <p class="edit_in_place" name="description">
+                <g:if test="${isOwner}">
+                    <i class="icon-pencil"></i>&nbsp;
+                </g:if>
+                ${contigSetInstance.description}
+            </p>
 
             <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
-            <br/><br/>
+            <br/>
             <g:form controller="contigSet" action="download" method="get">
-                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
-                    <input type="submit" class="submit long" value="Download contigs"/>
-                </g:form>
+                <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                <button type="submit" class="btn btn-info">
+                    <i class="icon-download-alt"></i>&nbsp;download contigs
+                </button>
+            </g:form>
 
-        </div>        <!-- .block_content ends -->
+            <h2>Contigs in this set</h2>
+            <g:render template="contigTable" model="['contigCollection' : contigData[0], 'contigsPerPage' : 10]"/>
 
-        <div class="bendl"></div>
+        </g:if>
+        <g:else>
+                <div class="block">
 
-        <div class="bendr"></div>
-    </div>
+                    <div class="block_head">
+                        <div class="bheadl"></div>
 
-    <g:if test="${contigSetInstance.contigs.size() > 4}">
+                        <div class="bheadr"></div>
 
-        <div class="block">
-            <div class="block_head">
-                <div class="bheadl"></div>
+                        <h2>Contig sets</h2>
 
-                <div class="bheadr"></div>
+                    </div>        <!-- .block_head ends -->
 
-                <h2>Contigs in this set</h2>
-            </div>        <!-- .block_head ends -->
+                    <div class="block_content">
 
-            <div class="block_content">
+                        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+                            <thead>
+                            <tr>
+                                <th>Colour</th>
+                                <th>Contig Set name</th>
+                                <th>Number of Contigs</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:each in="${contigSets}" var="contigSet" status="index">
+                                <tr>
+                                    <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
+                                    <td>
+                                        ${contigSet.name} &nbsp;&nbsp;
+                                        <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
+                                        <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
+                                    </td>
+                                    <td>${contigSet.contigs.size()}</td>
+                                </tr>
+                            </g:each>
+                            </tbody>
 
-                %{--<p>Click table headers to sort</p>--}%
-                <g:render template="contigTable" model="['contigCollection' : contigData[0], 'contigsPerPage' : 10]"/>
+                        </table>
 
-            </div>        <!-- .block_content ends -->
-            <div class="bendl"></div>
+                    </div>        <!-- .block_content ends -->
+                    <div class="bendl"></div>
 
-            <div class="bendr"></div>
-        </div>
-    </g:if>
-</g:if>
-<g:else>
-    <div class="block">
-
-        <div class="block_head">
-            <div class="bheadl"></div>
-
-            <div class="bheadr"></div>
-
-            <h2>Contig sets</h2>
-
-        </div>        <!-- .block_head ends -->
-
-        <div class="block_content">
-
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
-                <thead>
-                <tr>
-                    <th>Colour</th>
-                    <th>Contig Set name</th>
-                    <th>Number of Contigs</th>
-                </tr>
-                </thead>
-                <tbody>
-                <g:each in="${contigSets}" var="contigSet" status="index">
-                    <tr>
-                        <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
-                        <td>
-                            ${contigSet.name} &nbsp;&nbsp;
-                            <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
-                            <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
-                        </td>
-                        <td>${contigSet.contigs.size()}</td>
-                    </tr>
-                </g:each>
-                </tbody>
-
-            </table>
-
-        </div>        <!-- .block_content ends -->
-        <div class="bendl"></div>
-
-        <div class="bendr"></div>
-    </div>
-</g:else>
-<div class="block" id="chartBlock">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+                    <div class="bendr"></div>
+                </div>
+        </g:else>
 
         <h2>Contig Set charts</h2>
-
-    </div>        <!-- .block_head ends -->
-
-
-
-    <div class="block_content">
-
-        %{--<h2 id="spinner" style="font-size: 5em;text-align: center;padding-top: 100px;display: none;">Drawing chart, please wait...</h2>--}%
-
-        %{--<h2 id="downloadingSpinner" style="font-size: 5em;text-align: center;padding-top: 100px;">Downloading contig data, please wait...</h2>--}%
 
         <p class="chartOptions">Chart type :
             <span class="chartTypeSelector" id='turnscatterplotOn' onclick="switchTo('scatterplot')">scatter plot</span> |
