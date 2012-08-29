@@ -43,37 +43,39 @@
 </head>
 
 
-<body>
+<body style="padding-top:40px;">
 
-    <div class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar navbar-static-top navbar-inverse">
         <div class="navbar-inner">
             <a class="brand" href="#">AfterParty</a>
             <ul class="nav">
 
-                <li><a href="#">Home</a></li>
+                <li><a href="#"><i class="icon-home icon-white"></i>&nbsp;Home</a></li>
                 
                 <li class="pull-right">
                     <sec:ifLoggedIn>
-                    <g:link controller="logout" action="index">Logout</g:link>
+                    <g:link controller="logout" action="index"><i class="icon-user icon-white"></i>&nbsp;Logout</g:link>
                     </sec:ifLoggedIn>
 
                     <sec:ifNotLoggedIn>
-                    <g:link controller="login" action="auth">Click here to log in</g:link>
+                    <g:link controller="login" action="auth"><i class="icon-user icon-white"></i>&nbsp;Click here to log in</g:link>
                     </sec:ifNotLoggedIn>
                 </li>
                 <sec:ifLoggedIn>
                     <g:include controller="nav" action="showStudies"/>
                 </sec:ifLoggedIn>
 
-    </ul>
-</div>
-</div>
+                <g:if test="${session.studyId}">
+                    <g:include controller="nav" action="show"/>
+                </g:if>
+
+            </ul>
+        </div>
+    </div>
 
 
 
-<g:if test="${session.studyId}">
-<g:include controller="nav" action="show"/>
-</g:if>
+
 
 
 
@@ -88,7 +90,7 @@
 
 <g:layoutBody/>
 
-<pre><g:profilerOutput/></pre>
-
+<!-- <pre><g:profilerOutput/></pre>
+ -->
 </body>
 </html>

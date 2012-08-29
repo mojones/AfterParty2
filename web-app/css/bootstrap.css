@@ -5622,3 +5622,13 @@ a.badge:hover {
 .affix {
   position: fixed;
 }
+
+
+
+
+/* added by martin for afterparty*/
+
+/* edit-in-place textareas are too narrow by default, we will override them here*/
+.inplace_field{
+  width: 500px;
+}

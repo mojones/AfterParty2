@@ -1,10 +1,8 @@
 <%@ page import="afterparty.StatisticsService; afterparty.Study" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
-    <title>Standalone assembly viewer</title>
+    <title>Contig set</title>
 
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.jqplot.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.highlighter.js')}"></script>
@@ -87,31 +85,15 @@
 </head>
 
 <body>
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <g:if test="${contigSets.size() == 1}">
+            <g:set var="contigSetInstance" value="${contigSets[0]}"/>
 
-<g:if test="${contigSets.size() == 1}">
-    <g:set var="contigSetInstance" value="${contigSets[0]}"/>
-%{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
-To make a bit of text editable we need to
-1. add the edit_in_place tag to it
-2. set the name attribute to be the name of the property that the text refers to --}%
-
-
-    <div class="block">
-        <div class="block_head">
-            <div class="bheadl"></div>
-
-            <div class="bheadr"></div>
-
-            <h2>Contig Set details <span style="font-size: small;">(click to edit)</span></h2>
-        </div>        <!-- .block_head ends -->
-
-        <div class="block_content">
-            <h3>Name</h3>
-
+            <h2>Contig Set details</h2>
+            <h3>Name <small>click to edit</small></h3>
             <p class="edit_in_place" name="name">${contigSetInstance.name}</p>
-
-            <h3>Description</h3>
-
+            <h3>Description <small>click to edit</small></h3>
             <p class="edit_in_place" name="description">${contigSetInstance.description}</p>
 
             <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>

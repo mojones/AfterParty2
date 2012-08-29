@@ -1,26 +1,22 @@
-<form id="contigSetForm" method="get">
+<form id="contigSetForm" method="get"  class="form-search">
 
     <input type="hidden" name="idList" value="${contigSetId}">
-    <input class="submit long" id="showContigSetsButton" type="submit" value="view contigs"/>
+     <div class="btn-group">
+        <button class="btn btn-info btn-large" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-list"></i>&nbsp;View contig set</button>
+        <button class="btn btn-info btn-large" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>
+        <button class="btn btn-info btn-large" id="blastContigSetAnnotationButton" type="submit"><i class="icon-align-left"></i>&nbsp;BLAST contigs</button>
+    </div>
+    <br/><br/>
 
-    <input class="submit long" id="searchContigSetAnnotationButton" type="submit" class="submit long" value="search contigs">
-    <input class="submit long" id="blastContigSetAnnotationButton" type="submit" class="submit long" value="blast contigs">
 
-    <br/>
+    <div id="searchForm" style="display:none">
 
-    <p id="blastForm" style="display:none" class="doSomethingButton">
-        <label>BLAST query sequence:</label> <br/><br/>
-        <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
-        <br/><br/>
-        <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
-    </p>
+        <div class="input-append">
+            <input name="searchQuery" id="searchQuery" type="text" placeholder="Enter search query..." class="search-query input-xlarge">
+            <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">Search</button>    
+        </div>
+        <span class="help-block">Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.</span>
 
-    <p id="searchForm" style="display:none" class="doSomethingButton">
-        <label>Search query:</label> <br/><br/>
-        <input name="searchQuery" id="searchQuery" type="text" class="text small"> <br/><br/>    
-
-        Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.
-        <br/><br/>
         <label>Results to show:</label>
         <select name="numberOfResults">
             <option value="10">10</option>
@@ -29,18 +25,21 @@
             <option value="10000">10000</option>
         </select>
         <br/>
-
+        
         <label>Search in libraries (multiple selection):</label><br/>
         <select name="readSource" multiple="true" size="10">
-            <g:each var="sourceName" in="${readSources}">
-                <option value="${sourceName}">${sourceName}</option>
-            </g:each>
-        </select>
-
-
-        <br/>
-        <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
-    </p>
+        <g:each var="sourceName" in="${readSources}">
+            <option value="${sourceName}">${sourceName}</option>
+        </g:each>
+        </select>                
+    </div>
+    
+    <div id="blastForm" style="display:none">
+        <label>BLAST query sequence:</label> <br/>
+        <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
+        <br/><br/>
+        <input id="submitBLASTButton" type="submit" class="btn btn-large btn-info" value="submit" onclick="submitBLASTForm();">
+    </div>
 </form>
 
 <script type="text/javascript">

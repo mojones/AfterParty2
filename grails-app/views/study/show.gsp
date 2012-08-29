@@ -1,10 +1,8 @@
-<%@ page import="afterparty.Study" %>
+    <%@ page import="afterparty.Study" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>Study | ${studyInstance.name}</title>
 
     %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
 To make a bit of text editable we need to
@@ -32,7 +30,6 @@ To make a bit of text editable we need to
             $('#showContigSetsButton').hide();
 
             updateButton()
-            $('tr:odd').css('background-color', '#F0F0F0');
 
 
         });
@@ -47,7 +44,10 @@ To make a bit of text editable we need to
         function updateButton() {
             if ($("input:checked").length == 0) {
                 $('.doSomethingButton').slideUp('slow');
+                $("#searchForm").slideUp('slow');
+                $('#blastForm').slideUp('slow');
                 $('#noneSelectedMessage').slideDown('slow');
+
             }
             if ($("input:checked").length == 1) {
                 $('#noneSelectedMessage').slideUp('slow');
@@ -84,20 +84,10 @@ To make a bit of text editable we need to
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
+<div class="row-fluid">
+    <div class="span10 offset1">
         <h2>Study details</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
         <h3>Name</h3>
-
         <p class="edit_in_place" name="name">${studyInstance.name}</p>
 
         <h3>Description</h3>
@@ -111,38 +101,18 @@ To make a bit of text editable we need to
                 </g:form>
             </p>
         </g:if>
-
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Compound Samples</h2>
-
+        <hr/>
+        <h2>Compound samples</h2>
+            
         <g:if test="${isOwner}">
-            <ul>
-                <li>
-                    <g:link controller="study" action="createCompoundSample"
-                            params="${[id : studyInstance.id]}">Add new</g:link>
-                </li>
-            </ul>
+            <g:link class="btn btn-primary pull-right" controller="study" action="createCompoundSample" params="${[id : studyInstance.id]}">
+                Add new compound sample
+            </g:link>
         </g:if>
 
-    </div>        <!-- .block_head ends -->
+       <g:if test="${studyInstance.compoundSamples}">
 
-    <div class="block_content">
-        <g:if test="${studyInstance.compoundSamples}">
-
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th>Sample name</th>
@@ -161,47 +131,24 @@ To make a bit of text editable we need to
         <g:else>
             <h3>Click "ADD NEW" to add a compound sample for this study.</h3>
         </g:else>
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
 
         <h2>Contig sets</h2>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="#">Show only...</a>
+                <ul class="nav">
+                    <li><a href="#"  onclick="showOnly('.compoundSampleRow');">All contig sets</a></li>
+                    <li><a href="#" onclick="showOnly('.STUDY');">Study</a></li>
+                    <li><a href="#" onclick="showOnly('.ASSEMBLY');">Assemblies</a></li>
+                    <li><a href="#" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</a></li>
+                    <li><a href="#" onclick="showOnly('.USER');">User created</a></li>
+                </ul>
+            </div>
+        </div>
 
-        <ul>
-            <li>Show only:</li>
-            <li>
-                <span class="clickable" onclick="showOnly('.compoundSampleRow');">All contig sets</span>
-            </li>
-            <li>
-                <span class="clickable" onclick="showOnly('.STUDY');">Study</span>
-            </li>
-            <li>
-                <span class="clickable" onclick="showOnly('.ASSEMBLY');">Assemblies</span>
-            </li>
-            <li>
-                <span class="clickable" onclick="showOnly('.COMPOUND_SAMPLE');">Compound samples</span>
-            </li>
-            <li>
-                <span class="clickable" onclick="showOnly('.USER');">User created</span>
-            </li>
-        </ul>
+        <form id="contigSetForm" method="get"  class="form-search">
 
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-        <form id="contigSetForm" method="get">
-
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th>Contig Set name</th>
@@ -221,26 +168,21 @@ To make a bit of text editable we need to
             </table>
 
             <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
+            <div class="btn-group">
+                <input class="doSomethingButton btn btn-info btn-large" id="showContigSetsButton" style="display:none" type="submit" value="select contig set" onclick="submitCompare();"/>
+                <input class="doSomethingButton btn btn-info btn-large" id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox(); return false;" type="submit" value="search contig sets">
+                <input class="doSomethingButton btn btn-info btn-large" id="blastContigSetAnnotationButton" style="display:none" onclick="showBLASTBox(); return false;" type="submit" value="search contig sets">
+            </div>
+            <br/><br/>
+            
+            <div id="searchForm" style="display:none">
 
-            <input class="doSomethingButton submit long" id="showContigSetsButton" style="display:none" type="submit" value="select contig set" onclick="submitCompare();"/>
+                <div class="input-append">
+                    <input name="searchQuery" id="searchQuery" type="text" placeholder="Enter search query..." class="search-query input-xlarge">
+                    <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">Search</button>    
+                </div>
+                <span class="help-block">Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.</span>
 
-            <input class="doSomethingButton submit long" id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox();
-            return false;" type="submit" class="submit long" value="search contig sets">
-            <input class="doSomethingButton submit long" id="blastContigSetAnnotationButton" style="display:none" onclick="showBLASTBox();
-            return false;" type="submit" class="submit long" value="search contig sets">
-
-            <br/>
-
-            <p id="blastForm" style="display:none">
-                <label>BLAST query sequence:</label> <br/><br/>
-                <textarea name="blastQuery" id="blastQuery" rows="40" cols="80"></textarea>
-                <br/><br/>
-                <input id="submitBLASTButton" type="submit" class="submit long" value="submit" onclick="submitBLASTForm();">
-            </p>
-
-            <p id="searchForm" style="display:none">
-                <label>Search query:</label> <br/><br/>
-                <input name="searchQuery" id="searchQuery" type="text" class="text small">
                 <label>Results to show:</label>
                 <select name="numberOfResults">
                     <option value="10">10</option>
@@ -248,18 +190,28 @@ To make a bit of text editable we need to
                     <option value="1000">1000</option>
                     <option value="10000">10000</option>
                 </select>
-                <br/><br/>
-                Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.
-                <br/><br/>
+                <br/>
+                
+            </div>
 
-                <input id="submitSearchButton" type="submit" class="submit long" value="submit" onclick="submitSearchForm();">
-            </p>
+            <div id="blastForm" style="display:none">
+                <label>BLAST query sequence:</label> <br/>
+                <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
+                <br/><br/>
+                <input id="submitBLASTButton" type="submit" class="btn btn-large btn-info" value="submit" onclick="submitBLASTForm();">
+            </div>
+
         </form>
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
 
-    <div class="bendr"></div>
-</div>
+
+    </div>        
+</div>        
+    
+
+
+
+            
+
 
 </body>
 </html>
