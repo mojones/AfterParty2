@@ -16,9 +16,11 @@
 
     <tbody id="contigTableBody">
         <g:each var="contig" in="${contigCollection}" status="index">
-            <g:link controller="contig" action="show" id="${contig.id}">
+            
             <tr>
-                <td>${contig.name}</td>
+                <td>
+                    <g:link controller="contig" action="show" id="${contig.id}"><i class="icon-eye-open"></i>&nbsp;${contig.name}</g:link>
+                </td>
                 <td><g:formatNumber number="${contig.length}" type="number" maxFractionDigits="0"  /></td>
                 <td><g:formatNumber number="${contig.quality}" type="number" maxFractionDigits="0"  /></td>
                 <td><g:formatNumber number="${contig.coverage}" type="number" maxFractionDigits="0"  /></td>
@@ -34,7 +36,7 @@
 
                 </td>
             </tr>
-            </g:link>
+            
         </g:each>
     </tbody>
 </table>
@@ -43,7 +45,8 @@
 $(document).ready(function() {
    $('#contigTable').dataTable({
         "aaSorting": [[ 3, "desc" ]],
-        "asStripeClasses": [ 'strip1', 'strip2', 'strip3' ]    
+        "asStripeClasses": [],
+        "sPaginationType": "bootstrap"    
    });
 });
 </script>

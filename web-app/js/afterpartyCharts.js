@@ -17,14 +17,24 @@ function toggleSeries(index) {
 function setScatterX(fieldName) {
     window.scatterXField = fieldName;
     $('.scatterx').css({'cursor':'pointer', 'font-weight':'normal'});
-    $('#scatterx' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+    if (window.scatterxlogOn){
+        $('#scatterx' + fieldName + 'log').css({'cursor':'default', 'font-weight':'bold'});
+    }
+    else{
+        $('#scatterx' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+    }
     drawActiveChart();
 }
 
 function setScatterY(fieldName) {
     window.scatterYField = fieldName;
     $('.scattery').css({'cursor':'pointer', 'font-weight':'normal'});
-    $('#scattery' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+    if (window.scatterxlogOn){
+        $('#scattery' + fieldName + 'log').css({'cursor':'default', 'font-weight':'bold'});
+    }
+    else{
+        $('#scattery' + fieldName).css({'cursor':'default', 'font-weight':'bold'});
+    }
     drawActiveChart();
 }
 
@@ -327,7 +337,10 @@ drawScatterChart = function() {
 //    $('#spinner').hide();
     $('#chartBlock').unmask();
     $('.chartOptions').show();
-    $('.scatterplotOptions').show();
+    $('.cumulative-options').hide();
+    $('.scatterplot-options').show();
+    $('.histogram-options').hide();
+
     $('#scatterplotContainer').show();
 
 
@@ -488,6 +501,10 @@ drawChart = function() {
     $('#chartBlock').unmask();
 
     $('.chartOptions').show();
+    $('.cumulative-options').hide();
+    $('.scatterplot-options').hide();
+    $('.histogram-options').show();
+
 }
 
 // draw kumar-blaxter curve for the contig set
@@ -637,7 +654,7 @@ drawCumulativeChart = function() {
                     }
                 },
                 highlighter: {
-                    show: window.highlighterOn,
+                    show: window.cumulativehighlighterOn,
                     sizeAdjust: 7.5,
                     bringSeriesToFront: true,
                     yvalues: 2,
@@ -645,7 +662,7 @@ drawCumulativeChart = function() {
                     useAxesFormatters: false
                 },
                 cursor: {
-                    show: !window.highlighterOn,
+                    show: !window.cumulativehighlighterOn,
                     tooltipLocation:'sw',
                     followMouse : true,
                     showVerticalLine: true,
@@ -667,6 +684,10 @@ drawCumulativeChart = function() {
 //    $('#spinner').hide();
     $('#chartBlock').unmask();
     $('.chartOptions').show();
+    $('.cumulative-options').show();
+    $('.scatterplot-options').hide();
+    $('.histogram-options').hide();
+
 
 }
 
@@ -729,7 +750,7 @@ $(document).ready(function() {
     window.series[8] = true;
     window.series[9] = true;
 
-    // global variables that determine how the chart is drawn
+    // global variables that determine how the histogram is drawn
     window.highlighterOn = true;
     window.logOn = false;
     window.scaledOn = false;
@@ -739,6 +760,9 @@ $(document).ready(function() {
     window.scatterylogOn = true;
     window.scatterxlogOn = false;
     window.scattertrendOn = false;
+
+    // globals that affect the cumulative plot
+    window.cumulativehighlighterOn = true
 
 
     // global for the histogram field
@@ -782,6 +806,7 @@ $(document).ready(function() {
 
     // toggle for cumulative n filtering
     setUpToggle('cumulativefiltern');
+    setUpToggle('cumulativehighlighter');
 
     // three 'reset zoom' elements
     $('#resetZoom').click(function() {
