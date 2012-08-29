@@ -345,7 +345,7 @@ class ContigSetController {
             studyId = set.study.id
             def t = new Timer()
             def contigs
-            if ('any' in params.readSource){
+            if ('any' in params.readSource || params.readSource == null){
                 println "searching all read sources"
                 contigs = searchService.searchInContigSet(set, params.searchQuery, max)
             }

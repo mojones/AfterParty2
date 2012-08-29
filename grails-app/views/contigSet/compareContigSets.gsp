@@ -100,14 +100,15 @@
             <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
             <br/>
+            
+
+            <h2>Contigs in this set</h2>
             <g:form controller="contigSet" action="download" method="get">
                 <g:hiddenField name="id" value="${contigSetInstance.id}"/>
                 <button type="submit" class="btn btn-info">
                     <i class="icon-download-alt"></i>&nbsp;download contigs
                 </button>
             </g:form>
-
-            <h2>Contigs in this set</h2>
             <g:render template="contigTable" model="['contigCollection' : contigData[0], 'contigsPerPage' : 10]"/>
 
         </g:if>

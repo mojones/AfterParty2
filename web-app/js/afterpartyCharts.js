@@ -437,12 +437,14 @@ drawChart = function() {
         mySeriesOptions.push(
                 {
                     lineOptions: {
-                        show : window.series[i]
+                        showLine : window.series[i]
                     },
+                    show: window.series[i],
                     label : contigSetRawData[i].label
                 }
         );
     }
+    console.log(mySeriesOptions);
     var allFieldValues;
     if (window.chartType == 'length') {
         console.log('type is length, using min seq length');
