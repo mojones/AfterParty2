@@ -1,3 +1,7 @@
+
+
+
+
 // set the size of the divs that will hold charts, then redraw the active chart
 function setChartSize(pixels) {
     $('#histogramDiv').height(pixels).width(2 * pixels);
@@ -10,8 +14,13 @@ function setChartSize(pixels) {
 
 // show and hide data series when asked to
 function toggleSeries(index) {
-    window.series[index] = !window.series[index];
-    drawActiveChart();
+    allCharts = [window.scatterPlot, window.topHistogramPlot, window.sideHistogramPlot, window.histogramPlot, window.cumulativePlot]
+    for (index in allCharts){
+        chart = allCharts[index]
+        if (chart != undefined){
+            chart.series[0].toggleDisplay({data: ''});
+        }
+    }
 }
 
 function setScatterX(fieldName) {
@@ -216,7 +225,7 @@ drawScatterChart = function() {
         var a = contigSetRawData[i];
         var length = a.id.length;
         var result = [];
-        if (window.series[i]) {
+        if (true) {
             for (var n = 0; n < length; n++) {
                 // only add contigs if they pass the length and coverage filters
                 if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
@@ -227,6 +236,7 @@ drawScatterChart = function() {
         }
         allValues.push(result);
     }
+    console.log(allValues);
 
 
     var pointSize = 8;
@@ -247,9 +257,7 @@ drawScatterChart = function() {
     for (var i = 0; i < contigSetRawData.length; i++) {
         mySeriesOptions.push(
                 {
-                    markerOptions: {
-                        show : window.series[i]
-                    },
+                    show : window.series[i],
                     label : contigSetRawData[i].label,
                     trendline: {
                         show: window.scattertrendOn,
@@ -314,7 +322,8 @@ drawScatterChart = function() {
                     showHorizontalLine: true,
                     zoom:true
                 },
-                legend:{
+                legend: {
+                    renderer: $.jqplot.EnhancedLegendRenderer,
                     show: true
                 },
                 grid: {

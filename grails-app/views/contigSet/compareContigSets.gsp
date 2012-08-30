@@ -12,6 +12,7 @@
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.trendline.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.canvasAxisLabelRenderer.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.canvasTextRenderer.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'jqplot.enhancedLegendRenderer.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'afterpartyCharts.js')}"></script>
 
     <link rel="stylesheet" href="${resource(dir: 'js', file: 'jquery.jqplot.css')}"/>

@@ -133,7 +133,7 @@ table.jqplot-table-legend {
 }
 
 table.jqplot-table-legend, table.jqplot-cursor-legend {
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,255);
     border: 1px solid #cccccc;
     position: absolute;
     font-size: 0.75em;
