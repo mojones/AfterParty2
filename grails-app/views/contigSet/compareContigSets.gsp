@@ -128,9 +128,9 @@
                         <tr>
                             <td style="background-color: ${StatisticsService.boldAssemblyColours[index]}">.</td>
                             <td>
-                                    ${contigSet.name} &nbsp;&nbsp;
-                                    <span style="cursor:pointer;" onclick="toggleSeries(${index});">toggle</span> |
-                                    <span style="cursor:pointer;" onclick="moveToTop(${index});">move to top</span>
+                                    <i class="icon-tags"></i>&nbsp;${contigSet.name} &nbsp;&nbsp;
+                                    <button class="btn btn-warning" style="cursor:pointer;" onclick="toggleSeries(${index});"><i class="icon-eye-close"></i>&nbsp;toggle</button> 
+                                    <button class="btn btn-info" style="cursor:pointer;" onclick="moveToTop(${index});"><i class="icon-arrow-up"></i>&nbsp;move to top</button>
                             </td>
                             <td>${contigSet.contigs.size()}</td>
                         </tr>

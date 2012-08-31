@@ -1,12 +1,15 @@
 
 function showSearchBox() {
     $('.doSomethingButton').slideUp('slow');
+    $('#blastForm').hide();
     $('#searchForm').slideDown('slow');
+
     return false;
 }
 
 function showBLASTBox() {
     $('.doSomethingButton').slideUp('slow');
+    $('#searchForm').hide();
     $('#blastForm').slideDown('slow');
     return false;
 }
@@ -20,6 +23,11 @@ function submitBLASTForm() {
 function submitCompare() {
     $('#contigSetForm').attr('action', '/contigSet/compareContigSets');
 }
+function submitDownload() {
+    $('#contigSetForm').attr('action', '/contigSet/download');
+}
+
+
 
 
 function doCreate(idList, studyId) {

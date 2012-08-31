@@ -322,12 +322,17 @@ class AssemblyController {
         })
         println("contig set is ${a.defaultContigSet}")
         def contigs = []
+        def readSources = ['any']
         if (a.defaultContigSet){
             contigs = statisticsService.getContigInfoForContigSet(a.defaultContigSet.id)
+            readSources.addAll(statisticsService.getReadSourcesForContigSetId(a.defaultContigSet.id))
         }
+
+        
+
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
-        [assemblyInstance: a, contigs: contigs]
+        [assemblyInstance: a, contigs: contigs, readSources:readSources]
     }
 
 

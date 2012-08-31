@@ -5,71 +5,34 @@
 <head>
     <meta name="layout" content="main"/>
 
-    <title>Search contigs</title>
+    <title>Search contigs | ${query}</title>
 
 </head>
 
 <body>
-<div>
 
-    <g:if test="${contigs.size() > 0}">
-
-        <div class="block">
-            <div class="block_head">
-                <div class="bheadl"></div>
-
-                <div class="bheadr"></div>
-
-                <h2>
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <g:if test="${contigs.size() > 0}">
+               <h2>
                     Showing ${contigs.size()} results for ${query}
                 </h2>
 
-            </div>        <!-- .block_head ends -->
+                <g:form controller="contigSet" action="createFromContigList" method="post">
+                    <g:hiddenField name="q" value="${query}"/>
+                    <g:hiddenField name="contigList" value="${contigs*.id.join(',')}"/>
+                    <g:hiddenField name="studyId" value="${studyId}"/>
 
-            <div class="block_content">
-
+                    <button type="submit" class="btn btn-info"><i class="icon-tags"></i>&nbsp;save as contig set</button>
+                </g:form>
                 <g:render template="contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 30]"/>
-                <p>
-
-                    <g:form controller="contigSet" action="createFromContigList" method="post">
-                        <g:hiddenField name="q" value="${query}"/>
-                        <g:hiddenField name="contigList" value="${contigs*.id.join(',')}"/>
-                        <g:hiddenField name="studyId" value="${studyId}"/>
-
-                        <input type="submit" class="submit long" value="Save as contigSet"/>
-                    </g:form>
-                </p>
-            </div><!-- .block_content ends -->
-            <div class="bendl"></div>
-
-            <div class="bendr"></div>
-
-        </div>
-    </g:if>
-    <g:else>
-
-        <div class="block">
-            <div class="block_head">
-                <div class="bheadl"></div>
-
-                <div class="bheadr"></div>
-
-                <h2>
-                    No results for ${query}, hit back to try again.
-                </h2>
-
-            </div>        <!-- .block_head ends -->
-
-            <div class="block_content">
-
-              
-            </div><!-- .block_content ends -->
-            <div class="bendl"></div>
-
-            <div class="bendr"></div>
-
-        </div>
-    </g:else>
-
+        </g:if>
+        <g:else>
+            <h2>
+                No results for ${query}, hit back to try again.
+            </h2>
+        </g:else>
+    </div>
+</div>
 </body>
 </html>

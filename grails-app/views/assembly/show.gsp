@@ -1,10 +1,9 @@
 <%@ page import="afterparty.Assembly" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'assembly.label', default: 'Assembly')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+
+    <title>Assembly | ${assemblyInstance.name}</title>
 
 
     <script type="text/javascript">
@@ -21,202 +20,146 @@
 </head>
 
 <body>
+<div class="row-fluid">
 
-<div class="block withsidebar">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
+    <div class="span11 offset1">
         <h2>Assembly details</h2>
-    </div>        <!-- .block_head ends -->
-
-
-
-    <div class="block_content">
-
-        <div class="sidebar">
-            <ul class="sidemenu">
-                <li><a href="#sb1_raw">Description</a></li>
-                <li><a href="#sb2_raw">Contigs</a></li>
-                <li><a href="#sb3_raw">Annotations</a></li>
-            </ul>
-
-            <p>Use the <strong>Contigs</strong> tab to download/upload contigs. Use the <strong>Annotations</strong> tab to run BLAST or upload a BLAST result.
-            </p>
-        </div>        <!-- .sidebar ends -->
-
-        <div class="sidebar_content" id="sb1_raw">
-            <h3>Name <span style="font-size: small;">(click to edit)</span></h3>
-
-            <p class="edit_in_place" name="name">${assemblyInstance.name}</p>
-
-            <h3>Statistics</h3>
-
-            <p>
-                Contig count : ${assemblyInstance.contigCount}<br/>
-                Base count : ${assemblyInstance.baseCount}<br/>
-                Min contig length : ${assemblyInstance.minContigLength}<br/>
-                Mean contig length : ${assemblyInstance.meanContigLength}<br/>
-                Max contig length : ${assemblyInstance.maxContigLength}<br/>
-                N50 : ${assemblyInstance.n50}
-            </p>
-            <g:if test="${assemblyInstance.defaultContigSet}">
-                <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id]"/>
-            </g:if>
-        </div>        <!-- .sidebar_content ends -->
-
-
-        <div class="sidebar_content" id="sb2_raw">
-            <p>
-                <g:form controller="assembly" action="download" method="get">
-                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                    <input type="submit" class="submit long" value="Download contigs"/>
-                </g:form>
-            </p>
-
-            <br/><br/>
-
-            <h2>Upload contigs</h2>
-            <g:form action="uploadContigs" method="post" enctype="multipart/form-data">
-
-                <p class="fileupload" style="clear:none;">
-                    <label>Contigs file to upload:</label><br/>
-                    <input type="file" name="myFile"/>
-                    <span id="uploadmsg">FASTA format only</span>
-                </p>
-
-                <p class="fileupload" style="clear:none;">
-                    <label>Contigs quality file (optional):</label><br/>
-                    <input type="file" name="contigsQualityFile"/>
-                    <span id="uploadmsg">FASTA quality format only</span>
-                </p>
-
-                <p class="fileupload" style="clear:none;">
-                    <label>Contigs statistics file (optional):</label><br/>
-                    <input type="file" name="contigsStatsFile"/>
-                    <span id="uploadmsg">MIRA output  format only</span>
-                </p>
-
-                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
-
-                <p style="clear:none;">
-                    <input type="submit" class="submit short" value="Upload"/>
-                </p>
-            </g:form>
-
-            <h2>Upload ACE</h2>
-            <g:form action="uploadAce" method="post" enctype="multipart/form-data">
-                <p class="fileupload" style="clear:none;">
-                    <label>.ace file to upload:</label><br/>
-                    <input type="file" name="aceFile"/>
-                    <span id="uploadmsg">ACE format only</span>
-                </p>
-                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
-
-                <p style="clear:none;">
-                    <input type="submit" class="submit short" value="Upload"/>
-                </p>
-            </g:form>
-
-
-            <g:if test="${assemblyInstance.defaultContigSet}">
-                <g:form controller="contigSet" action="compareContigSets" method="get">
-
-                    <g:hiddenField name="idList" value="${assemblyInstance.defaultContigSet.id}"/>
-
-                    <p style="clear:none;">
-                        <input type="submit" class="submit mid" value="View contigs"/>
-                    </p>
-                </g:form>
-            </g:if>
-        </div>        <!-- .sidebar_content ends -->
-
-
-        <div class="sidebar_content" id="sb3_raw">
-            <p>
-                <g:form controller="assembly" action="runBlast">
-                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                    <input type="submit" class="submit long" value="BLAST contigs"/>
-                </g:form>
-
-                <g:form controller="assembly" action="runPfam">
-                    <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                    <input type="submit" class="submit long" value="Interproscan contigs"/>
-                </g:form>
-            </p>
-            <br/>
-
-
-
-            <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
-
-                <p class="fileupload" style="clear:none;">
-                    <label>Select BLAST results file to upload:</label><br/>
-                    <input type="file" name="myFile"/>
-
-                    <span id="uploadmsg">BLAST XML output only</span>
-                </p>
-
-                <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
-
-                <p style="clear:none;">
-                    <input type="submit" class="submit mid" value="Upload"/>
-                </p>
-            </g:form>
-
-        </div>        <!-- .sidebar_content ends -->
-
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
+    </div>
 </div>
 
+<div class="row-fluid">
 
+    <div class="span4 offset1">
+        <h3>Name</h3>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${assemblyInstance.name}
+        </p>
 
+        <h3>Description</h3>
 
-<g:if test="${contigs.size() > 10}">
+        <p class="edit_in_place" name="description">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${assemblyInstance.description.replaceAll("\n", '<br/>')}
+        </p>
 
-    <div class="block">
-        <div class="block_head">
-            <div class="bheadl"></div>
+        <g:if test="${assemblyInstance.defaultContigSet}">
+            <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
+        </g:if>
 
-            <div class="bheadr"></div>
-
-            <h2>Browse contigs for this assembly</h2>
-        </div>        <!-- .block_head ends -->
-
-        <div class="block_content">
-
-            <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
-
-        </div>        <!-- .block_content ends -->
-        <div class="bendl"></div>
-
-        <div class="bendr"></div>
     </div>
-</g:if>
+    <div class="span2">
+        <table class="table table-bordered table-hover">
+            <tbody>
+                <tr> <td> <b>Contig count</b> </td> <td> ${assemblyInstance.contigCount} </td> </tr>
+                <tr> <td> <b>Base count</b> </td> <td> ${assemblyInstance.baseCount}</td> </tr>
+                <tr> <td> <b>Min contig length</b> </td> <td> ${assemblyInstance.minContigLength}</td> </tr>
+                <tr> <td> <b>Mean contig length</b> </td> <td> <g:formatNumber number="${assemblyInstance.meanContigLength}" type="number" maxFractionDigits="0"  /></td> </tr>
+                <tr> <td> <b>Max contig length</b> </td> <td> ${assemblyInstance.maxContigLength}</td> </tr>
+                <tr> <td> <b>N50 </b></td> <td> ${assemblyInstance.n50}</td> </tr>
+            </tbody>
+        </table>
+    </div>
+<div>
+
+<div class="row-fluid">
+    <div class="span10 offset1">
+
+        <div class="bs-docs-example">
+            <ul id="myTab" class="nav nav-tabs">
+              <li class="active"><a href="#generateAnnotation" data-toggle="tab">Generate annotation</a></li>
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Upload contigs <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#uploadFASTA" data-toggle="tab">FASTA</a></li>
+                  <li><a href="#uploadACE" data-toggle="tab">ACE</a></li>
+                </ul>
+              </li>
+
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Upload annotation <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#uploadBLAST" data-toggle="tab">BLAST</a></li>
+                  <li><a href="#uploadIPR" data-toggle="tab">InterProScan</a></li>
+                </ul>
+              </li>
+            </ul>
+
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active fade in" id="generateAnnotation">
+                    <g:form controller="assembly" action="runBlast">
+                        <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;BLAST contigs</button>
+                    </g:form>
+
+                    <g:form controller="assembly" action="runPfam">
+                        <g:hiddenField name="id" value="${assemblyInstance.id}"/>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;InterProScan contigs</button>
+                    </g:form>
+                </div>
+
+                <div class="tab-pane fade" id="uploadFASTA">
+                    <g:form action="uploadContigs" method="post" enctype="multipart/form-data">
+
+                        <label>Contigs file to upload:</label>
+                        <input type="file" name="myFile"/>
+                        <span class="help-block">FASTA format only</span>
+                    
+                        <label>Contigs quality file (optional):</label>
+                        <input type="file" name="contigsQualityFile"/>
+                        <span class="help-block">FASTA quality format only</span>
+                    
+                        <label>Contigs statistics file (optional):</label>
+                        <input type="file" name="contigsStatsFile"/>
+                        <span class="help-block">MIRA format only</span>
+                    
+                        <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and create contigs</button>
+                    </g:form>
+                </div>
+
+                <div class="tab-pane fade" id="uploadACE">
+                    <g:form action="uploadAce" method="post" enctype="multipart/form-data">
+                        <label>.ace file to upload:</label>
+                        <input type="file" name="aceFile"/>
+                        <span class="help-block">.ace format only</span>
+                        <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and create contigs</button>
+                    </g:form>                
+                </div>
+
+                <div class="tab-pane fade" id="uploadBLAST">
+                    <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
+                        <label>Select BLAST results file to upload:</label>
+                        <input type="file" name="myFile"/>
+                        <span class="help-block">BLAST XML format only : <code>-outfmt 5</code></span>
+                        <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and add annotation</button>
+                    </g:form>              
+                </div>
+
+                <div class="tab-pane fade" id="uploadIPR">
+                    <g:form action="uploadInterproscanAnnotation" method="post" enctype="multipart/form-data">
+                        <label>Select InterProScan results file to upload:</label>
+                        <input type="file" name="myFile"/>
+                        <span class="help-block">InterProScan raw format only <code>-format raw</code></span>
+                        <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and add annotation</button>
+                    </g:form>              
+                </div>
+            </div>
+        </div>
 
 
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>${assemblyInstance.name}</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-        <p>${assemblyInstance.description.replaceAll("\n", '<br/>')}</p>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
+        <h2>Browse contigs for this assembly</h2>
+        <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
+    </div>
 </div>
 
 </body>

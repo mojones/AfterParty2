@@ -48,12 +48,15 @@ function setScatterY(fieldName) {
 }
 
 //rearrange the data series so that the one with the specified id is last i.e. on the top layer of the scatter plot
-function moveToTop(index) {
-    scatterPlot.moveSeriesToFront(index);
-    histogramPlot.moveSeriesToFront(index);
-    cumulativePlot.moveSeriesToFront(index);
-    topHistogramPlot.moveSeriesToFront(index);
-    sideHistogramPlot.moveSeriesToFront(index);
+function moveToTop(seriesIndex) {
+    allCharts = [window.scatterPlot, window.topHistogramPlot, window.sideHistogramPlot, window.histogramPlot, window.cumulativePlot]
+    for (index in allCharts){
+        chart = allCharts[index]
+        if (chart != undefined){
+            console.log('moving to front');
+            chart.moveSeriesToFront(seriesIndex);
+        }
+    }
 }
 
 // draw the top and side histograms that accompany the scatter plot

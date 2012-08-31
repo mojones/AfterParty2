@@ -5,6 +5,7 @@
         <button class="btn btn-info" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-eye-open"></i>&nbsp;View contig set</button>
         <button class="btn btn-info" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>
         <button class="btn btn-info" id="blastContigSetAnnotationButton" type="submit"><i class="icon-zoom-in"></i>&nbsp;BLAST contigs</button>
+        <button class="btn btn-success" id="downloadContigsButton" onClick="submitDownload()"><i class="icon-download-alt"></i>&nbsp;download contigs</button>
     </div>
     <br/><br/>
 
@@ -41,7 +42,7 @@
         <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
         <br/><br/>
         <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
-            <i class="icon-zoom-in"></i>&nbsp;BLAST contigs
+            <i class="icon-zoom-in"></i>&nbsp;submit sequence
         </button>
     </div>
 </form>

@@ -110,17 +110,24 @@ To make a bit of text editable we need to
             </p>
         </g:if>
         <hr/>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span10 offset1">
+
         <h2>Compound samples</h2>
             
         <g:if test="${isOwner}">
-            <g:link class="btn btn-info pull-right" controller="study" action="createCompoundSample" params="${[id : studyInstance.id]}">
-                <i class="icon-plus-sign"></i>&nbsp; Add new compound sample
-            </g:link>
+            <p>
+                <g:link class="btn btn-info" controller="study" action="createCompoundSample" params="${[id : studyInstance.id]}">
+                    <i class="icon-plus-sign"></i>&nbsp; Add new compound sample
+                </g:link>
+            </p>
         </g:if>
 
        <g:if test="${studyInstance.compoundSamples}">
 
-            <table class="table table-bordered">
+            <table id="compound-sample-table" class="table table-bordered">
                 <thead>
                 <tr>
                     <th>Sample name</th>
@@ -134,14 +141,29 @@ To make a bit of text editable we need to
                 </g:each>
                 </tbody>
             </table>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+                   $('#compound-sample-table').dataTable({
+                        "aaSorting": [[ 3, "desc" ]],
+                        "asStripeClasses": [],
+                        "sPaginationType": "bootstrap"    
+                   });
+                });
+            </script>
+
         </g:if>
 
         <g:else>
             <h3>Click "ADD NEW" to add a compound sample for this study.</h3>
         </g:else>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span10 offset1">
 
         <h2>Contig sets</h2>
-        <div class="navbar">
+        <!-- <div class="navbar">
             <div class="navbar-inner">
                 <a class="brand" href="#">Show only...</a>
                 <ul class="nav">
@@ -152,11 +174,11 @@ To make a bit of text editable we need to
                     <li><a href="#" onclick="showOnly('.USER');"><i class="icon-filter"></i>&nbsp;User created</a></li>
                 </ul>
             </div>
-        </div>
+        </div> -->
 
         <form id="contigSetForm" method="get"  class="form-search">
 
-            <table class="table table-bordered table-hover">
+            <table id="contig-list-table" class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th>Contig Set name</th>
@@ -169,7 +191,21 @@ To make a bit of text editable we need to
                         <td>
                             <g:checkBox name="check_${contigSet.id}" value="${false}" class="checkbox"/> 
                             <i class="icon-tags"></i>&nbsp;${contigSet.name}
+                            <g:if test="${contigSet.type.toString() == 'STUDY'}">
+                                <span class="label">study</span>
+                            </g:if>
 
+                            <g:if test="${contigSet.type.toString() == 'ASSEMBLY'}">
+                                <span class="label label-success">assembly</span>
+                            </g:if>
+
+                            <g:if test="${contigSet.type.toString() == 'COMPOUND_SAMPLE'}">
+                                <span class="label label-important">compound sample</span>
+                            </g:if>
+
+                            <g:if test="${contigSet.type.toString() == 'USER'}">
+                                <span class="label label-info">user</span>
+                            </g:if>
                         </td>
                         <td>${contigSet.numberOfContigs()}</td>
                     </tr>
@@ -177,6 +213,16 @@ To make a bit of text editable we need to
                 </tbody>
 
             </table>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+                   $('#contig-list-table').dataTable({
+                        "aaSorting": [[ 1, "desc" ]],
+                        "asStripeClasses": [],
+                        "sPaginationType": "bootstrap"    
+                   });
+                });
+            </script>
 
             <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
             <div class="btn-group">
