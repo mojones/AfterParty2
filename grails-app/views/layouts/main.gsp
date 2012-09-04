@@ -45,10 +45,10 @@
 
     <div class="navbar navbar-static-top navbar-inverse">
         <div class="navbar-inner">
-            <a class="brand" href="#">AfterParty</a>
+            <a class="brand" href="/">AfterParty</a>
             <ul class="nav">
 
-                <li><a href="#"><i class="icon-home icon-white"></i>&nbsp;Home</a></li>
+                <li><a href="/"><i class="icon-home icon-white"></i>&nbsp;Home</a></li>
                 
                 <li class="pull-right">
                     <sec:ifLoggedIn>

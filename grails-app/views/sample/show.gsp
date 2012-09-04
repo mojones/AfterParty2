@@ -1,10 +1,8 @@
 <%@ page import="afterparty.Sample" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'sample.label', default: 'Sample')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>Sample | ${sampleInstance.name}</title>
 
 
     %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
@@ -25,39 +23,22 @@
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Sample details <span style="font-size: small;">(click to edit)</span></h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-        <h3>Name</h3>
-
-        <p class="edit_in_place" name="name">${sampleInstance.name}</p>
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${sampleInstance.name}
+        </p>
 
         <h3>Description</h3>
-
-        <p class="edit_in_place" name="description">${sampleInstance.description}</p>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${sampleInstance.description}
+        </p>
 
         <h2>Experiments</h2>
         <g:if test="${isOwner}">

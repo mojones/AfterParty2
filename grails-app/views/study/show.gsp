@@ -130,7 +130,7 @@ To make a bit of text editable we need to
             <table id="compound-sample-table" class="table table-bordered">
                 <thead>
                 <tr>
-                    <th>Sample name</th>
+                    <th>Compound Sample name</th>
                 </tr>
                 </thead>
                 <tbody>

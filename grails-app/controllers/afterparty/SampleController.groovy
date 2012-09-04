@@ -25,6 +25,8 @@ class SampleController {
 
     def show = {
         def sampleInstance = Sample.get(params.id)
+       
+
         [sampleInstance: sampleInstance, isOwner : sampleInstance.isOwnedBy(springSecurityService.principal)]
 
     }

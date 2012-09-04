@@ -1,10 +1,8 @@
 <%@ page import="afterparty.StatisticsService; afterparty.Study" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'study.label', default: 'Study')}"/>
-    <title>Viewing a compound sample</title>
+    <title>Compound sample | ${compoundSample.name}</title>
 
     %{--we need raphael to draw comparison graphs--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>
@@ -37,53 +35,34 @@ To make a bit of text editable we need to
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
+<div class="row-fluid">
+    <div class="span10 offset1">
         <h2>Compound sample details</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
         <h3>Name</h3>
 
-        <p class="edit_in_place" name="name">${compoundSample.name}</p>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${compoundSample.name}
+        </p>
 
         <g:if test="${compoundSample.defaultContigSet}">
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : compoundSample.defaultContigSet.id]"/>
+            <g:render template="/contigSet/searchForm" model="['contigSetId' : compoundSample.defaultContigSet.id, 'readSources' : readSources]"/>
         </g:if>
-    </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-        <div class="bheadr"></div>
         <h2>Samples</h2>
         <g:if test="${isOwner}">
-            <ul>
-                <li>
-                    <g:link controller="compoundSample" action="createSample"
-                            params="${[id : compoundSample.id]}">Add new</g:link>
-                </li>
-            </ul>
+            <p>
+                <g:link class="btn btn-info" controller="compoundsample" action="createSample" params="${[id : compoundSample.id]}">
+                    <i class="icon-plus-sign"></i>&nbsp; Add new compound sample
+                </g:link>
+            </p>
         </g:if>
 
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
         <g:if test="${compoundSample.samples}">
 
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th>Sample name</th>
@@ -92,7 +71,7 @@ To make a bit of text editable we need to
                 <tbody>
                 <g:each in="${compoundSample.samples}" var="s">
                     <tr>
-                        <td><g:link controller="sample" action="show" id="${s.id}">${s.name}</g:link></td>
+                        <td><g:link controller="sample" action="show" id="${s.id}"><i class="icon-tag"></i>&nbsp;${s.name}</g:link></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -102,35 +81,20 @@ To make a bit of text editable we need to
         <g:else>
             <h3>Click "ADD NEW" to add a sample for this compound sample.</h3>
         </g:else>
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+    
 
         <h2>Assemblies</h2>
         <g:if test="${isOwner}">
-
-            <ul>
-                <li>
-                    <g:link controller="compoundSample" action="createAssembly"
-                            params="${[id : compoundSample.id]}">Add new</g:link>
-                </li>
-            </ul>
+            <p>
+                <g:link class="btn btn-info" controller="compoundsample" action="createAssembly" params="${[id : compoundSample.id]}">
+                    <i class="icon-plus-sign"></i>&nbsp; Add new assembly
+                </g:link>
+            </p>
         </g:if>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
+    
         <g:if test="${compoundSample.assemblies}">
 
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th>Assembly name</th>
@@ -141,7 +105,7 @@ To make a bit of text editable we need to
                 <tbody>
                 <g:each in="${compoundSample.assemblies.sort()}" var="assembly" status="index">
                     <tr>
-                        <td><g:link controller="assembly" action="show" id="${assembly.id}">${assembly.name}</g:link></td>
+                        <td><g:link controller="assembly" action="show" id="${assembly.id}"><i class="icon-align-left"></i>&nbsp;${assembly.name}</g:link></td>
                         <td>${assembly.contigs.size()}</td>
                         <td>${assembly.baseCount}</td>
                     </tr>
@@ -154,25 +118,19 @@ To make a bit of text editable we need to
         <g:else>
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
         </g:else>
+
         <p>
             <g:form controller="contigSet" action="compareContigSets" method="get">
                 <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it?.defaultContigSet?.id}).join(',')}"/>
-                <input type="submit" class="submit long" value="Compare assemblies"/>
+                <button type="submit" class="btn btn-info"><i class="icon-eye-open"></i>&nbsp;compare assemblies</button>
             </g:form>
         </p>
 
-        <p>
-            <g:form controller="assembly" action="makeHybridAssembly" method="get">
-                <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it.id}).join(',')}"/>
-                <input type="submit" class="submit long" value="Merge assemblies"/>
-            </g:form>
-        </p>
+        <h2>Browse contigs for this compound sample</h2>
+        <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
 
-    </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
+    </div>        
 </div>
 
 </body>

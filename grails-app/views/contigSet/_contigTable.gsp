@@ -18,7 +18,7 @@
         <g:each var="contig" in="${contigCollection}" status="index">
             
             <tr>
-                <td>
+                <td style="white-space: nowrap">
                     <g:link controller="contig" action="show" id="${contig.id}"><i class="icon-eye-open"></i>&nbsp;${contig.name}</g:link>
                 </td>
                 <td><g:formatNumber number="${contig.length}" type="number" maxFractionDigits="0"  /></td>
