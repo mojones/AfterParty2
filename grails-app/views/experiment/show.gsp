@@ -1,10 +1,8 @@
 <%@ page import="afterparty.Experiment" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'experiment.label', default: 'Experiment')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>Experiment | ${experimentInstance.name}</title>
 
 
     %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
@@ -25,54 +23,38 @@
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Experiment details <span style="font-size: small;">(click to edit)</span></h2>
-
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <h2>Experiment details</h2>
         <h3>Name</h3>
-
-        <p class="edit_in_place" name="name">${experimentInstance.name}</p>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${experimentInstance.name}
+        </p>
 
         <h3>Description</h3>
-
-        <p class="edit_in_place" name="description">${experimentInstance.description}</p>
-
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${experimentInstance.description}
+        </p>
 
         <h2>Runs</h2>
-        <g:if test="${isOwner}">
-            <ul>
-                <g:link controller="experiment" action="createRun"
-                        params="${[id : experimentInstance.id]}">Add new</g:link>
-            </ul>
-        </g:if>
-    </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
+        <g:if test="${isOwner}">
+            <p>
+                <g:link class="btn btn-info" controller="experiment" action="createRun" params="${[id : experimentInstance.id]}">
+                    <i class="icon-plus-sign"></i>&nbsp; Add new run
+                </g:link>
+            </p>
+        </g:if>
+
         <g:if test="${experimentInstance.runs}">
 
-            <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+            <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th>Run name</th>
@@ -83,7 +65,7 @@
                 <tbody>
                 <g:each in="${experimentInstance.runs}" var="run">
                     <tr>
-                        <td><g:link controller="run" action="show" id="${run.id}">${run.name}</g:link></td>
+                        <td><g:link controller="run" action="show" id="${run.id}"><i class="icon-cog"></i>&nbsp;${run.name}</g:link></td>
                         <td>${run.getRawReadsCount()}</td>
                         <td>${run.getTrimmedReadsCount()}</td>
                     </tr>
@@ -94,57 +76,25 @@
         <g:else>
             <h3>Click "ADD NEW" to add an run for this experiment.</h3>
         </g:else>
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
 
-    <div class="bendr"></div>
-</div>
-
-<sec:ifLoggedIn>
-    <div class="block">
-
-        <div class="block_head">
-            <div class="bheadl"></div>
-
-            <div class="bheadr"></div>
-
+        <g:if test="${isOwner}">
             <h2>Upload / Replace adapter sequences</h2>
-
-        </div>        <!-- .block_head ends -->
-
-
-
-        <div class="block_content">
-
             <g:form action="attachAdapterSequences" method="post" enctype="multipart/form-data">
 
-                <p class="fileupload">
-                    <label>Select new file:</label><br/>
-                    <input type="file" name="myFile"/>
-
-                    <span id="uploadmsg">FASTA format only</span>
-                </p>
-
+                <label>Select new file:</label><br/>
+                <input type="file" name="myFile"/>
+                <span class="help-block">FASTA format only</span>
                 <g:hiddenField name="experimentId" value="${experimentInstance?.id}"/>
-
-                <p>
-                    <input type="submit" class="submit mid" value="Upload"/>
-                </p>
+                <button type="submit" class="btn btn-info"/><i class="icon-upload"></i>&nbsp;upload</button>
             </g:form>
+                <g:link class="btn btn-info" controller="experiment" action="trimAllReadFiles" id="${experimentInstance.id}"><i class="icon-time"></i>&nbsp;trim all reads</g:link>
 
 
-            <h3><g:link controller="experiment" action="trimAllReadFiles"
-                        id="${experimentInstance.id}">Trim all reads</g:link></h3>
+        </g:if>
 
-        </div>        <!-- .block_content ends -->
+    </div>    
+</div>
 
-        <div class="bendl"></div>
-
-        <div class="bendr"></div>
-
-    </div>
-
-</sec:ifLoggedIn>
 
 </body>
 </html>
