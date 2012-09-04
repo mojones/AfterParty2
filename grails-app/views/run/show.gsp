@@ -1,10 +1,8 @@
 <%@ page import="afterparty.ReadsFileStatus; afterparty.Run" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'run.label', default: 'Run')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>Run | ${runInstance.name}</title>
 
 
     %{--set up edit in place. We will grab all elements with class edit_in_place and run the edit in place method on them.
@@ -25,210 +23,162 @@
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Run details <span style="font-size: small;">(click to edit)</span></h2>
-
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <h2>Run details</h2>
         <h3>Name</h3>
-
-        <p class="edit_in_place" name="name">${runInstance.name}</p>
+        <p class="edit_in_place" name="name">
+            <g:if test="${isOwner}">
+                <i class="icon-pencil"></i>&nbsp;
+            </g:if>
+            ${runInstance.name}
+        </p>
 
         <h3>Description</h3>
-
-        <p class="edit_in_place" name="description">${runInstance.description}</p>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-
-<div class="block withsidebar small left">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Raw reads</h2>
-    </div>        <!-- .block_head ends -->
-
-
-
-    <div class="block_content">
-
-        <div class="sidebar">
-            <ul class="sidemenu">
-                <li><a href="#sb1_raw">Description</a></li>
-                <li><a href="#sb2_raw">Upload/Replace</a></li>
-                <li><a href="#sb3_raw">Actions</a></li>
-            </ul>
-
-            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
-            </p>
-        </div>        <!-- .sidebar ends -->
-
-        <div class="sidebar_content" id="sb1_raw">
-            <g:if test="${runInstance.rawReadsFile}">
-                <h3>${runInstance.rawReadsFile.name}</h3>
-
-                <p>${runInstance.rawReadsFile.description}</p>
-
-                <p>
-                    <b>Base count</b> : ${runInstance.rawReadsFile.baseCount} <br/>
-                    <b>Read count</b> : ${runInstance.rawReadsFile.readCount} <br/>
-                    <b>Min length</b> : ${runInstance.rawReadsFile.minReadLength} <br/>
-                    <b>Mean length</b> : ${runInstance.rawReadsFile.meanReadLength} <br/>
-                    <b>Max length</b> : ${runInstance.rawReadsFile.maxReadLength}
-                </p>
-            </g:if>
-            <g:else>
-                <h3>No raw reads file uploaded yet</h3>
-            </g:else>
-        </div>        <!-- .sidebar_content ends -->
-
-
-        <div class="sidebar_content" id="sb2_raw">
+        <p class="edit_in_place" name="name">
             <g:if test="${isOwner}">
-                <g:form action="attachReads" method="post" enctype="multipart/form-data">
-                    <p class="fileupload" style="clear:none;">
-                        <label>Select new file:</label><br/>
-                        <input type="file" name="myFile"/>
-                    </p>
-                    <g:hiddenField name="id" value="${runInstance?.id}"/>
-                    <g:hiddenField name="type" value="raw"/>
-                    <p style="clear:none;">
-                        <input type="submit" class="submit long" value="Upload new file"/>
-                    </p>
-                </g:form>
+                <i class="icon-pencil"></i>&nbsp;
             </g:if>
-        </div>        <!-- .sidebar_content ends -->
+            ${runInstance.description}
+        </p>
 
 
-        <div class="sidebar_content" id="sb3_raw">
-            <g:if test="${runInstance.rawReadsFile && isOwner}">
+        <div class="bs-docs-example">
+            <ul id="myTab" class="nav nav-tabs">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Raw reads <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#rawReadsStats" data-toggle="tab">stats</a></li>
+                  <li><a href="#rawReadsActions" data-toggle="tab">actions</a></li>
+                </ul>
+              </li>
 
-                <p>
-                    <g:form controller="readsFile" action="download">
-                        <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
-                        <input type="submit" class="submit long" value="Download reads"/>
-                    </g:form>
-                </p>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Trimmed reads <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#trimmedReadsStats" data-toggle="tab">stats</a></li>
+                  <li><a href="#trimmedReadsActions" data-toggle="tab">actions</a></li>
+                </ul>
+              </li>
 
-                <p>
-                    <g:form controller="run" action="trim">
-                        <g:hiddenField name="id" value="${runInstance.id}"/>
-                        <input type="submit" class="submit long" value="Trim reads"/>
-                    </g:form>
-                </p>
-            </g:if>
-        </div>        <!-- .sidebar_content ends -->
-
-    </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block withsidebar small right">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Trimmed reads</h2>
-    </div>        <!-- .block_head ends -->
-
-
-
-    <div class="block_content">
-
-        <div class="sidebar">
-            <ul class="sidemenu">
-                <li><a href="#sb1_trimmed">Description</a></li>
-                <li><a href="#sb2_trimmed">Upload/Replace</a></li>
-                <li><a href="#sb3_trimmed">Actions</a></li>
+              
             </ul>
 
-            <p>Use the <strong>Upload/Replace</strong> tab to add raw reads. Use the <strong>Actions</strong> tab to download, trim or assemble reads.
-            </p>
-        </div>        <!-- .sidebar ends -->
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active fade in" id="rawReadsStats">
+                    <g:if test="${runInstance.rawReadsFile}">
+                        <h3>Raw reads stats</h3>
+                        <h3>${runInstance.rawReadsFile.name}</h3>
 
-        <div class="sidebar_content" id="sb1_trimmed">
-            <g:if test="${runInstance.trimmedReadsFile}">
-
-                <h3>${runInstance.trimmedReadsFile.name}</h3>
-
-                <p><g:truncate maxlength="100">${runInstance.trimmedReadsFile.description}</g:truncate></p>
-
-                <p>
-                    <b>Base count</b> : ${runInstance.trimmedReadsFile.baseCount} <br/>
-                    <b>Read count</b> : ${runInstance.trimmedReadsFile.readCount} <br/>
-                    <b>Min length</b> : ${runInstance.trimmedReadsFile.minReadLength} <br/>
-                    <b>Mean length</b> : ${runInstance.trimmedReadsFile.meanReadLength} <br/>
-                    <b>Max length</b> : ${runInstance.trimmedReadsFile.maxReadLength}
-                </p>
-            </g:if>
-            <g:else>
-                <h3>No trimmed reads file uploaded yet</h3>
-            </g:else>
-        </div>        <!-- .sidebar_content ends -->
+                        <p>${runInstance.rawReadsFile.description}</p>
+                            <g:form controller="readsFile" action="download">
+                                <g:hiddenField name="id" value="${runInstance.rawReadsFile.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-download-alt"></i>&nbsp;Download reads</button>
+                            </g:form>
 
 
-        <div class="sidebar_content" id="sb2_trimmed">
-            <g:form action="attachReads" method="post" enctype="multipart/form-data">
-                <p class="fileupload" style="clear:none;">
-                    <label>Select new file:</label><br/>
-                    <input type="file" name="myFile"/>
-                </p>
-                <g:hiddenField name="id" value="${runInstance?.id}"/>
-                <g:hiddenField name="type" value="trimmed"/>
+                        <div class="span2">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                <tr><td><b>Base count</b> </td><td>${runInstance.rawReadsFile.baseCount} </td></tr>
+                                <tr><td><b>Read count</b> </td><td>${runInstance.rawReadsFile.readCount} </td></tr>
+                                <tr><td><b>Min length</b> </td><td>${runInstance.rawReadsFile.minReadLength} </td></tr>
+                                <tr><td><b>Mean length</b></td><td> ${runInstance.rawReadsFile.meanReadLength} </td></tr>
+                                <tr><td><b>Max length</b> </td><td>${runInstance.rawReadsFile.maxReadLength}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <h3>No raw reads file uploaded yet</h3>
+                    </g:else>
+                </div>
 
-                <p style="clear:none;">
-                    <input type="submit" class="submit long" value="Upload new file"/>
-                </p>
-            </g:form>
-        </div>        <!-- .sidebar_content ends -->
+                <div class="tab-pane fade" id="rawReadsActions">
+                    <g:if test="${isOwner}">
+                        <h4>Upload/replace reads</h4>
+                        <g:form action="attachReads" method="post" enctype="multipart/form-data">
+                            <label>select file of reads</label>
+                            <input type="file" name="myFile"/>
+                            <span class="help-block">select a FASTQ file containing raw reads</span>
+                            <g:hiddenField name="id" value="${runInstance?.id}"/>
+                            <g:hiddenField name="type" value="raw"/>
+                            <button type="submit" class="btn btn-info"><i class="icon-upload"></i>&nbsp;upload reads</button>
+                        </g:form>
+                    </g:if>       
+                    <hr/>
 
+                    <g:if test="${runInstance.rawReadsFile && isOwner}">
+                        <h4>Trim reads</h4>
+                            <g:form controller="run" action="trim">
+                                <g:hiddenField name="id" value="${runInstance.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;trim reads</button>
+                            </g:form>
+                    </g:if>
+                </div>
 
-        <div class="sidebar_content" id="sb3_trimmed">
-            <g:if test="${runInstance.trimmedReadsFile}">
+                <div class="tab-pane fade" id="trimmedReadsStats">
+                    <g:if test="${runInstance.trimmedReadsFile}">
 
-                <p>
-                    <g:form controller="readsFile" action="download">
-                        <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
-                        <input type="submit" class="submit long" value="Download reads"/>
-                    </g:form>
-                </p>
+                        <h3>${runInstance.trimmedReadsFile.name}</h3>
 
-                <p>
-                    <g:form controller="run" action="runMira">
-                        <g:hiddenField name="id" value="${runInstance.id}"/>
-                        <input type="submit" class="submit long" value="Assemble reads"/>
-                    </g:form>
-                </p>
-            </g:if>
-            <g:else>
-                <h3>No trimmed reads file uploaded yet</h3>
-            </g:else>
+                        <p><g:truncate maxlength="100">${runInstance.trimmedReadsFile.description}</g:truncate></p>
+                        <p>${runInstance.rawReadsFile.description}</p>
+
+                            <g:form controller="readsFile" action="download">
+                                <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-download-alt"></i>&nbsp;Download reads</button>
+                            </g:form>
+
+                        <div class="span2">
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                <tr><td><b>Base count</b> </td><td>${runInstance.trimmedReadsFile.baseCount} </td></tr>
+                                <tr><td><b>Read count</b> </td><td>${runInstance.trimmedReadsFile.readCount} </td></tr>
+                                <tr><td><b>Min length</b> </td><td>${runInstance.trimmedReadsFile.minReadLength} </td></tr>
+                                <tr><td><b>Mean length</b></td><td> ${runInstance.trimmedReadsFile.meanReadLength} </td></tr>
+                                <tr><td><b>Max length</b> </td><td>${runInstance.trimmedReadsFile.maxReadLength}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <h3>No trimmed reads file uploaded yet</h3>
+                    </g:else>
+                    
+                </div>
+
+                <div class="tab-pane fade" id="trimmedReadsActions">
+                    <g:if test="${isOwner}">
+                        <h4>Upload/replace reads</h4>
+                        <g:form action="attachReads" method="post" enctype="multipart/form-data">
+                            <label>select file of reads</label>
+                            <input type="file" name="myFile"/>
+                            <span class="help-block">select a FASTQ file containing raw reads</span>
+                            <g:hiddenField name="id" value="${runInstance?.id}"/>
+                            <g:hiddenField name="type" value="trimmed"/>
+                            <button type="submit" class="btn btn-info"><i class="icon-upload"></i>&nbsp;upload reads</button>
+                        </g:form>
+                    </g:if>       
+                   
+                    <g:if test="${runInstance.trimmedReadsFile && isOwner}">
+                            <g:form controller="run" action="runMira">
+                                <g:hiddenField name="id" value="${runInstance.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;assemble reads</button>
+                            </g:form>
+                    </g:if>
+
+                </div>
+
+                
+            </div>
+            
+        </div>        
         </div>        <!-- .sidebar_content ends -->
 
     </div>        <!-- .block_content ends -->
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
+   
 
 </body>
 </html>
