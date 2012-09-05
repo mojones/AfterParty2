@@ -89,7 +89,13 @@ class ContigSetController {
         //def idList = [341873]
         def dataArray = []
         idList.each{
-            def oneContig = statisticsService.getInfoForSingleContig(it.toLong())
+            def oneContig
+            if (!searchString){
+                oneContig = statisticsService.getInfoForSingleContig(it.toLong())
+            }
+            else{
+                oneContig = statisticsService.getFilteredInfoForSingleContig(it.toLong(), searchString)
+            }
             dataArray.add([
                             makeNameForContig(oneContig),
                             oneContig.length,

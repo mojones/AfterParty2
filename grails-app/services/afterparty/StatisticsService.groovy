@@ -478,6 +478,32 @@ def getContigIds(Long contigSetId, Long offset, Long limit, String orderBy, Stri
     return result
 }
 
+def getFilteredInfoForSingleContig(Long id, String query){
+    def result = [:]
+    def sql = new Sql(dataSource)
+
+    // first get the contig stats
+    def contigStatement = "select * from contig where id=${id}"
+    sql.rows(contigStatement).each{ row ->
+        result.name = row.name
+        result.coverage = row.average_coverage.toInteger()
+        result.quality = row.average_quality.toInteger()
+        result.length = row.sequence.size()
+        result.id = id
+        result.gc = (row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() * 100 / result.length).toInteger()
+    }    
+
+    // now the annotation
+    def annotationStatement = "select * from annotation where contig_id=${id} and to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) order by evalue desc"
+    sql.rows(annotationStatement).each{ row ->
+        result.put(row.type + '_desc', row.description)
+        result.put(row.type + '_score', row.evalue)
+    }
+
+    return result
+
+}
+
 def getInfoForSingleContig(Long id){
     def result = [:]
     def sql = new Sql(dataSource)
