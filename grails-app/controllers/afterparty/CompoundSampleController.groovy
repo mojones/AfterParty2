@@ -11,13 +11,11 @@ class CompoundSampleController {
     def show = {
         def c = CompoundSample.get(params.id)
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
-        def contigs = []
         def readSources = ['any']
         if (c.defaultContigSet){
-            contigs = statisticsService.getContigInfoForContigSet(c.defaultContigSet.id)
             readSources.addAll(statisticsService.getReadSourcesForContigSetId(c.defaultContigSet.id))
         }
-        [compoundSample: c, isOwner: c.study.user.id == userId, contigs:contigs, readSources:readSources]
+        [compoundSample: c, isOwner: c.study.user.id == userId, readSources:readSources]
     }
 
     @Secured(['ROLE_USER'])

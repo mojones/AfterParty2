@@ -5633,3 +5633,8 @@ a.badge:hover {
 .inplace_field{
   width: 500px;
 }
+
+/* make sure that table rows don't wrap */
+td {
+  white-space: nowrap;
+}

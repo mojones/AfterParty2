@@ -110,7 +110,7 @@
                     <i class="icon-download-alt"></i>&nbsp;download contigs
                 </button>
             </g:form>
-            <g:render template="contigTable" model="['contigCollection' : contigData[0], 'contigsPerPage' : 10]"/>
+            <g:render template="contigTable" model="['contigSetId' : contigSetInstance.id]"/>
 
         </g:if>
         <g:else>

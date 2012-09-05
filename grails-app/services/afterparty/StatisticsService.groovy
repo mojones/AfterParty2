@@ -22,7 +22,7 @@ public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia'
 @Cacheable("myCache")
 def getAssemblyStats(Long id) {
 
-    println "getting assembly stats for $id"
+   // println "getting assembly stats for $id"
     def start = System.currentTimeMillis()
 
     if (!Assembly.get(id).defaultContigSet) {
@@ -36,10 +36,10 @@ def getAssemblyStats(Long id) {
             //            fetchMode 'contigs.annotations', org.hibernate.FetchMode.JOIN
             //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
             })
-    println "got raw assembly object : " + (System.currentTimeMillis() - start)
+   // println "got raw assembly object : " + (System.currentTimeMillis() - start)
 
 
-    println "saved contig set : " + (System.currentTimeMillis() - start)
+   // println "saved contig set : " + (System.currentTimeMillis() - start)
 
     def assemblyStats = grailsApplication.mainContext.statisticsService.getContigStatsForContigSet(a.defaultContigSet.id)
 
@@ -346,12 +346,15 @@ def getContigInfoForContigSet(Long id){
         // scary sql ahead
         // we need to pull out the annotation for a given contig, then transpose some rows to columns
 
+        // TODO we can probably simplify this a lot as we don't strictly need all the complicated annotation when drawing scatter plots
         def sqlString = """
             select 
             id, 
             name,
             MAX(CASE WHEN type = 'BLAST' THEN description ELSE NULL END) AS top_blast, 
             MAX(CASE WHEN type = 'BLAST' THEN bitscore ELSE NULL END) AS blast_bitscore,
+            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
+            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
             MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
             MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
             average_coverage,
@@ -363,7 +366,7 @@ def getContigInfoForContigSet(Long id){
                 contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
             from 
                 contig, annotation, contig_set_contig 
-            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM' or annotation.type='CONTIG') and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
+            where annotation.contig_id=contig.id and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
             order by annotation.type, contig.id, bitscore desc
         ) as bar 
         group by id, name, average_coverage, average_quality, sequence;
@@ -371,7 +374,7 @@ def getContigInfoForContigSet(Long id){
 
         """
 
-        println sqlString
+        //println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
           result.add(
@@ -397,11 +400,116 @@ def getContigInfoForContigSet(Long id){
 
 
 }
+
+
+
+
+def getFilteredContigCount(Long contigSetId, String query){
+    def sql = new Sql(dataSource)
+    def idStatement = "select count(contig_id) from contig_set_contig where contig_set_contigs_id=${contigSetId}"
+    def result    
+    sql.rows(idStatement).each{ row ->
+        result = row.count
+    }
+    return result
+}
+def getContigCount(Long contigSetId){
+    def sql = new Sql(dataSource)
+    def idStatement = "select count(contig_id) from contig_set_contig where contig_set_contigs_id=${contigSetId}"
+    def result    
+    sql.rows(idStatement).each{ row ->
+        result = row.count
+    }
+    return result
+}
+
+
+
+def getFilteredContigIds(Long contigSetId, Long offset, Long limit, String orderBy, String sortDirection, String query){
+    def sql = new Sql(dataSource)
+    def idStatement = """
+        select distinct on (contig.id, ${Sql.expand(orderBy)}) 
+            contig.id 
+        from 
+            contig_set_contig, contig, annotation 
+        where 
+            contig.id = contig_set_contig.contig_id and 
+            contig_set_contig.contig_set_contigs_id=${contigSetId} and 
+            annotation.contig_id = contig.id and 
+            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+        order by 
+            ${Sql.expand(orderBy)} ${Sql.expand(sortDirection)} 
+        offset 
+            ${offset} 
+        limit 
+            ${limit}
+
+            """    
+    println idStatement
+    def result = []
+    sql.rows(idStatement).each{ row ->
+        result.add(row.id)
+    }
+    return result
+}
+
+def getContigIds(Long contigSetId, Long offset, Long limit, String orderBy, String sortDirection){
+    def sql = new Sql(dataSource)
+    def idStatement = """
+        select 
+            contig_id 
+        from 
+            contig_set_contig, contig 
+        where 
+            contig.id = contig_set_contig.contig_id and 
+            contig_set_contig.contig_set_contigs_id=${contigSetId} 
+        order by 
+             ${Sql.expand(orderBy)} ${Sql.expand(sortDirection)} 
+        offset 
+            ${offset} 
+        limit 
+            ${limit}
+            """    
+    println idStatement
+    def result = []
+    sql.rows(idStatement).each{ row ->
+        result.add(row.contig_id)
+    }
+    return result
+}
+
+def getInfoForSingleContig(Long id){
+    def result = [:]
+    def sql = new Sql(dataSource)
+
+    // first get the contig stats
+    def contigStatement = "select * from contig where id=${id}"
+    sql.rows(contigStatement).each{ row ->
+        result.name = row.name
+        result.coverage = row.average_coverage.toInteger()
+        result.quality = row.average_quality.toInteger()
+        result.length = row.sequence.size()
+        result.id = id
+        result.gc = (row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() * 100 / result.length).toInteger()
+    }    
+
+    // now the annotation
+    def annotationStatement = "select * from annotation where contig_id=${id} order by evalue desc"
+    sql.rows(annotationStatement).each{ row ->
+        result.put(row.type + '_desc', row.description)
+        result.put(row.type + '_score', row.evalue)
+    }
+
+    return result
+
+}
+
+
 @Cacheable('contigInfoCache')
 def getContigInfoForContigList(def ids){
 
     def sql = new Sql(dataSource)
-    println "sql is $sql"
+    //println "sql is $sql"
     def result = []
     // TODO make this one sql call rather than an each{}
     ids.each{ id ->
@@ -433,7 +541,7 @@ def getContigInfoForContigList(def ids){
 
         """
 
-        println sqlString
+        //println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
           result.add(
@@ -462,7 +570,7 @@ def getContigInfoForContigList(def ids){
 def getFilteredContigInfoForContigList(def ids, def query){
 
     def sql = new Sql(dataSource)
-    println "sql is $sql"
+    //println "sql is $sql"
     def result = []
     // TODO make this one sql call rather than an each{}
     ids.each{ id ->
@@ -523,14 +631,14 @@ def getFilteredContigInfoForContigList(def ids, def query){
 def getReadSourcesForContigSetId(def id){
 
     def sql = new Sql(dataSource)
-    println "sql is $sql"
+   // println "sql is $sql"
     def result = []
    
         def sqlString = """
     select distinct source from read, contig, contig_set_contig where contig_set_contig.contig_set_contigs_id=${id} and contig.id = contig_set_contig.contig_id and read.contig_id = contig.id
         """
 
-        println sqlString
+       // println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
           result.add(row.source)

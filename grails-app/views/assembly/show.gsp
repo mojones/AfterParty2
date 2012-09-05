@@ -158,7 +158,8 @@
 
 
         <h2>Browse contigs for this assembly</h2>
-        <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
+        <g:render template="/contigSet/contigTable" model="[contigSetId : assemblyInstance.defaultContigSet.id]"/>
+
     </div>
 </div>
 

@@ -321,10 +321,8 @@ class AssemblyController {
 //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println("contig set is ${a.defaultContigSet}")
-        def contigs = []
         def readSources = ['any']
         if (a.defaultContigSet){
-            contigs = statisticsService.getContigInfoForContigSet(a.defaultContigSet.id)
             readSources.addAll(statisticsService.getReadSourcesForContigSetId(a.defaultContigSet.id))
         }
 

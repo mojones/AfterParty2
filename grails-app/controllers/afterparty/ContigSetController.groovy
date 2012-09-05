@@ -21,6 +21,94 @@ class ContigSetController {
 
     def index = { }
 
+    def makeNameForContig(contig){
+        // start with eye icon
+        def result = '<i class="icon-eye-open"></i>&nbsp;'
+        def linkUrl = createLink(controller: 'contig', action:'show', params:[id: contig.id])
+        // the contig name links to the contig page
+        result += "<a href=\"${linkUrl}\">${contig.name}</a>"
+        //if (contig.PFAM_desc){
+            //result += '&nbsp;<span class="label label-success">pfam</span>'
+        //}
+        //if (contig.BLAST_desc){
+            //result += '&nbsp;<span class="label label-important">blast</span>'
+        //}
+        //if (contig.HMMPANTHER_desc){
+            //result += '&nbsp;<span class="label label-info">hmmpanther</span>'
+        //}
+        //if (contig.GENE3D_desc){
+            //result += '&nbsp;<span class="label">gene3d</span>'
+        //}
+        return result
+    }
+
+    def makeAnnotationForContig(contig){
+        def annotationLines = []
+        if (contig.BLAST_desc){
+            annotationLines.add("<span class=\"label label-important\">blast</span>&nbsp;${contig.BLAST_desc} (${contig.BLAST_score})")
+        }
+        if (contig.PFAM_desc){
+            annotationLines.add("<span class=\"label label-success\">pfam</span>&nbsp;${contig.PFAM_desc} (${contig.PFAM_score})")
+        }
+        if (contig.HMMPANTHER_desc){
+            annotationLines.add("<span class=\"label label-info\">hmmpanther</span>&nbsp;${contig.HMMPANTHER_desc} (${contig.HMMPANTHER_score})")
+        }
+        if (contig.GENE3D_desc){
+            annotationLines.add("<span class=\"label\">gene3d</span>&nbsp;${contig.GENE3D_desc} (${contig.GENE3D_score})")
+        }
+
+        return annotationLines.join('<br/>')
+    }
+
+    def getContigsJSON = {
+
+        def contigSetId = params.contigSetId.toLong()
+        def start = params.iDisplayStart.toLong()
+        def limit = params.iDisplayLength.toLong()
+
+        def sortIndex = params.iSortCol_0.toInteger()
+        def sortDirection = params.sSortDir_0
+        def sortColumnNames = ['contig.name', 'length(contig.sequence)', 'contig.average_quality', 'contig.average_coverage']
+
+        def searchString = params.sSearch
+        println "search is ${searchString}"
+
+        def totalContigCount = statisticsService.getContigCount(contigSetId)
+        def filteredContigCount
+        def idList
+        if (!searchString){
+            filteredContigCount = totalContigCount
+            idList = statisticsService.getContigIds(contigSetId, start, limit, sortColumnNames[sortIndex], sortDirection)
+        }
+        else{
+            filteredContigCount = statisticsService.getFilteredContigCount(contigSetId, searchString)
+            idList = statisticsService.getFilteredContigIds(contigSetId, start, limit, sortColumnNames[sortIndex], sortDirection, searchString)
+        }
+
+        // get the data
+        //def idList = [341873]
+        def dataArray = []
+        idList.each{
+            def oneContig = statisticsService.getInfoForSingleContig(it.toLong())
+            dataArray.add([
+                            makeNameForContig(oneContig),
+                            oneContig.length,
+                            oneContig.quality,
+                            oneContig.coverage,
+                            oneContig.gc,
+                            makeAnnotationForContig(oneContig)
+                        ])
+        }
+
+        def result = [
+            sEcho : params.sEcho,
+            iTotalRecords : totalContigCount,
+            iTotalDisplayRecords : filteredContigCount,
+            aaData: dataArray
+            ]
+        render result.encodeAsJSON()
+    }
+
 
     def standaloneComparison = {}
 
@@ -218,12 +306,10 @@ class ContigSetController {
         }
         println "idlist is $idList"
         def contigSetListResult = []
-        def contigSetDataResult = []
         def readSourcesResult = ['any']
         idList.sort().each {
             println "getting a contig set with id $it"
             contigSetListResult.add(ContigSet.get(it.toLong()))
-            contigSetDataResult.add(statisticsService.getContigInfoForContigSet(it.toLong()))
             readSourcesResult.addAll(statisticsService.getReadSourcesForContigSetId(it.toLong()))
         }
 
@@ -233,7 +319,6 @@ class ContigSetController {
         [
         contigSets: contigSetListResult, 
         isOwner: contigSetListResult[0].study.user.id == userId,
-        contigData : contigSetDataResult,
         readSources : readSourcesResult
         ]
     }

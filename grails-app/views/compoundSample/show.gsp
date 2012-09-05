@@ -127,7 +127,7 @@ To make a bit of text editable we need to
         </p>
 
         <h2>Browse contigs for this compound sample</h2>
-        <g:render template="/contigSet/contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 10]"/>
+        <g:render template="/contigSet/contigTable" model="[contigSetId : compoundSample.defaultContigSet.id]"/>
 
 
     </div>        
