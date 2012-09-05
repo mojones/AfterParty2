@@ -1,10 +1,8 @@
 <%@ page import="afterparty.AnnotationType; javassist.bytecode.annotation.Annotation; afterparty.Contig" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'contig.label', default: 'Contig')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>Contig | ${contigInstance.name}</title>
 
     %{--raphael library included on this page to show contig annotations, also g plugin and line plugin--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>
@@ -18,54 +16,37 @@
 
 <body>
 
-<p>
-    <!-- AddToAny BEGIN -->
-    <a class="a2a_dd" href="http://www.addtoany.com/share_save"><img
-            src="http://static.addtoany.com/buttons/share_save_256_24.png" width="256" height="24" border="0"
-            alt="Share"/></a>
-    <script type="text/javascript" src="http://static.addtoany.com/menu/page.js"></script>
-    <!-- AddToAny END -->
-</p>
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <h2>${contigInstance.name}</h2>
 
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Annotation</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
         <script type="text/javascript">
 
             var drawContig = function(data) {
 
                 window.contigData = data;
-
+                $('#coffeescript_annotation').empty();
                 var paperWidth = $('#coffeescript_annotation').width() - 40;
                 var drawing = new BioDrawing();
                 drawing.start(paperWidth, 'coffeescript_annotation');
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Contig annotation');
 
-                drawing.drawScale(data.length);
+                drawing.drawScale(window.contigData.length);
 
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Quality');
-                drawing.drawChart(data.quality, 100);
+                drawing.drawChart(window.contigData.quality, 100);
 
                 drawing.drawSpacer(50);
                 drawing.drawTitle('Coverage');
-                drawing.drawChart(data.coverage, 100);
+                drawing.drawChart(window.contigData.coverage, 100);
 
-                if (data.blastHits.length > 0) {
+                if (window.contigData.blastHits.length > 0) {
                     drawing.drawTitle('BLAST hits vs uniprot');
-                    for (var i = 0; i < data.blastHits.length; i++) {
-                        var hit = data.blastHits[i];
+                    for (var i = 0; i < window.contigData.blastHits.length; i++) {
+                        var hit = window.contigData.blastHits[i];
                         var hitColour = drawing.getBLASTColour(hit.bitscore);
                         var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.description, hit.accession, hit.id);
 
@@ -86,8 +67,8 @@
                     drawing.drawSpacer(50);
                 }
 
-                for (type in data.annotations) {
-                    var hits = data.annotations[type];
+                for (type in window.contigData.annotations) {
+                    var hits = window.contigData.annotations[type];
                     if (hits.length > 0) {
                         drawing.drawTitle(type + ' annotations');
 
@@ -115,84 +96,52 @@
                         drawing.drawSpacer(50);
                     }
                 }
+                if (window.showReads){
+                    drawing.drawTitle('Reads');
 
-                drawing.drawTitle('Reads');
-
-                for (var i = 0; i < data.readColours.length; i++) {
-                    var colourMap = data.readColours[i];
-                    drawing.drawColouredTitle(colourMap.source, colourMap.colour);
-                }
+                    for (var i = 0; i < window.contigData.readColours.length; i++) {
+                        var colourMap = window.contigData.readColours[i];
+                        drawing.drawColouredTitle(colourMap.source, colourMap.colour);
+                    }
 
 
-                for (var i = 0; i < data.reads.length; i++) {
-                    var read = data.reads[i];
-                    var readSource = read.source;
+                    for (var i = 0; i < window.contigData.reads.length; i++) {
+                        var read = window.contigData.reads[i];
+                        var readSource = read.source;
 
-                    var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
-                    var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
+                        var readTooltip = readSource.name + ' : ' + read.start + ' - ' + read.stop;
+                        var readRect = drawing.drawBar(read.start, read.stop, 10, read.colour, readTooltip, read.name);
 
+                    }
                 }
                 drawing.end();
                 $('#spinner').hide();
             }
-
+            window.showReads = false;
             $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig);
-
-
-
 
         </script>
 
 
+        <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"> </h2>
         <div id="coffeescript_annotation">
-            <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-            </h2>
         </div>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
+    </div>
 </div>
+<div class="row-fluid">
+    <div class="span10 offset1">
 
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>${contigInstance.name}</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-        <h3>Read count : ${contigInstance.reads.size()}</h3>
+   
+        <h3>Read count : ${contigInstance.reads.size()}</h3> 
+        <button class="btn btn-info" onclick="window.showReads=!window.showReads;drawContig(window.contigData)"><i class="icon-eye-open"></i>&nbsp;toggle reads</button>
 
 
         <h3>Sequence</h3>
-        <textarea rows="10" cols="100">${contigInstance.sequence}</textarea>
-
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+        <textarea rows="5" class="span12">${contigInstance.sequence}</textarea>
 
         <h2>BLAST hits</h2>
-    </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
-
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+        <table  class="table table-bordered table-hover">
 
             <thead>
             <tr>
@@ -229,26 +178,11 @@
 
         </table>
 
-    </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
 
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>Interproscan matches</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+        <h2>Interproscan annotation</h2>
+ 
+        <table class="table table-bordered table-hover">
 
             <thead>
             <tr>
@@ -287,11 +221,7 @@
 
         </table>
 
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
+    </div>       
 </div>
 
 </body>

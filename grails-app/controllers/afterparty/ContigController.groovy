@@ -76,7 +76,7 @@ class ContigController {
                 reads: readCollection,   // sort the reads by start position so they pile up nicely
                 readColours: description2colour
         ]
-
+        println result
         render result as JSON
 
 

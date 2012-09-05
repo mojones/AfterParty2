@@ -314,10 +314,9 @@ class AssemblyController {
         def criteria = Assembly.createCriteria()
         def start = System.currentTimeMillis()
 
-        // todo should we get all contigs here and dump them in a data table?
         def a = criteria.get({
             eq('id', params.id.toLong())
-            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
+//            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
 //            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println("contig set is ${a.defaultContigSet}")
@@ -330,7 +329,7 @@ class AssemblyController {
 
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
-        [assemblyInstance: a, contigs: contigs, readSources:readSources]
+        [assemblyInstance: a, readSources:readSources]
     }
 
 
