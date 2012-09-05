@@ -450,6 +450,28 @@ def getFilteredContigIds(Long contigSetId, Long offset, Long limit, String order
     sql.rows(idStatement).each{ row ->
         result.add(row.id)
     }
+
+    def exactNameMatchStatement = """
+        select
+            contig.id 
+        from 
+            contig_set_contig, contig 
+        where 
+            contig.id = contig_set_contig.contig_id and 
+            contig_set_contig.contig_set_contigs_id=${contigSetId} and
+            contig.name=${query}
+        order by 
+            ${Sql.expand(orderBy)} ${Sql.expand(sortDirection)} 
+        offset 
+            ${offset} 
+        limit 
+            ${limit}
+
+            """    
+    println exactNameMatchStatement
+    sql.rows(exactNameMatchStatement).each{ row ->
+        result.add(row.id)
+    }
     return result
 }
 
@@ -494,7 +516,33 @@ def getFilteredInfoForSingleContig(Long id, String query){
     }    
 
     // now the annotation
-    def annotationStatement = "select * from annotation where contig_id=${id} and to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) order by evalue desc"
+    // if the contig name is an exact match for the query, then just grab all annotation, otherwise grab the items that match the query
+
+    def annotationStatement
+    if (result.name == query){
+        annotationStatement = """
+        select 
+            * 
+        from 
+            annotation 
+        where 
+            contig_id=${id}
+        order by 
+            evalue desc"""
+    }
+    else{
+        annotationStatement = """
+        select 
+            * 
+        from 
+            annotation 
+        where 
+            contig_id=${id} and 
+            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+        order by 
+            evalue desc"""
+        }
+    
     sql.rows(annotationStatement).each{ row ->
         result.put(row.type + '_desc', row.description)
         result.put(row.type + '_score', row.evalue)
