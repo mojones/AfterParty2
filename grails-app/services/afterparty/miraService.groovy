@@ -48,6 +48,15 @@ class miraService {
 //                    println "updating contig with ${currentContig.reads.size()} reads"
                     currentContig.averageCoverage = currentContig.calculateAverageCoverage()
 //                    def start = System.currentTimeMillis()
+                    Annotation ann = new Annotation(
+                        description:'whole contig', 
+                        bitscore : 0, 
+                        evalue : 0,
+                        start : 0,
+                        stop : 0, 
+                        accession: 'ABC',
+                        type : AnnotationType.CONTIG)
+                    currentContig.addToAnnotations(ann)
                     currentContig.save()
 //                    println System.currentTimeMillis() - start
                     if (++added % 100 == 0) {
@@ -160,6 +169,15 @@ class miraService {
         // take care of the final contig in the file
         if (currentContig) {
             currentContig.averageCoverage = currentContig.calculateAverageCoverage()
+            Annotation ann = new Annotation(
+                        description:'whole contig', 
+                        bitscore : 0, 
+                        evalue : 0,
+                        start : 0,
+                        stop : 0, 
+                        accession: 'ABC',
+                        type : AnnotationType.CONTIG)
+            currentContig.addToAnnotations(ann)
             currentContig.save()
 
         }

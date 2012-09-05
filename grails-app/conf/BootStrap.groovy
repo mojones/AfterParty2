@@ -169,7 +169,7 @@ class BootStrap {
                         newAssembly
                 )
 //
-//                statisticsService.createContigSetForAssembly(a.id)
+                  statisticsService.createContigSetForAssembly(a.id)
 //
 //                println "adding blast annotation"
 //

@@ -93,7 +93,7 @@ class BlastService {
 
                 contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
 
-                def blastProcess = new ProcessBuilder("${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 6 -max_target_seqs 10".split(" "))
+                def blastProcess = new ProcessBuilder("${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10".split(" "))
                 blastProcess.redirectErrorStream(true)
                 blastProcess = blastProcess.start()
 

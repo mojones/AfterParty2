@@ -363,7 +363,7 @@ def getContigInfoForContigSet(Long id){
                 contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
             from 
                 contig, annotation, contig_set_contig 
-            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM' or annotation.type='CONTIG') and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
             order by annotation.type, contig.id, bitscore desc
         ) as bar 
         group by id, name, average_coverage, average_quality, sequence;
@@ -426,7 +426,7 @@ def getContigInfoForContigList(def ids){
                 contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
             from 
                 contig, annotation 
-            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig.id = ${id}
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM' or annotation.type='CONTIG') and contig.id = ${id}
             order by annotation.type, contig.id, bitscore desc
         ) as bar 
         group by id, name, average_coverage, average_quality, sequence;
@@ -487,7 +487,7 @@ def getFilteredContigInfoForContigList(def ids, def query){
                 contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
             from 
                 contig, annotation 
-            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM') and contig.id = ${id} and to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query})
+            where annotation.contig_id=contig.id and (annotation.type='BLAST' or annotation.type='PFAM' or annotation.type='CONTIG') and contig.id = ${id} and to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query})
             order by annotation.type, contig.id, bitscore desc
         ) as bar 
         group by id, name, average_coverage, average_quality, sequence;

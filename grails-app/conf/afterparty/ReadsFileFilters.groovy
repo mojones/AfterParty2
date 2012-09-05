@@ -38,11 +38,11 @@ class ReadsFileFilters {
                 ReadsFile r = ReadsFile.get(params.id)
                 def user = springSecurityService.isLoggedIn() ? springSecurityService?.principal : null
 
-                if (!r.run.experiment.sample.compoundSample.study.published && r.run.experiment.sample.compoundSample.study.user.id != user?.id) {
-                    flash.error = "ReadsFile is not published and you are not the owner"
-                    redirect(controller: 'study', action: 'listPublished')
-                    return false
-                }
+//                if (!r.run.experiment.sample.compoundSample.study.published && r.run.experiment.sample.compoundSample.study.user.id != user?.id) {
+//                    flash.error = "ReadsFile is not published and you are not the owner"
+//                    redirect(controller: 'study', action: 'listPublished')
+//                    return false
+//                }
             }
         }
 

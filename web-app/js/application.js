@@ -57,7 +57,7 @@ function updateJobStatus() {
             // on success, update the joblist div
             jQuery('#jobList').html(data);
             //see if we have any jobs still running by checking for the existence of an element with the class runningJob
-            if ($('.runningJob').length > 0) {
+            if ($('.runningJob').length > 0 || $('.queuedJob').length > 0) {
                 //if we still have running jobs, set a timeout to check again in 3 seconds
                 t = setTimeout("updateJobStatus()", 1000);
             }
