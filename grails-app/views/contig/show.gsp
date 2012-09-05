@@ -34,15 +34,17 @@
                 drawing.drawTitle('Contig annotation');
 
                 drawing.drawScale(window.contigData.length);
+                if (Math.min.apply(Math, window.contigData.quality) != Math.max.apply(Math, window.contigData.quality)){
+                    drawing.drawSpacer(50);
+                    drawing.drawTitle('Quality');
+                    drawing.drawChart(window.contigData.quality, 100);
+                }
 
-                drawing.drawSpacer(50);
-                drawing.drawTitle('Quality');
-                drawing.drawChart(window.contigData.quality, 100);
-
-                drawing.drawSpacer(50);
-                drawing.drawTitle('Coverage');
-                drawing.drawChart(window.contigData.coverage, 100);
-
+                if (Math.min.apply(Math, window.contigData.coverage) != Math.max.apply(Math, window.contigData.coverage)){
+                    drawing.drawSpacer(50);
+                    drawing.drawTitle('Coverage');
+                    drawing.drawChart(window.contigData.coverage, 100);
+                }
                 if (window.contigData.blastHits.length > 0) {
                     drawing.drawTitle('BLAST hits vs uniprot');
                     for (var i = 0; i < window.contigData.blastHits.length; i++) {

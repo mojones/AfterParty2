@@ -163,18 +163,6 @@ To make a bit of text editable we need to
     <div class="span10 offset1">
 
         <h2>Contig sets</h2>
-        <!-- <div class="navbar">
-            <div class="navbar-inner">
-                <a class="brand" href="#">Show only...</a>
-                <ul class="nav">
-                    <li><a href="#" onclick="showOnly('.compoundSampleRow');"><i class="icon-globe"></i>&nbsp;All contig sets</a></li>
-                    <li><a href="#" onclick="showOnly('.STUDY');"><i class="icon-th-list"></i>&nbsp;Study</a></li>
-                    <li><a href="#" onclick="showOnly('.ASSEMBLY');"><i class="icon-align-left"></i>&nbsp;Assemblies</a></li>
-                    <li><a href="#" onclick="showOnly('.COMPOUND_SAMPLE');"><i class="icon-leaf"></i>&nbsp;Compound samples</a></li>
-                    <li><a href="#" onclick="showOnly('.USER');"><i class="icon-filter"></i>&nbsp;User created</a></li>
-                </ul>
-            </div>
-        </div> -->
 
         <form id="contigSetForm" method="get"  class="form-search">
 
@@ -223,50 +211,51 @@ To make a bit of text editable we need to
                    });
                 });
             </script>
-
-            <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
-            <div class="btn-group">
-                <button class="doSomethingButton btn btn-info" id="showContigSetsButton" style="display:none" type="submit" onclick="submitCompare();">
-                    <i class="icon-eye-open"></i>&nbsp;view contigs
-                </button>
-                <button class="doSomethingButton btn btn-info" id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox(); return false;" type="submit">
-                    <i class="icon-search"></i>&nbsp;search contigs
-                </button>
-                <button class="doSomethingButton btn btn-info" id="blastContigSetAnnotationButton" style="display:none" onclick="showBLASTBox(); return false;" type="submit">
-                    <i class="icon-zoom-in"></i>&nbsp;blast contigs
-                </button>
-            </div>
-            <br/><br/>
-            
-            <div id="searchForm" style="display:none">
-
-                <div class="input-append">
-                    <input name="searchQuery" id="searchQuery" type="text" placeholder="Enter search query..." class="search-query input-xlarge">
-                    <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">
-                        <i class="icon-search"></i>&nbsp;Search
-                    </button>    
+            <hr/>
+                <p id="noneSelectedMessage">Select some contig sets to view/compare/search them</p>
+                <div class="btn-group">
+                    <button class="doSomethingButton btn btn-info" id="showContigSetsButton" style="display:none" type="submit" onclick="submitCompare();">
+                        <i class="icon-eye-open"></i>&nbsp;view contigs
+                    </button>
+                    <button class="doSomethingButton btn btn-info" id="searchContigSetAnnotationButton" style="display:none" onclick="showSearchBox(); return false;" type="submit">
+                        <i class="icon-search"></i>&nbsp;search contigs
+                    </button>
+                    <button class="doSomethingButton btn btn-info" id="blastContigSetAnnotationButton" style="display:none" onclick="showBLASTBox(); return false;" type="submit">
+                        <i class="icon-zoom-in"></i>&nbsp;blast contigs
+                    </button>
                 </div>
-                <span class="help-block">Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.</span>
-
-                <label>Results to show:</label>
-                <select name="numberOfResults">
-                    <option value="10">10</option>
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                    <option value="10000">10000</option>
-                </select>
-                <br/>
-                
-            </div>
-
-            <div id="blastForm" style="display:none">
-                <label>BLAST query sequence:</label> <br/>
-                <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
                 <br/><br/>
-                <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
-                    <i class="icon-zoom-in"></i>&nbsp;BLAST
-                </button>
-            </div>
+                
+                <div id="searchForm" style="display:none">
+
+                    <div class="input-append">
+                        <input name="searchQuery" id="searchQuery" type="text" placeholder="Enter search query..." class="search-query input-xlarge">
+                        <button id="submitSearchButton" type="submit" class="btn" onclick="submitSearchForm();">
+                            <i class="icon-search"></i>&nbsp;Search
+                        </button>    
+                    </div>
+                    <span class="help-block">Hint: use <b>&amp;</b> for AND,  <b>|</b> for OR, <b>(</b> and <b>)</b> to group.</span>
+
+                    <label>Results to show:</label>
+                    <select name="numberOfResults">
+                        <option value="10">10</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                        <option value="10000">10000</option>
+                    </select>
+                    <br/>
+                    
+                </div>
+
+                <div id="blastForm" style="display:none">
+                    <label>BLAST query sequence:</label> <br/>
+                    <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
+                    <br/><br/>
+                    <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
+                        <i class="icon-zoom-in"></i>&nbsp;BLAST
+                    </button>
+                </div>
+            
 
         </form>
 

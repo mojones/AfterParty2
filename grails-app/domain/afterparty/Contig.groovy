@@ -61,7 +61,7 @@ class Contig {
 
 //        println "calculating coverage for ${this.id}, sequence length is ${sequence.length()}"
         def result = new Integer[sequence.length()]
-        (0..sequence.length() - 1).each {
+        (1..sequence.length() - 1).each {
             result[it] = 0
         }
 

@@ -69,7 +69,7 @@ class ContigController {
 
         def result = [
                 length: contigInstance.length(),
-                quality: contigInstance.quality.split(' '),
+                quality: contigInstance.quality.split(' ').collect({it.toInteger()}),
                 coverage: contigInstance.coverage(),
                 blastHits: contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).sort({-it.bitscore}),
                 annotations: annotationsMap,
