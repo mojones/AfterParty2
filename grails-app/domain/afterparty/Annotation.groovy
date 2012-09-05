@@ -46,6 +46,8 @@ class Annotation {
             case AnnotationType.BLAST:
                 def cleanAccession = accession.replace('UniRef100_','')
                 return "http://www.uniprot.org/uniprot/$cleanAccession"
+            case AnnotationType.HMMPANTHER:
+                return "http://www.pantherdb.org/panther/family.do?clsAccession=${accession}"
             default:
                 return "#"
         }
