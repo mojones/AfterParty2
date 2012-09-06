@@ -149,6 +149,7 @@
             <tr>
                 <th>Accession</th>
                 <th>Bitscore</th>
+                <th>Evalue</th>
                 <th>Decription</th>
                 <th>Start</th>
                 <th>Stop</th>
@@ -171,6 +172,7 @@
                 ">
                     <td><a href="${b.generateUrl()}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
+                    <td>${String.format('%10.3G', b.evalue)}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>
                     <td>${b.stop}</td>

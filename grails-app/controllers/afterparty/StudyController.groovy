@@ -172,8 +172,10 @@ class StudyController {
         def user = AfterpartyUser.get(springSecurityService.principal.id)
         user.addToStudies(studyInstance)
         studyInstance.save()
+        flash.success = "created a new study"
         redirect(action: 'show', id: studyInstance.id)
     }
+
 
     @Secured(['ROLE_USER'])
     def makePublished = {

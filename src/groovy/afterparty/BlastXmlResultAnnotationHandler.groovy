@@ -44,7 +44,7 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
             b.bitscore = currentProperties.get('Hsp_bit-score').toFloat()
             b.start = currentProperties.get('Hsp_query-from').toInteger()
             b.stop = currentProperties.get('Hsp_query-to').toInteger()
-            b.evalue = currentProperties.get('Hsp_query-to').toFloat()
+            b.evalue = currentProperties.get('Hsp_evalue').toFloat()
             b.type = AnnotationType.BLAST
 
             currentContig.addToAnnotations(b)

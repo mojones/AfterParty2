@@ -78,10 +78,17 @@
 
 
 <g:if test="${flash.success}">
-<div class="message success"><p>${flash.success}</p></div>
+    <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    ${flash.success}
+    </div>
 </g:if>
+
 <g:if test="${flash.error}">
-<div class="message errormsg"><p>${flash.error}</p></div>
+    <div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    ${flash.error}
+    </div>
 </g:if>
 
 <p id="log"></p>

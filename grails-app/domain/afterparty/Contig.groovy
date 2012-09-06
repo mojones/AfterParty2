@@ -61,16 +61,17 @@ class Contig {
 
 //        println "calculating coverage for ${this.id}, sequence length is ${sequence.length()}"
         def result = new Integer[sequence.length()]
-        (1..sequence.length() - 1).each {
+        (0..sequence.length() - 1).each {
             result[it] = 0
         }
 
         this.reads.each {
 //            println "start is $it.start and stop is $it.stop"
 
-            def firstPosition = [[it.start, it.stop, sequence.length() - 1].min(), 0].max()
+            // reads count the first base as position 1 not 0 so deduct one from all positions
+            def firstPosition = [[it.start - 1, it.stop - 1, sequence.length() - 1].min(), 0].max()
 
-            def lastPosition = [[it.stop, it.start, 0].max(), this.sequence.length() - 1].min()
+            def lastPosition = [[it.stop - 1, it.start - 1, 0].max(), this.sequence.length() - 1].min()
 //            println "incrementing from $firstPosition to $lastPosition (length is ${result.size()})"
 
             (firstPosition..lastPosition).each {
@@ -84,6 +85,7 @@ class Contig {
 
     def calculateAverageCoverage() {
         def coverage = this.coverage()
+        println "coverage is ${coverage.sum()}"
         return (Float) [coverage.sum() / coverage.size(), 0.1].max()
     }
 

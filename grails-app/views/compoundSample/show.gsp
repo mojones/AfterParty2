@@ -55,7 +55,7 @@ To make a bit of text editable we need to
         <g:if test="${isOwner}">
             <p>
                 <g:link class="btn btn-info" controller="compoundsample" action="createSample" params="${[id : compoundSample.id]}">
-                    <i class="icon-plus-sign"></i>&nbsp; Add new compound sample
+                    <i class="icon-plus-sign"></i>&nbsp; Add new sample
                 </g:link>
             </p>
         </g:if>
@@ -86,7 +86,7 @@ To make a bit of text editable we need to
         <h2>Assemblies</h2>
         <g:if test="${isOwner}">
             <p>
-                <g:link class="btn btn-info" controller="compoundsample" action="createAssembly" params="${[id : compoundSample.id]}">
+                <g:link class="btn btn-info" controller="compoundSample" action="createAssembly" params="${[id : compoundSample.id]}">
                     <i class="icon-plus-sign"></i>&nbsp; Add new assembly
                 </g:link>
             </p>
@@ -119,15 +119,13 @@ To make a bit of text editable we need to
             <h3>Click "ADD NEW" to add an assembly for this species.</h3>
         </g:else>
 
-        <p>
-            <g:form controller="contigSet" action="compareContigSets" method="get">
-                <g:hiddenField name="idList" value="${compoundSample.assemblies.collect({it?.defaultContigSet?.id}).join(',')}"/>
-                <button type="submit" class="btn btn-info"><i class="icon-eye-open"></i>&nbsp;compare assemblies</button>
-            </g:form>
-        </p>
+       
 
-        <h2>Browse contigs for this compound sample</h2>
-        <g:render template="/contigSet/contigTable" model="[contigSetId : compoundSample.defaultContigSet.id]"/>
+        <g:if test="${compoundSample.defaultContigSet}">
+            <h2>Browse contigs for this compound sample</h2>
+            <g:render template="/contigSet/contigTable" model="[contigSetId : compoundSample.defaultContigSet.id]"/>
+        </g:if>
+
 
 
     </div>        

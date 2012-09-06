@@ -53,16 +53,20 @@
 
     </div>
     <div class="span2">
+        <g:if test="${assemblyInstance.defaultContigSet}">
+
         <table class="table table-bordered table-hover">
-            <tbody>
-                <tr> <td> <b>Contig count</b> </td> <td> ${assemblyInstance.contigCount} </td> </tr>
-                <tr> <td> <b>Base count</b> </td> <td> ${assemblyInstance.baseCount}</td> </tr>
-                <tr> <td> <b>Min contig length</b> </td> <td> ${assemblyInstance.minContigLength}</td> </tr>
-                <tr> <td> <b>Mean contig length</b> </td> <td> <g:formatNumber number="${assemblyInstance.meanContigLength}" type="number" maxFractionDigits="0"  /></td> </tr>
-                <tr> <td> <b>Max contig length</b> </td> <td> ${assemblyInstance.maxContigLength}</td> </tr>
-                <tr> <td> <b>N50 </b></td> <td> ${assemblyInstance.n50}</td> </tr>
-            </tbody>
-        </table>
+                <tbody>
+                    <tr> <td> <b>Contig count</b> </td> <td> ${assemblyInstance.contigCount} </td> </tr>
+                    <tr> <td> <b>Base count</b> </td> <td> ${assemblyInstance.baseCount}</td> </tr>
+                    <tr> <td> <b>Min contig length</b> </td> <td> ${assemblyInstance.minContigLength}</td> </tr>
+                    <tr> <td> <b>Mean contig length</b> </td> <td> <g:formatNumber number="${assemblyInstance.meanContigLength}" type="number" maxFractionDigits="0"  /></td> </tr>
+                    <tr> <td> <b>Max contig length</b> </td> <td> ${assemblyInstance.maxContigLength}</td> </tr>
+                    <tr> <td> <b>N50 </b></td> <td> ${assemblyInstance.n50}</td> </tr>
+                </tbody>
+            </table>
+        </g:if>
+        
     </div>
 <div>
 
@@ -156,9 +160,11 @@
             </div>
         </div>
 
+        <g:if test="${assemblyInstance.defaultContigSet}">
+            <h2>Browse contigs for this assembly</h2>
+            <g:render template="/contigSet/contigTable" model="[contigSetId : assemblyInstance.defaultContigSet.id]"/>
+        </g:if>
 
-        <h2>Browse contigs for this assembly</h2>
-        <g:render template="/contigSet/contigTable" model="[contigSetId : assemblyInstance.defaultContigSet.id]"/>
 
     </div>
 </div>

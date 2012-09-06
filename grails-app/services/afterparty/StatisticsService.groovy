@@ -310,6 +310,7 @@ if (a.defaultContigSet) {
     def currentDefaultContigSet = a.defaultContigSet
     println "deleting old contig set for assembly with id ${currentDefaultContigSet.id}"
     a.compoundSample.study.removeFromContigSets(currentDefaultContigSet)
+    a.defaultContigSet = null
     currentDefaultContigSet.delete(flush:true)
 }
 cs.data = new ContigSetData()

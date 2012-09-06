@@ -48,7 +48,7 @@ class BlastXmlResultHandler extends DefaultHandler {
                     bitscore : bitscore,
                     start : queryStart,
                     stop : queryStop,
-                    evalue: evalue.round(new MathContext(2))
+                    evalue: evalue
             ])
 
 
