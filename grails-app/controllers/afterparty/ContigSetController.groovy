@@ -434,7 +434,7 @@ class ContigSetController {
             }
             else{
                 println "searching only read sources : ${params.readSource}"
-                // get filtered contig ids only for that library
+                contigIdList = statisticsService.getFilteredContigIdsByLibrary(contigSetId, max, params.searchQuery, params.list('readSource'))
             }
         }
 

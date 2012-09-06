@@ -57,12 +57,11 @@
 
         <table class="table table-bordered table-hover">
                 <tbody>
-                    <tr> <td> <b>Contig count</b> </td> <td> ${assemblyInstance.contigCount} </td> </tr>
-                    <tr> <td> <b>Base count</b> </td> <td> ${assemblyInstance.baseCount}</td> </tr>
-                    <tr> <td> <b>Min contig length</b> </td> <td> ${assemblyInstance.minContigLength}</td> </tr>
-                    <tr> <td> <b>Mean contig length</b> </td> <td> <g:formatNumber number="${assemblyInstance.meanContigLength}" type="number" maxFractionDigits="0"  /></td> </tr>
-                    <tr> <td> <b>Max contig length</b> </td> <td> ${assemblyInstance.maxContigLength}</td> </tr>
-                    <tr> <td> <b>N50 </b></td> <td> ${assemblyInstance.n50}</td> </tr>
+                    <tr> <td> <b>Contig count</b> </td> <td> ${stats.count} </td> </tr>
+                    <tr> <td> <b>Base count</b> </td> <td> ${stats.span}</td> </tr>
+                    <tr> <td> <b>Min contig length</b> </td> <td> ${stats.min}</td> </tr>
+                    <tr> <td> <b>Mean contig length</b> </td> <td> ${stats.mean}</td> </tr>
+                    <tr> <td> <b>Max contig length</b> </td> <td> ${stats.max}</td> </tr>
                 </tbody>
             </table>
         </g:if>

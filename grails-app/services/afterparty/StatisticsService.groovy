@@ -18,6 +18,42 @@ class StatisticsService {
 //    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB', '#8A2BE2', '#DC143C']
 public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive', 'teal', 'yellow', 'aqua']
 
+def getContigSetStats(Long id){
+    def result = [:]
+    def sql = new Sql(dataSource)
+    
+    // get contig count
+    def contigCountStatement = """
+        select count(*) from contig, contig_set_contig  where contig_set_contig.contig_set_contigs_id=${id} and contig_set_contig.contig_id = contig.id
+            """    
+    sql.rows(contigCountStatement).each{ row ->
+        result.count = row.count
+    }
+
+    // get contig stats
+    def contigStatsStatement = """
+        select 
+            sum(length(contig.sequence)), 
+            min(length(contig.sequence)), 
+            max(length(contig.sequence)), 
+            avg(length(contig.sequence)) 
+        from 
+            contig, contig_set_contig  
+        where 
+            contig_set_contig.contig_set_contigs_id=1016695 and 
+            contig_set_contig.contig_id = contig.id            
+            """    
+    sql.rows(contigStatsStatement).each{ row ->
+        result.span = row.sum
+        result.min = row.min
+        result.max = row.max
+        result.mean = row.avg.toInteger()
+    }
+
+    println result
+    return result
+
+}
 
 @Cacheable("myCache")
 def getAssemblyStats(Long id) {
@@ -420,6 +456,42 @@ def getContigCount(Long contigSetId){
     def result    
     sql.rows(idStatement).each{ row ->
         result = row.count
+    }
+    return result
+}
+
+def getFilteredContigIdsByLibrary(Long contigSetId, Integer limit, String query, def readSourcesList){
+    def sql = new Sql(dataSource)
+    
+    String listString
+
+    if (readSourcesList.size() > 1){
+        println "turning list into quoted"
+        listString = "'" + readSourcesList.join("','") + "'"
+    }
+    else{
+        listString = "'" + readSourcesList[0] + "'"
+    }
+
+    def idStatement = """
+    select 
+        distinct annotation.contig_id 
+    from 
+        annotation, contig_set_contig, read 
+    where
+        annotation.contig_id=contig_set_contig.contig_id and 
+        contig_set_contig.contig_set_contigs_id=${contigSetId} and 
+        to_tsvector('english', annotation.description) @@ to_tsquery('english', '${query}') and 
+        read.contig_id=annotation.contig_id and 
+        read.source in (${listString})
+    limit
+        ${limit}
+    """.toString()
+    println idStatement
+    def result = []
+    sql.rows(idStatement).each{ row ->
+        println row.contig_id
+        result.add(row.contig_id)
     }
     return result
 }

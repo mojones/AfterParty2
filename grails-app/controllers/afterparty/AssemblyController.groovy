@@ -310,26 +310,25 @@ class AssemblyController {
     }
 
     def show = {
-//        def assemblyInstance = Assembly.get(params.id)
         def criteria = Assembly.createCriteria()
         def start = System.currentTimeMillis()
 
         def a = criteria.get({
             eq('id', params.id.toLong())
-//            fetchMode 'contigs', org.hibernate.FetchMode.JOIN
-//            fetchMode 'contigs.reads', org.hibernate.FetchMode.JOIN
         })
         println("contig set is ${a.defaultContigSet}")
         def readSources = ['any']
+        def stats
         if (a.defaultContigSet){
             readSources.addAll(statisticsService.getReadSourcesForContigSetId(a.defaultContigSet.id))
+            stats = statisticsService.getContigSetStats(a.defaultContigSet.id)
         }
 
         
 
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
-        [assemblyInstance: a, readSources:readSources]
+        [assemblyInstance: a, readSources:readSources, stats: stats]
     }
 
 
