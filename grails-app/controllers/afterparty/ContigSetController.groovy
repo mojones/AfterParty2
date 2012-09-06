@@ -27,34 +27,23 @@ class ContigSetController {
         def linkUrl = createLink(controller: 'contig', action:'show', params:[id: contig.id])
         // the contig name links to the contig page
         result += "<a href=\"${linkUrl}\">${contig.name}</a>"
-        //if (contig.PFAM_desc){
-            //result += '&nbsp;<span class="label label-success">pfam</span>'
-        //}
-        //if (contig.BLAST_desc){
-            //result += '&nbsp;<span class="label label-important">blast</span>'
-        //}
-        //if (contig.HMMPANTHER_desc){
-            //result += '&nbsp;<span class="label label-info">hmmpanther</span>'
-        //}
-        //if (contig.GENE3D_desc){
-            //result += '&nbsp;<span class="label">gene3d</span>'
-        //}
+       
         return result
     }
 
     def makeAnnotationForContig(contig){
         def annotationLines = []
         if (contig.BLAST_desc){
-            annotationLines.add("<span class=\"label label-important\">blast</span>&nbsp;${contig.BLAST_desc} (${contig.BLAST_score})")
+            annotationLines.add("<span class=\"label label-important\">blast</span>&nbsp;${contig.BLAST_desc} (${String.format('%10.3G', contig.BLAST_score)})")
         }
         if (contig.PFAM_desc){
-            annotationLines.add("<span class=\"label label-success\">pfam</span>&nbsp;${contig.PFAM_desc} (${contig.PFAM_score})")
+            annotationLines.add("<span class=\"label label-success\">pfam</span>&nbsp;${contig.PFAM_desc} (${String.format('%10.3G', contig.PFAM_score)})")
         }
         if (contig.HMMPANTHER_desc){
-            annotationLines.add("<span class=\"label label-info\">hmmpanther</span>&nbsp;${contig.HMMPANTHER_desc} (${contig.HMMPANTHER_score})")
+            annotationLines.add("<span class=\"label label-info\">hmmpanther</span>&nbsp;${contig.HMMPANTHER_desc} (${String.format('%10.3G', contig.HMMPANTHER_score)})")
         }
         if (contig.GENE3D_desc){
-            annotationLines.add("<span class=\"label\">gene3d</span>&nbsp;${contig.GENE3D_desc} (${contig.GENE3D_score})")
+            annotationLines.add("<span class=\"label\">gene3d</span>&nbsp;${contig.GENE3D_desc} (${String.format('%10.3G', contig.GENE3D_score)})")
         }
 
         return annotationLines.join('<br/>')
