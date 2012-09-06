@@ -17,15 +17,14 @@
                <h2>
                     Showing ${contigs.size()} results for ${query}
                 </h2>
-
                 <g:form controller="contigSet" action="createFromContigList" method="post">
                     <g:hiddenField name="q" value="${query}"/>
-                    <g:hiddenField name="contigList" value="${contigs*.id.join(',')}"/>
+                    <g:hiddenField name="contigList" value="${contigIdList.join(',')}"/>
                     <g:hiddenField name="studyId" value="${studyId}"/>
 
                     <button type="submit" class="btn btn-info"><i class="icon-tags"></i>&nbsp;save as contig set</button>
                 </g:form>
-                <g:render template="contigTable" model="['contigCollection' : contigs, 'contigsPerPage' : 30]"/>
+                <g:render template="staticContigTable" model="['contigs' : contigs]"/>
         </g:if>
         <g:else>
             <h2>

@@ -49,6 +49,24 @@ class ContigSetController {
         return annotationLines.join('<br/>')
     }
 
+    def makeTableRowArrayForContig(contigId, searchString){
+        def oneContig
+        if (searchString == ''){
+            oneContig = statisticsService.getInfoForSingleContig(contigId.toLong())
+        }
+        else{
+            oneContig = statisticsService.getFilteredInfoForSingleContig(contigId.toLong(), searchString)
+        }
+        return [
+                    makeNameForContig(oneContig),
+                    oneContig.length,
+                    oneContig.quality,
+                    oneContig.coverage,
+                    oneContig.gc,
+                    makeAnnotationForContig(oneContig)
+                ]
+    }
+
     def getContigsJSON = {
 
         def contigSetId = params.contigSetId.toLong()
@@ -78,21 +96,8 @@ class ContigSetController {
         //def idList = [341873]
         def dataArray = []
         idList.each{
-            def oneContig
-            if (!searchString){
-                oneContig = statisticsService.getInfoForSingleContig(it.toLong())
-            }
-            else{
-                oneContig = statisticsService.getFilteredInfoForSingleContig(it.toLong(), searchString)
-            }
-            dataArray.add([
-                            makeNameForContig(oneContig),
-                            oneContig.length,
-                            oneContig.quality,
-                            oneContig.coverage,
-                            oneContig.gc,
-                            makeAnnotationForContig(oneContig)
-                        ])
+            
+            dataArray.add(makeTableRowArrayForContig(it, searchString))
         }
 
         def result = [
@@ -415,36 +420,34 @@ class ContigSetController {
         println "idlist is $idList"
         Integer max = params.numberOfResults.toInteger()
         println "max is $max"
-        def allContigs = []
+
         def studyId = 0
+        def contigIdList
 
-
-        idList.each {
-            println "searching in contig set $it"
-            ContigSet set = ContigSet.get(it)
-            studyId = set.study.id
-            def t = new Timer()
-            def contigs
+        idList.each { id ->
+            println "searching in contig set $id"
+            Long contigSetId = id.toLong()
+            studyId = ContigSet.get(contigSetId).study.id
             if ('any' in params.readSource || params.readSource == null){
                 println "searching all read sources"
-                contigs = searchService.searchInContigSet(set, params.searchQuery, max)
+                contigIdList = statisticsService.getFilteredContigIds(contigSetId, 0, max, 'contig.average_coverage', 'desc', params.searchQuery)
             }
             else{
                 println "searching only read sources : ${params.readSource}"
-
-                contigs = searchService.searchInContigSetAndLibrary(set, params.searchQuery, max, params.list("readSource"))
+                // get filtered contig ids only for that library
             }
-            t.log("called search service")
-            println "got ${contigs.size()} results for ${params.searchQuery}"
-            allContigs.addAll(contigs*.id)
         }
 
-        def contigInfo = statisticsService.getFilteredContigInfoForContigList(allContigs, params.searchQuery)
-
+        def allContigs = []
+        contigIdList.each{id ->
+            println "getting a table row for $id"
+            allContigs.add(makeTableRowArrayForContig(id, params.searchQuery))
+        }
 
         println "rendering view...."
         [
-                contigs: contigInfo,
+                contigs: allContigs,
+                contigIdList : contigIdList,
                 query: params.searchQuery,
                 studyId: studyId
         ]

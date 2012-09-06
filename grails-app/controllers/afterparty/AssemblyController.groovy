@@ -85,7 +85,7 @@ class AssemblyController {
         job.save(flush: true)
 
 
-//        runAsync {
+        runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -121,7 +121,7 @@ class AssemblyController {
 
             job2.progress = 'finished'
             job2.status = BackgroundJobStatus.FINISHED
- //       }
+        }
 
         redirect(controller: 'backgroundJob', action: 'list')
 
@@ -151,7 +151,7 @@ class AssemblyController {
 
         def contigs = miraService.parseFasta(f.inputStream)
 
-//        runAsync {
+        runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -220,7 +220,7 @@ class AssemblyController {
 
             job2.progress = 'finished'
             job2.status = BackgroundJobStatus.FINISHED
-//        }
+        }
 
         redirect(controller: 'backgroundJob', action: 'list')
 
