@@ -7,6 +7,7 @@ class BlastService {
     def sessionFactory
     def grailsApplication
 
+    javax.sql.DataSource dataSource
 
     static transactional = false
 
@@ -26,17 +27,10 @@ class BlastService {
             println "blast : $it"
         })
         blastProcess.waitFor()
-        def newData = new ContigSetData()
-        newData.blastHeaderFile = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
-        newData.blastIndexFile = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
-        newData.blastSequenceFile = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
-        
-        cs.data = newData
-        println "saving ContigSet ${cs.id}"
-        cs.save(flush:true)
-        newData.contigSet = cs
-        newData.save(flush:true)
-
+        def headerBytes = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
+        def indexBytes = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
+        def sequenceBytes = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
+       
         println('saved some new blast data')
         return cs
     }

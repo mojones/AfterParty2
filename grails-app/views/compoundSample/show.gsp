@@ -98,16 +98,12 @@ To make a bit of text editable we need to
                 <thead>
                 <tr>
                     <th>Assembly name</th>
-                    <th>Number of Contigs</th>
-                    <td>Span</td>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${compoundSample.assemblies.sort()}" var="assembly" status="index">
                     <tr>
                         <td><g:link controller="assembly" action="show" id="${assembly.id}"><i class="icon-align-left"></i>&nbsp;${assembly.name}</g:link></td>
-                        <td>${assembly.contigs.size()}</td>
-                        <td>${assembly.baseCount}</td>
                     </tr>
                 </g:each>
                 </tbody>

@@ -1,10 +1,8 @@
 <%@ page import="afterparty.Contig" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="main.gsp"/>
-    <g:set var="entityName" value="${message(code: 'contig.label', default: 'Contig')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>BLAST search results</title>
 
     %{--raphael library included on this page to show contig annotations, also g plugin and line plugin--}%
     <script type="text/javascript" src="${resource(dir: 'js', file: 'raphael-min.js')}"></script>
@@ -16,17 +14,10 @@
 
 <body>
 
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
+<div class="row-fluid">
+    <div class="span10 offset1">
         <h2>Blast hits</h2>
-    </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
         <script type="text/javascript">
 
@@ -46,65 +37,23 @@
                 for (var i = 0; i < data.hits.length; i++) {
                     var hit = data.hits[i];
                     var hitColour = drawing.getBLASTColour(hit.bitscore);
-                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.contigId, hit.contigId);
+                    var blastRect = drawing.drawBar(hit.start, hit.stop, 15, hitColour, hit.evalue ,hit.contigName);
                 }
                 drawing.end();
                 $('#spinner').hide();
             });
 
-
-
-
-
-
         </script>
 
 
-        <div id="coffeescript_annotation">
-            <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;">
-            </h2>
-        </div>
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
+        <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"></h2>
+        <div id="coffeescript_annotation"> </div>
 
         <h2>BLAST results</h2>
-    </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
-        <h3>Number of hits : ${results.size()}</h3>
-
-    </div>        <!-- .block_content ends -->
-
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
-</div>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
-        <h2>BLAST hits</h2>
-    </div>        <!-- .block_head ends -->
-
-    <div class="block_content">
-
-        <table cellpadding="0" cellspacing="0" width="100%" class="sortable">
+        <button type="submit" class="btn btn-info" onclick="doCreate(${results*.contigId}, ${studyId})"><i class="icon-tags"></i>&nbsp;save as contig set</button>
+        <hr/>
+        <table id="blast-result-table" class="table table-hover table-bordered">
 
             <thead>
             <tr>
@@ -135,14 +84,17 @@
 
         </table>
 
-        <p><input type="submit" class="submit long" value="Save as contig set" onclick="doCreate(${results*.contigId}, ${studyId})"/>
-        </p>
-
+                    <script type="text/javascript">
+                $(document).ready(function() {
+                   $('#blast-result-table').dataTable({
+                        "aaSorting": [[ 4, "asc" ]],
+                        "asStripeClasses": [],
+                        "sPaginationType": "bootstrap"    
+                   });
+                });
+            </script>
     </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
 </div>
 
 </body>

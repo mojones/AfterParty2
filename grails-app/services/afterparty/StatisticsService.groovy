@@ -18,6 +18,20 @@ class StatisticsService {
 //    public static boldAssemblyColours = ['#00FFFF', '#FFC0CB', '#87CEEB', '#8A2BE2', '#DC143C']
 public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive', 'teal', 'yellow', 'aqua']
 
+
+def getFastaForContigSet(Long id){
+    def sql = new Sql(dataSource)
+    def allContigsStatement = """
+        select id, sequence from contig, contig_set_contig  where contig_set_contig.contig_set_contigs_id=${id} and contig_set_contig.contig_id = contig.id
+            """    
+    def result = new StringBuilder()
+    sql.rows(allContigsStatement).each{ row ->
+        result.append(">${row.id}\n${row.sequence}\n")
+    }
+    return result.toString()
+}
+
+
 def getContigSetStats(Long id){
     def result = [:]
     def sql = new Sql(dataSource)
