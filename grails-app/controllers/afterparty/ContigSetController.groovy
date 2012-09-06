@@ -149,20 +149,19 @@ class ContigSetController {
 
 
             contigs.each { contig ->
-//                println "looking at contig $contig"
-                def (id, quality, coverage) = contig.key.split('_')
-                if (coverage.toFloat() > 0) {
-                    def sequence = contig.value.toLowerCase()
-                    cs.id.push(id)
-                    cs.length.push(sequence.length())
-                    def lengthWithoutN = sequence.replaceAll('n', '').length()
-                    cs.lengthwithoutn.push(lengthWithoutN)
-                    cs.quality.push(quality.toFloat())
-                    cs.coverage.push(coverage.toFloat())
-                    cs.topBlast.push(id)
-                    cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
-                }
-            }
+        def (id, quality, coverage) = contig.key.split('_')
+        if (coverage.toFloat() > 0) {
+            def sequence = contig.value.toLowerCase()
+            cs.id.push(id)
+            cs.length.push(sequence.length())
+            def lengthWithoutN = sequence.replaceAll('n', '').length()
+            cs.lengthwithoutn.push(lengthWithoutN)
+            cs.quality.push(quality.toFloat())
+            cs.coverage.push(coverage.toFloat())
+            cs.topBlast.push(id)
+            cs.gc.push(100 * (sequence.count('g') + sequence.count('c')) / lengthWithoutN)
+        }
+        }
 
             println "built map in ${System.currentTimeMillis() - start}"
 
@@ -176,7 +175,6 @@ class ContigSetController {
 
 
         File tempFileDirectory = ApplicationHolder.application.parentContext.getResource("standalonePages").file
-//        File tempFileDirectory = new File((String) g.resource(dir: 'standalonePages', absolute: 'true'))
         println "temp directory is $tempFileDirectory.absolutePath"
         File output = File.createTempFile('standalone', '.html', tempFileDirectory)
         println "output file is $output.absolutePath"
@@ -195,7 +193,7 @@ class ContigSetController {
         redirect(uri: "/standalonePages/$output.name")
     }
 
-    //todo - use multiple contig sets in a blast search (actually multiple blast searches) - use backgroundjob to track progress
+
 
     def blastAgainstSingleContigSet(Long id, String query) {
 
@@ -243,7 +241,6 @@ class ContigSetController {
         reader.setContentHandler(handler)
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-//        blastProcess.in.eachLine {println it}
         reader.parse(new InputSource(blastProcess.in))
 
         blastResults.each {
@@ -345,8 +342,8 @@ class ContigSetController {
             println "adding contig $it"
             cs.addToContigs(Contig.get(it))
         }
-        cs.data = new ContigSetData()
-        blastService.attachBlastDatabaseToContigSet(cs)
+        cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
+        
         cs.save()
         redirect(action: 'compareContigSets', 'params': ['idList': [cs.id]])
 

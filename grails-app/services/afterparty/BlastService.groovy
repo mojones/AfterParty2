@@ -11,30 +11,7 @@ class BlastService {
 
     static transactional = false
 
-    def attachBlastDatabaseToContigSet(ContigSet cs) {
-        File contigsFastaFile = File.createTempFile('contigs', '.fasta')
-        println "temporary file is ${contigsFastaFile.absolutePath} ${contigsFastaFile.name}"
-        cs.contigs.each {
-            contigsFastaFile.append(">" + it.id + "\n" + it.sequence + "\n")
-        }
-        println "running formatblasdb"
-
-        println("${grailsApplication.config.makeblastdbPath} -in ${contigsFastaFile.absolutePath} -input_type 'fasta' -dbtype 'nucl'".split(" "))
-        def blastProcess = new ProcessBuilder("${grailsApplication.config.makeblastdbPath} -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl".split(" "))
-        blastProcess.redirectErrorStream(true)
-        blastProcess = blastProcess.start()
-        blastProcess.in.eachLine({
-            println "blast : $it"
-        })
-        blastProcess.waitFor()
-        def headerBytes = (new File(contigsFastaFile.absolutePath + '.nhr')).getBytes()
-        def indexBytes = (new File(contigsFastaFile.absolutePath + '.nin')).getBytes()
-        def sequenceBytes = (new File(contigsFastaFile.absolutePath + '.nsq')).getBytes()
-       
-        println('saved some new blast data')
-        return cs
-    }
-
+    
 
     def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
 

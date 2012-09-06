@@ -51,8 +51,14 @@
 
         <h2>BLAST results</h2>
 
-        <button type="submit" class="btn btn-info" onclick="doCreate(${results*.contigId}, ${studyId})"><i class="icon-tags"></i>&nbsp;save as contig set</button>
-        <hr/>
+                <g:form controller="contigSet" action="createFromContigList" method="post">
+                    <g:hiddenField name="q" value="blast search"/>
+                    <g:hiddenField name="contigList" value="${results*.contigId.join(',')}"/>
+                    <g:hiddenField name="studyId" value="${studyId}"/>
+
+                    <button type="submit" class="btn btn-info"><i class="icon-tags"></i>&nbsp;save as contig set</button>
+                </g:form>
+
         <table id="blast-result-table" class="table table-hover table-bordered">
 
             <thead>
