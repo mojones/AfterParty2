@@ -9,6 +9,7 @@ class RunController {
     def springSecurityService
     def trimReadsService
     def grailsLinkGenerator
+    def statisticsService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -19,7 +20,7 @@ class RunController {
 
         // we must get all the data from the request before we enter the async block
         def f = request.getFile('myFile')
-        def realData = f.inputStream.bytes
+        def realData = f.getFileItem().getString()
         def realFilename = f.originalFilename
 
         def type = params.type
@@ -36,7 +37,7 @@ class RunController {
 
 
 
-        runAsync({
+        //runAsync({
             Run run = Run.get(runId)
 
             // we must get() these domain objects inside the runAsync block
@@ -48,6 +49,7 @@ class RunController {
             realJob.save(flush: true)
             println "creating rfd"
             ReadsFileData d = new ReadsFileData(fileData: realData)
+            d.save(flush:true)
             println "creating..."
             ReadsFile r = new ReadsFile(name: "uploaded FASTQ ${realFilename} for ${run.name}", data: d, status: ReadsFileStatus.RAW)
             println "saving...."
@@ -64,7 +66,6 @@ class RunController {
 
                 run.trimmedReadsFile = r
             }
-//            run.name =  'martin'
             run.save()
             println "after: raw is ${run.rawReadsFile},trimmed is ${run.trimmedReadsFile}"
 
@@ -72,7 +73,7 @@ class RunController {
             realJob.destinationUrl = grailsLinkGenerator.link(controller: 'run', action: 'show', id: run.id)
             realJob.save(flush: true)
             println "done everything"
-        })
+        //})
 
         redirect(controller: 'backgroundJob', action: 'list')
 
@@ -108,7 +109,20 @@ class RunController {
     def show = {
         def runInstance = Run.get(params.id)
         def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
-        [runInstance: runInstance, isOwner: runInstance.experiment.sample.compoundSample.study.user.id == userId]
+        def rawDataStats
+        if (runInstance.rawReadsFile){
+            rawDataStats = statisticsService.getReadFileDataStats(runInstance.rawReadsFile.data.id)
+        }
+        def trimmedDataStats
+        if (runInstance.trimmedReadsFile){
+            trimmedDataStats = statisticsService.getReadFileDataStats(runInstance.trimmedReadsFile.data.id)
+        }
+        [
+        runInstance: runInstance, 
+        isOwner: runInstance.experiment.sample.compoundSample.study.user.id == userId,
+        rawReadStats : rawDataStats,
+        trimmedReadStats : trimmedDataStats
+        ]
 
     }
 

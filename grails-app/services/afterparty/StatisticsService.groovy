@@ -72,10 +72,14 @@ def getContigSetStats(Long id){
 @Cacheable("myCache")
 def getReadFileDataStats(Long id) {
 
+    println "getting reads file data for $id"
     ReadsFileData f = ReadsFileData.get(id)
 
     //        get the data
     String fileString = new String(f.fileData)
+    println "length is ${fileString.size()}"
+    println "data : ${fileString[0..1000]}"
+
     def lines = fileString.split("\n")
     int totalBases = 0
     int readCount = 0
@@ -94,14 +98,19 @@ def getReadFileDataStats(Long id) {
         }
     }
 
+    println "total bases : $totalBases"
+    println "read count : $readCount"
+
     int meanLength = totalBases / readCount
-    return [
+    def result = [
     'readCount': readCount,
     'meanLength': meanLength,
     'baseCount': totalBases,
     'maxLength': maxReadLength,
     'minLength': minReadLength,
     ]
+    println result
+    return result
 }
 
 

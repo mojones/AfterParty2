@@ -22,14 +22,15 @@ class ExperimentController {
                     progress: 'queued',
                     status: BackgroundJobStatus.QUEUED,
                     type: BackgroundJobType.TRIM,
-                    study: e.sample.study)
+                    user: AfterpartyUser.get(springSecurityService.principal.id),
+                    study: e.sample.compoundSample.study)
             job.save(flush: true)
 
-            runAsync {
+            //runAsync {
                 trimReadsService.trimReads(run.id, job.id)
-            }
+            //}
         }
-        redirect(controller: 'backgroundJob', action: list)
+        redirect(controller: 'backgroundJob', action: 'list')
 
     }
 
@@ -37,13 +38,14 @@ class ExperimentController {
     def attachAdapterSequences = {
         def f = request.getFile('myFile')
 
-        def experimentId = params.experimentId
+        def experimentId = params.id
 
         BackgroundJob job = new BackgroundJob(
                 name: 'uploading adapters file',
                 progress: 'running',
-                study: Experiment.get(experimentId).sample.study,
+                study: Experiment.get(experimentId).sample.compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
+                user: AfterpartyUser.get(springSecurityService.principal.id),
                 type: BackgroundJobType.UPLOAD_ADAPTERS)
         job.save(flush: true)
 
@@ -60,7 +62,7 @@ class ExperimentController {
             job.save(flush: true)
         }
 
-        redirect(controller: 'backgroundJob', action: list)
+        redirect(controller: 'backgroundJob', action: 'list')
 
     }
 

@@ -54,7 +54,7 @@ To make a bit of text editable we need to
         <h2>Samples</h2>
         <g:if test="${isOwner}">
             <p>
-                <g:link class="btn btn-info" controller="compoundsample" action="createSample" params="${[id : compoundSample.id]}">
+                <g:link class="btn btn-info" controller="compoundSample" action="createSample" params="${[id : compoundSample.id]}">
                     <i class="icon-plus-sign"></i>&nbsp; Add new sample
                 </g:link>
             </p>

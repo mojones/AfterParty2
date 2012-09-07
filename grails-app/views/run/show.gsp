@@ -45,30 +45,13 @@
 
         <div class="bs-docs-example">
             <ul id="myTab" class="nav nav-tabs">
-              
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Raw reads <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#rawReadsStats" data-toggle="tab">stats</a></li>
-                  <li><a href="#rawReadsActions" data-toggle="tab">actions</a></li>
-                </ul>
-              </li>
-
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Trimmed reads <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#trimmedReadsStats" data-toggle="tab">stats</a></li>
-                  <li><a href="#trimmedReadsActions" data-toggle="tab">actions</a></li>
-                </ul>
-              </li>
-
-              
+               <li class="active"><a href="#rawReads" data-toggle="tab">Raw reads</a></li>
+               <li><a href="#trimmedReads" data-toggle="tab">Trimmed reads</a></li>
             </ul>
 
             <div id="myTabContent" class="tab-content">
-                <div class="tab-pane active fade in" id="rawReadsStats">
+                <div class="tab-pane active fade in" id="rawReads">
                     <g:if test="${runInstance.rawReadsFile}">
-                        <h3>Raw reads stats</h3>
                         <h3>${runInstance.rawReadsFile.name}</h3>
 
                         <p>${runInstance.rawReadsFile.description}</p>
@@ -77,25 +60,30 @@
                                 <button type="submit" class="btn btn-info"><i class="icon-download-alt"></i>&nbsp;Download reads</button>
                             </g:form>
 
+                        <g:if test="${runInstance.rawReadsFile && isOwner}">
+                            <g:form controller="run" action="trim">
+                                <g:hiddenField name="id" value="${runInstance.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;trim reads</button>
+                            </g:form>
+                        </g:if>
 
-                        <div class="span2">
+                        <div>
                             <table class="table table-bordered table-hover">
                                 <tbody>
-                                <tr><td><b>Base count</b> </td><td>${runInstance.rawReadsFile.baseCount} </td></tr>
-                                <tr><td><b>Read count</b> </td><td>${runInstance.rawReadsFile.readCount} </td></tr>
-                                <tr><td><b>Min length</b> </td><td>${runInstance.rawReadsFile.minReadLength} </td></tr>
-                                <tr><td><b>Mean length</b></td><td> ${runInstance.rawReadsFile.meanReadLength} </td></tr>
-                                <tr><td><b>Max length</b> </td><td>${runInstance.rawReadsFile.maxReadLength}</td></tr>
+                                <tr><td><b>Base count</b> </td><td>${rawReadStats.baseCount} </td></tr>
+                                <tr><td><b>Read count</b> </td><td>${rawReadStats.readCount} </td></tr>
+                                <tr><td><b>Min length</b> </td><td>${rawReadStats.minLength} </td></tr>
+                                <tr><td><b>Mean length</b></td><td> ${rawReadStats.meanLength} </td></tr>
+                                <tr><td><b>Max length</b> </td><td>${rawReadStats.maxLength}</td></tr>
                                 </tbody>
                             </table>
                         </div>
+
                     </g:if>
                     <g:else>
                         <h3>No raw reads file uploaded yet</h3>
                     </g:else>
-                </div>
 
-                <div class="tab-pane fade" id="rawReadsActions">
                     <g:if test="${isOwner}">
                         <h4>Upload/replace reads</h4>
                         <g:form action="attachReads" method="post" enctype="multipart/form-data">
@@ -108,17 +96,9 @@
                         </g:form>
                     </g:if>       
                     <hr/>
-
-                    <g:if test="${runInstance.rawReadsFile && isOwner}">
-                        <h4>Trim reads</h4>
-                            <g:form controller="run" action="trim">
-                                <g:hiddenField name="id" value="${runInstance.id}"/>
-                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;trim reads</button>
-                            </g:form>
-                    </g:if>
                 </div>
 
-                <div class="tab-pane fade" id="trimmedReadsStats">
+                <div class="tab-pane fade" id="trimmedReads">
                     <g:if test="${runInstance.trimmedReadsFile}">
 
                         <h3>${runInstance.trimmedReadsFile.name}</h3>
@@ -131,14 +111,21 @@
                                 <button type="submit" class="btn btn-info"><i class="icon-download-alt"></i>&nbsp;Download reads</button>
                             </g:form>
 
-                        <div class="span2">
+                        <g:if test="${runInstance.trimmedReadsFile && isOwner}">
+                            <g:form controller="run" action="runMira">
+                                <g:hiddenField name="id" value="${runInstance.id}"/>
+                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;assemble reads</button>
+                            </g:form>
+                        </g:if>
+
+                        <div>
                             <table class="table table-bordered table-hover">
                                 <tbody>
-                                <tr><td><b>Base count</b> </td><td>${runInstance.trimmedReadsFile.baseCount} </td></tr>
-                                <tr><td><b>Read count</b> </td><td>${runInstance.trimmedReadsFile.readCount} </td></tr>
-                                <tr><td><b>Min length</b> </td><td>${runInstance.trimmedReadsFile.minReadLength} </td></tr>
-                                <tr><td><b>Mean length</b></td><td> ${runInstance.trimmedReadsFile.meanReadLength} </td></tr>
-                                <tr><td><b>Max length</b> </td><td>${runInstance.trimmedReadsFile.maxReadLength}</td></tr>
+                                <tr><td><b>Base count</b> </td><td>${trimmedReadStats.baseCount} </td></tr>
+                                <tr><td><b>Read count</b> </td><td>${trimmedReadStats.readCount} </td></tr>
+                                <tr><td><b>Min length</b> </td><td>${trimmedReadStats.minLength} </td></tr>
+                                <tr><td><b>Mean length</b></td><td> ${trimmedReadStats.meanLength} </td></tr>
+                                <tr><td><b>Max length</b> </td><td>${trimmedReadStats.maxLength}</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -146,10 +133,7 @@
                     <g:else>
                         <h3>No trimmed reads file uploaded yet</h3>
                     </g:else>
-                    
-                </div>
 
-                <div class="tab-pane fade" id="trimmedReadsActions">
                     <g:if test="${isOwner}">
                         <h4>Upload/replace reads</h4>
                         <g:form action="attachReads" method="post" enctype="multipart/form-data">
@@ -161,19 +145,8 @@
                             <button type="submit" class="btn btn-info"><i class="icon-upload"></i>&nbsp;upload reads</button>
                         </g:form>
                     </g:if>       
-                   
-                    <g:if test="${runInstance.trimmedReadsFile && isOwner}">
-                            <g:form controller="run" action="runMira">
-                                <g:hiddenField name="id" value="${runInstance.id}"/>
-                                <button type="submit" class="btn btn-info"><i class="icon-time"></i>&nbsp;assemble reads</button>
-                            </g:form>
-                    </g:if>
-
                 </div>
-
-                
             </div>
-            
         </div>        
         </div>        <!-- .sidebar_content ends -->
 

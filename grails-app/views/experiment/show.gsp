@@ -58,16 +58,12 @@
                 <thead>
                 <tr>
                     <th>Run name</th>
-                    <th>Raw reads</th>
-                    <td>Trimmed reads</td>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${experimentInstance.runs}" var="run">
                     <tr>
                         <td><g:link controller="run" action="show" id="${run.id}"><i class="icon-cog"></i>&nbsp;${run.name}</g:link></td>
-                        <td>${run.getRawReadsCount()}</td>
-                        <td>${run.getTrimmedReadsCount()}</td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -84,7 +80,7 @@
                 <label>Select new file:</label><br/>
                 <input type="file" name="myFile"/>
                 <span class="help-block">FASTA format only</span>
-                <g:hiddenField name="experimentId" value="${experimentInstance?.id}"/>
+                <g:hiddenField name="id" value="${experimentInstance?.id}"/>
                 <button type="submit" class="btn btn-info"/><i class="icon-upload"></i>&nbsp;upload</button>
             </g:form>
                 <g:link class="btn btn-info" controller="experiment" action="trimAllReadFiles" id="${experimentInstance.id}"><i class="icon-time"></i>&nbsp;trim all reads</g:link>

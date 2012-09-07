@@ -19,26 +19,6 @@ class ReadsFile {
         }
 
 
-    def getReadCount() {
-        return statisticsService.getReadFileDataStats(data.id.toLong()).readCount
-    }
-
-    def getMeanReadLength() {
-        return statisticsService.getReadFileDataStats(data.id.toLong()).meanLength
-    }
-
-    def getMaxReadLength() {
-        return statisticsService.getReadFileDataStats(data.id.toLong()).maxLength
-    }
-
-    def getMinReadLength() {
-        return statisticsService.getReadFileDataStats(data.id.toLong()).minLength
-    }
-
-    def getBaseCount() {
-        return statisticsService.getReadFileDataStats(data.id.toLong()).baseCount
-    }
-
 
     def isPublished(){
         return this.run.isPublished()

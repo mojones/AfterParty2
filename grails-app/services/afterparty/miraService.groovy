@@ -59,6 +59,7 @@ class miraService {
                 }
                 currentContigString = []
                 currentContigName = line.split(/ /)[1]
+                currentContigName = currentContigName.split(/_/)[-1]
 //                println currentContigName
                 inContigString = true
 

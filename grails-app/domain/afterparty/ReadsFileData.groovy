@@ -2,11 +2,14 @@ package afterparty
 
 class ReadsFileData {
 
-    byte[] fileData
+    String fileData
 
     static constraints = {
     }
 
+    static mapping = {
+       fileData type: 'text'
+    }
+
     static belongsTo = ReadsFile
-    static hasMany = [readsFiles : ReadsFile]
 }

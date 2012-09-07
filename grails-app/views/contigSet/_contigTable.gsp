@@ -2,7 +2,7 @@
 <table class="table table-bordered table-hover" id="contigTable">
     <thead>
         <tr>
-            <th>Contig ID</th>
+            <th>Contig name</th>
             <th>Length</th>
             <th>Mean quality</th>
             <th>Mean coverage</th>

@@ -57,7 +57,6 @@
                 <thead>
                 <tr>
                     <th>Experiment name</th>
-                    <th>Raw reads</th>
                     <td>Run count</td>
                 </tr>
                 </thead>
@@ -65,7 +64,6 @@
                 <g:each in="${sampleInstance.experiments}" var="s">
                     <tr>
                         <td><g:link controller="experiment" action="show" id="${s.id}"><i class="icon-tint"></i>&nbsp;${s.name}</g:link></td>
-                        <td>${s.rawReadsCount}</td>
                         <td>${s.runs.size()}</td>
                     </tr>
                 </g:each>

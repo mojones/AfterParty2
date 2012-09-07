@@ -10,7 +10,6 @@ class TrimReadsService {
 
     def trimReads(def runId, def jobId) {
 
-        runAsync {
             def run = Run.get(runId)
             def readsFileId = run.rawReadsFile.id
             BackgroundJob job = BackgroundJob.get(jobId)
@@ -36,15 +35,19 @@ class TrimReadsService {
             job.commandLine = command
 
 
-            Process p = command.execute()
             println command
+            def p = new ProcessBuilder(command.split(" "))
+            p.redirectErrorStream(true)
+            p = p.start()
+
             println "Process: ${p}"
 
             int lines = 0
             StringBuffer file = new StringBuffer()
-            p.in.newReader().eachLine { line ->
+            p.in.eachLine { line ->
+                println line
                 lines++
-                if (lines % 1000 == 0) {
+                if (lines % 10 == 0) {
                     int readsProcessed = lines / 4
 //                println "read : $lines"
                     job.progress = "$readsProcessed reads processed"
@@ -56,8 +59,9 @@ class TrimReadsService {
             job.progress = 'saving trimmed reads to db'
             job.save()
 
-            ReadsFileData d = new ReadsFileData(fileData: file.toString().getBytes())
+            ReadsFileData d = new ReadsFileData(fileData: file.toString())
             ReadsFile trimmedReadsFile = new ReadsFile(name: "trimmed version of $rawReadsFile.name", data: d, description: p.err.text, status: ReadsFileStatus.TRIMMED, run: run)
+            trimmedReadsFile.save(flush:true)
             run.trimmedReadsFile = trimmedReadsFile
 
             run.save(flush: true)
@@ -76,6 +80,6 @@ class TrimReadsService {
 
 
             return trimmedReadsFile.id
-        }
+
     }
 }
