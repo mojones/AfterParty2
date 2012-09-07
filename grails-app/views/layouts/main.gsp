@@ -37,6 +37,7 @@
     <g:javascript library="application"/>
 
     <g:layoutHead/>
+        <ga:trackPageview />
 
 </head>
 
