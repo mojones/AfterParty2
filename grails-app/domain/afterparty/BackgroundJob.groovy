@@ -32,7 +32,7 @@ class BackgroundJob {
             Date now = new Date(System.currentTimeMillis())
             TimeDuration td = TimeCategory.minus(finish, now)
 
-            return "$td remaining"
+            return "${td.getMinutes()} minutes ${td.getSeconds()} seconds remaining"
         }
         else {
             return ''

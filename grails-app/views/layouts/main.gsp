@@ -79,14 +79,14 @@
 
 <g:if test="${flash.success}">
     <div class="alert alert-success">
-    <button type="button" class="close" data-dismiss="alert">×</button>
+    <button type="button" class="close" data-dismiss="alert">x</button>
     ${flash.success}
     </div>
 </g:if>
 
 <g:if test="${flash.error}">
     <div class="alert alert-error">
-    <button type="button" class="close" data-dismiss="alert">×</button>
+    <button type="button" class="close" data-dismiss="alert">x</button>
     ${flash.error}
     </div>
 </g:if>

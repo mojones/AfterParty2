@@ -9,7 +9,7 @@ class AsyncMethodFilters {
             }
             after = { Map model ->
                 println "sleeping to make sure the background thread has time to kick off"
-                Thread.sleep(2000)
+                Thread.sleep(5000)
             }
             afterView = { Exception e ->
 

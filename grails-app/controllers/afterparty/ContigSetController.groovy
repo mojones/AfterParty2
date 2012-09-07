@@ -387,8 +387,7 @@ class ContigSetController {
         ids.each {
             c.addToContigs(Contig.get(it.toLong()))
         }
-        c.data = new ContigSetData()
-        blastService.attachBlastDatabaseToContigSet(c)
+        c.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
         c.save(flush: true)
         statisticsService.getStatsForContigSet(c)
         println "rendering $c.id"

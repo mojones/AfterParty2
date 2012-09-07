@@ -97,12 +97,12 @@
                 <div class="tab-pane active fade in" id="generateAnnotation">
                     <g:form controller="assembly" action="runBlast">
                         <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;BLAST contigs</button>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;generate BLAST annotation</button>
                     </g:form>
 
                     <g:form controller="assembly" action="runPfam">
                         <g:hiddenField name="id" value="${assemblyInstance.id}"/>
-                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;InterProScan contigs</button>
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;generate InterProScan annotation</button>
                     </g:form>
                 </div>
 

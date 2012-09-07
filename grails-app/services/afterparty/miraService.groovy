@@ -13,7 +13,7 @@ class miraService {
     def grailsLinkGenerator
 
     def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
-
+        println "attaching contigs from ace file"
         def added = 0
         def startTime = System.currentTimeMillis()
 
@@ -38,14 +38,14 @@ class miraService {
         aceFile.eachLine { line ->
 
             // for quick testing
-            if (added > 100000) {
-                return
-            }
+            //if (added > 100000) {
+            //    return
+            //}
 
             if (line.startsWith(/CO /)) {
                 // if we already have a contig then update it
                 if (currentContig) {
-//                    println "updating contig with ${currentContig.reads.size()} reads"
+                    println "updating contig with ${currentContig.reads.size()} reads"
                     currentContig.averageCoverage = currentContig.calculateAverageCoverage()
 //                    def start = System.currentTimeMillis()
                     
@@ -173,10 +173,10 @@ class miraService {
             currentContig.save()
 
         }
-
+        println "finished processing .ace file"
         a = a.merge()
         a.save()
-//
+
         statisticsService.createContigSetForAssembly(a.id)
         return a
 

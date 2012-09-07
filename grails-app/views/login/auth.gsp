@@ -1,45 +1,24 @@
 <head>
-    <title><g:message code='spring.security.ui.login.title'/></title>
+    <title>Log in</title>
     <meta name="layout" content="main.gsp"/>
 </head>
 
 <body>
-
-<div class="block">
-
-    <div class="block_head">
-        <div class="bheadl"></div>
-
-        <div class="bheadr"></div>
-
+<div class="row-fluid">
+    <div class="span10 offset1">
         <h2>Log in</h2>
-    </div>        <!-- .block_head ends -->
 
-    <div class="block_content">
         <form action='${postUrl}' method='POST' id="loginForm" name="loginForm" autocomplete='off'>
-
-
-            <p>
-                %{--<label for="username"></label>--}%
-                %{--<input name="j_username" id="username" size="20"/>--}%
-
-                <label>Username:</label><br/>
-                <input type="text" class="text small" name="j_username"/>
-            </p>
-
-            <p>
-                <label>Password:</label><br/>
-                <input type="text" class="text small" name="j_password"/>
-
-            </p>
-            <input type="submit" class="submit mid" value="Log in"/>
+            <label>Username:</label>
+            <input type="text" class="text small" name="j_username" placeholder="type your username"/>
+            <label>Password:</label>
+            <input type="text" class="text small" name="j_password"  placeholder="type your password"/>
+            <br/>
+            <button type="submit" class="btn btn-info"><i class="icon-user"></i>&nbsp;log in</button>
 
         </form>
     </div>        <!-- .block_content ends -->
 
-    <div class="bendl"></div>
-
-    <div class="bendr"></div>
 </div>
 
 

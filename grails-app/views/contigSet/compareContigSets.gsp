@@ -44,8 +44,11 @@
                         }
                     }
                 }
-
-                doCreate(ids, ${contigSets[0].study.id});
+                var createUrl = "<g:createLink controller="contigSet" action="createFromContigList"/>";
+                console.log(createUrl);
+                var fullUrl = createUrl + '?contigList=' + ids.join() + '&q=changeme&studyId=' + ${contigSets[0].study.id};
+                console.log(fullUrl);
+                window.location = fullUrl;
             });
 
             // draw and paginate table first

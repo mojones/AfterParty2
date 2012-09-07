@@ -94,6 +94,7 @@ class AssemblyController {
             job2.save(flush: true)
 
             Assembly assembly = Assembly.get(assemblyId)
+            def oldDefaultContigSetId = assembly.defaultContigSet?.id
             assembly.defaultContigSet = null
             assembly.save(flush: true)
 
@@ -106,6 +107,10 @@ class AssemblyController {
             sqlAfterparty.execute("delete from read using contig where read.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from contig_set_contig using contig where contig_set_contig.contig_id = contig.id and contig.assembly_id = $assemblyId")
             sqlAfterparty.execute("delete from contig where contig.assembly_id = $assemblyId")
+            if (oldDefaultContigSetId){
+                println "nuking old contig set"
+                sqlAfterparty.execute("delete from contig_set where id = $oldDefaultContigSetId")
+            }
 
             println "done deleting individual contigs"
 
@@ -175,9 +180,7 @@ class AssemblyController {
                 println "deleting $contig"
                 assembly.removeFromContigs(contig)
                 contigSets.each { set ->
-//                    println "\t checking contigset $set"
                     if (set.contigs.contains(contig)) {
-//                        println "\t\tremoving $contig from $set"
                         set.removeFromContigs(contig)
                         set.save()
                     }
