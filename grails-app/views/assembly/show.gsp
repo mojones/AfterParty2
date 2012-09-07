@@ -47,9 +47,6 @@
             ${assemblyInstance.description.replaceAll("\n", '<br/>')}
         </p>
 
-        <g:if test="${assemblyInstance.defaultContigSet}">
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
-        </g:if>
 
     </div>
     <div class="span2">
@@ -71,6 +68,10 @@
 
 <div class="row-fluid">
     <div class="span10 offset1">
+        <g:if test="${assemblyInstance.defaultContigSet}">
+            <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
+        </g:if>
+
 
         <div class="bs-docs-example">
             <ul id="myTab" class="nav nav-tabs">
