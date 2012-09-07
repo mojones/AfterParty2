@@ -54,7 +54,7 @@ def getContigSetStats(Long id){
         from 
             contig, contig_set_contig  
         where 
-            contig_set_contig.contig_set_contigs_id=1016695 and 
+            contig_set_contig.contig_set_contigs_id=${id} and 
             contig_set_contig.contig_id = contig.id            
             """    
     sql.rows(contigStatsStatement).each{ row ->
