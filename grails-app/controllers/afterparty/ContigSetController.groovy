@@ -195,7 +195,7 @@ class ContigSetController {
 
 
 
-    def blastAgainstSingleContigSet(Long id, String query) {
+    def blastAgainstSingleContigSet(Long id, String query, String program) {
 
         println "blasting against single contig set"
         ContigSet cs = ContigSet.get(id)
@@ -221,9 +221,17 @@ class ContigSetController {
             println "makeblastdb : $it"
         })
         makeBlastDbProcess.waitFor()
+        def blastCommand
+        if (program == 'blastn'){
+            blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+        }
+        if (program == 'tblastn'){
+             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+        }
+        if (program == 'tblastx'){
+             blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+        }
 
-
-        def blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
         println blastCommand
         def blastProcess = new ProcessBuilder(blastCommand.split(" "))
         blastProcess.redirectErrorStream(true)
@@ -231,8 +239,12 @@ class ContigSetController {
 
 
         def writer = new PrintWriter(new BufferedOutputStream(blastProcess.out))
-        writer.println(">mySearch\n${query}")
+        writer.println(query)
         writer.close()
+
+        //blastProcess.in.eachLine{
+        //    println it
+        //}
 
         def blastResults = []
 
@@ -277,7 +289,7 @@ class ContigSetController {
         idList.each {
             studyId = ContigSet.get(it).study.id
             println "\tblasting against contig set ${ContigSet.get(it).name}"
-            def blastResults = blastAgainstSingleContigSet(it.toLong(), params.blastQuery)
+            def blastResults = blastAgainstSingleContigSet(it.toLong(), params.blastQuery, params.program)
             println "\tgot ${blastResults.size()} results"
             allResults.addAll(blastResults)
         }

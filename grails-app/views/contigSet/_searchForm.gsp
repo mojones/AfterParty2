@@ -41,7 +41,14 @@
     
     <div id="blastForm" style="display:none">
         <label>BLAST query sequence:</label> <br/>
-        <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
+        <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste query sequence here..."></textarea>
+        <br/><br/>
+        <label>Program to use:</label>
+        <select name="program">
+            <option value="blastn">blastn</option>
+            <option value="tblastn">tblastn</option>
+            <option value="tblastx">tblastx</option>
+        </select>
         <br/><br/>
         <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
             <i class="icon-zoom-in"></i>&nbsp;submit sequence
