@@ -79,7 +79,7 @@ class PfamService {
         println "running pfam for $assemblyId"
         Assembly assembly = Assembly.get(assemblyId)
         BackgroundJob job = BackgroundJob.get(backgroundJobId)
-        job.progress = "starting PFAM"
+        job.progress = "starting interproscan"
         def contigCount = assembly.contigs.size()
         job.totalUnits = contigCount
         job.status = BackgroundJobStatus.RUNNING
