@@ -117,7 +117,7 @@ class AssemblyController {
 
             println "done deleting individual contigs"
 
-            miraService.attachContigsFromMiraInfo(f.inputStream, assembly)
+            miraService.attachContigsFromMiraInfo(f.inputStream, assembly, job2.id)
 
             assembly.save(flush: true)
             job2.progress = "creating contig set"

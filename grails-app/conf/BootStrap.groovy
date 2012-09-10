@@ -165,7 +165,8 @@ class BootStrap {
                 miraService.attachContigsFromMiraInfo(
                         new FileInputStream(new File('/home/martin/Downloads/afterPartydata/litoData/lito_assembly/lito_d_results/lito_out.ace')),
 // new File('/home/martin/Downloads/afterPartydata/smallData/smallAssembly_assembly/smallAssembly_d_results/smallAssembly_out.ace'),
-                        newAssembly
+                        newAssembly,
+                        null
                 )
 //
                   statisticsService.createContigSetForAssembly(a.id)

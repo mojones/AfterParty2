@@ -12,8 +12,13 @@ class miraService {
 
     def grailsLinkGenerator
 
-    def attachContigsFromMiraInfo(InputStream aceFile, Assembly a) {
+    def attachContigsFromMiraInfo(InputStream aceFile, Assembly a, def jobId) {
         println "attaching contigs from ace file"
+        def job
+        if (jobId != null){
+            job = BackgroundJob.get(jobId)
+        }
+
         def added = 0
         def startTime = System.currentTimeMillis()
 
@@ -53,6 +58,10 @@ class miraService {
 //                    println System.currentTimeMillis() - start
                     if (++added % 100 == 0) {
                         println added
+                        if (job){
+                            job.progress="uploaded $added contigs"
+                            job.save(flush:true)
+                        }
                     }
 //
 
@@ -190,7 +199,6 @@ class miraService {
         println "i am running mira!"
         println " ${new Date()} running mira on reads file with id $readsFileIds"
 
-//        update the job to show that it 's running
         BackgroundJob job = BackgroundJob.get(jobId)
         job.progress = "running mira"
         job.status = BackgroundJobStatus.RUNNING
@@ -209,7 +217,6 @@ class miraService {
             byte[] myData = readsFile.data.fileData
             println "reads file is $readsFile"
             println "process input is ${procInput.absolutePath}"
-//            println "process data is $myData"
             def readData = readsFile.data.fileData
             procInput.append(readData)
         }
@@ -225,7 +232,6 @@ class miraService {
 
         // monitor stdout of the mira process and update the job to show which pass we are on
         p.in.eachLine({
-//            println it
             if (it.contains('Pass')) {
                 println it
                 job.progress = it
@@ -248,9 +254,8 @@ class miraService {
         String destination = grailsLinkGenerator.link(controller: 'assembly', action: 'show', id: a.id)
 
         println "attaching contigs to new assembly, destination is $destination"
-        attachContigsFromMiraInfo(new FileInputStream(aceFile), a)
+        attachContigsFromMiraInfo(new FileInputStream(aceFile), a, job.id)
 
-//        update the job to show that we 're finished and set the sink and source ids
         job.progress = 'finished'
         job.status = BackgroundJobStatus.FINISHED
         println "destination is $destination"

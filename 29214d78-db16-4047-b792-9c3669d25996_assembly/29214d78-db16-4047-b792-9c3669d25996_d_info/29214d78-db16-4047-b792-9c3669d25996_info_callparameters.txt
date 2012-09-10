@@ -1,1 +1,0 @@
-/home/martin/Downloads/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira --job=denovo,est,normal,454 --project=29214d78-db16-4047-b792-9c3669d25996 -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo
