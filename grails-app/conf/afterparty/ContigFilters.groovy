@@ -9,6 +9,7 @@ class ContigFilters {
 
         contigExists(controller: 'contig', action: '(show|showJSON)') {
             before = {
+                println "User agent: ${request.getHeader("User-Agent")}"
                 println "checking if contig exists"
                 Contig c = Contig.get(params.id)
                 if (!c) {
