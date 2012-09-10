@@ -268,7 +268,7 @@ class AssemblyController {
         println "id is $assemblyId"
 
         BackgroundJob job = new BackgroundJob(
-                name: "Running Pfam on ${assemblyId}",
+                name: "Running InterProScan on ${assemblyId}",
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
