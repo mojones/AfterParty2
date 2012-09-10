@@ -265,7 +265,7 @@ def createContigSetForStudy(Long id) {
 
     s.compoundSamples.each { compoundSample ->
         compoundSample.assemblies.each { assembly ->
-            assembly.defaultContigSet.contigs.each { contig ->
+            assembly?.defaultContigSet?.contigs.each { contig ->
                 cs.addToContigs(contig)
             }
         }

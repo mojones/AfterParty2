@@ -40,7 +40,10 @@ class AssemblyController {
                 progress: 'running',
                 study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
-                type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION)
+                type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION,
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
+                )
+
         job.save(flush: true)
 
         runAsync {
@@ -80,7 +83,7 @@ class AssemblyController {
                 user: AfterpartyUser.get(springSecurityService.principal.id),
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_CONTIGS,
-                destinationUrl: g.createLink(controllerName: 'assembly', actionName: 'show', params: [id: assemblyId])
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
         )
         job.save(flush: true)
 
@@ -149,7 +152,9 @@ class AssemblyController {
                 study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_CONTIGS,
-                user: AfterpartyUser.get(springSecurityService.principal.id)
+                user: AfterpartyUser.get(springSecurityService.principal.id),
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
+
                 )
 
         job.save(flush: true)
@@ -236,13 +241,16 @@ class AssemblyController {
     def runBlast = {
         def assemblyId = params.id
         println "id is $assemblyId"
+        println "url is ${g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])}"
 
         BackgroundJob job = new BackgroundJob(
                 name: "Running BLAST on ${assemblyId}",
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
-                user: AfterpartyUser.get(springSecurityService.principal.id)
+                user: AfterpartyUser.get(springSecurityService.principal.id),
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
+
         )
         job.save(flush: true)
 
@@ -264,7 +272,9 @@ class AssemblyController {
                 progress: 'queued',
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.BLAST,
-                user: AfterpartyUser.get(springSecurityService.principal.id)
+                user: AfterpartyUser.get(springSecurityService.principal.id),
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
+                
         )
         job.save(flush: true)
 

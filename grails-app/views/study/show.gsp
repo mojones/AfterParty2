@@ -102,12 +102,11 @@ To make a bit of text editable we need to
         </p>
         
         <g:if test="${isOwner && !studyInstance.published}">
-            <p>
+           
                 <g:form action="makePublished" method="get">
                     <g:hiddenField name="id" value="${studyInstance.id}"/>
-                    <input type="submit" class="submit long" value="Publish study"/>
+                    <button type="submit" class="btn btn-info"><i class="icon-eye-open"></i>&nbsp;publish study</button>
                 </g:form>
-            </p>
         </g:if>
         <hr/>
     </div>

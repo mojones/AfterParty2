@@ -23,7 +23,9 @@ class ExperimentController {
                     status: BackgroundJobStatus.QUEUED,
                     type: BackgroundJobType.TRIM,
                     user: AfterpartyUser.get(springSecurityService.principal.id),
-                    study: e.sample.compoundSample.study)
+                    study: e.sample.compoundSample.study,
+                    destinationUrl: g.createLink(controller: 'experiment', action: 'show', params: [id: params.id])
+                    )
             job.save(flush: true)
 
             //runAsync {

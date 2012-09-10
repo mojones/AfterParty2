@@ -31,7 +31,8 @@ class RunController {
                 status: BackgroundJobStatus.QUEUED,
                 progress: 'queued',
                 type: BackgroundJobType.UPLOAD_READS,
-                user: AfterpartyUser.get(springSecurityService.principal.id)
+                user: AfterpartyUser.get(springSecurityService.principal.id),
+                destinationUrl: g.createLink(controller: 'run', action: 'show', params: [id: runId])
         )
         job.save(flush: true)
 
