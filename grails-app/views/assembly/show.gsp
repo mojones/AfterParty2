@@ -142,7 +142,7 @@
                     <g:form action="uploadBlastAnnotation" method="post" enctype="multipart/form-data">
                         <label>Select BLAST results file to upload:</label>
                         <input type="file" name="myFile"/>
-                        <span class="help-block">BLAST XML format only : <code>-outfmt 5</code></span>
+                        <span class="help-block">gzipped BLAST XML format only : <code>-outfmt 5</code></span>
                         <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
                         <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and add annotation</button>
                     </g:form>              

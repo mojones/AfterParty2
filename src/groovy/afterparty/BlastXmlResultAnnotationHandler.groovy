@@ -59,7 +59,7 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
         if (qName == 'Iteration') {
             count++
 
-//            println "added hits for $currentContig.name"
+            println "added hits for $currentContig.name"
             //            currentContig.addTags(currentTags)
             //            currentContig.save(flush: true)
             //            currentContig.index()

@@ -15,10 +15,10 @@ class BlastService {
 
     def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
 
-//        input.eachLine {
+        //input.eachLine {
         //            println "BLAST: $it"
         //        }
-        //
+        
         def session = sessionFactory.openStatelessSession()
 
         def handler = new BlastXmlResultAnnotationHandler(jobId: backgroundJobId, assembly: Assembly.get(assemblyId.toLong()), statelessSession: session)

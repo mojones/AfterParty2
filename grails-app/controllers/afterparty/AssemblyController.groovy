@@ -41,16 +41,19 @@ class AssemblyController {
                 study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
                 type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION,
+                user: AfterpartyUser.get(springSecurityService.principal.id),
                 destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
                 )
 
         job.save(flush: true)
 
-        runAsync {
+        //runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
-            blastService.addBlastHitsFromInput(f.inputStream, job.id, assemblyId)
+            def gzipInputStream = new java.util.zip.GZIPInputStream(f.inputStream) 
+            
+            blastService.addBlastHitsFromInput(gzipInputStream, job.id, assemblyId)
             println "back in controller, indexing"
 
             BackgroundJob.withNewSession {
@@ -60,7 +63,7 @@ class AssemblyController {
                 job2.save()
             }
 
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
     }

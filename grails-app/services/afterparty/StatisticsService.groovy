@@ -357,7 +357,16 @@ def createContigSetForAssembly(Long id) {
 
 def getFilteredContigCount(Long contigSetId, String query){
     def sql = new Sql(dataSource)
-    def idStatement = "select count(contig_id) from contig_set_contig where contig_set_contigs_id=${contigSetId}"
+    def idStatement = """
+        select 
+            count(annotation.contig_id) 
+        from 
+            contig_set_contig, annotation 
+        where 
+            contig_set_contigs_id=${contigSetId} and 
+            contig_set_contig.contig_id=annotation.contig_id and 
+            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query})
+    """
     def result    
     sql.rows(idStatement).each{ row ->
         result = row.count
