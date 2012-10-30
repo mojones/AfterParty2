@@ -7,6 +7,7 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
 
     def jobId
     def statelessSession
+    def sql
 
     // to make sure we only add annotation to the right contigs
     def assembly
@@ -21,6 +22,9 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
         if (qName in ['Iteration_query-def', 'Hit_def', 'Hit_accession', 'Hsp_bit-score', 'Hsp_query-from', 'Hsp_query-to', 'Hsp_evalue']) {
             currentElement = qName
         }
+        else{
+            currentElement = null
+        }
     }
 
     void characters(char[] chars, int offset, int length) {
@@ -28,7 +32,7 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
             currentProperties.put(currentElement, new String(chars, offset, length))
 
             if (currentElement == 'Iteration_query-def') {
-                currentContig = Contig.findByAssemblyAndName(this.assembly, currentProperties.get('Iteration_query-def'))
+                //currentContig = Contig.findByAssemblyAndName(this.assembly, currentProperties.get('Iteration_query-def'))
             }
         }
     }
@@ -38,17 +42,17 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
     void endElement(String ns, String localName, String qName) {
         currentElement = null
         if (qName == 'Hsp') {
-            Annotation b = new Annotation()
-            b.description = currentProperties.get('Hit_def')
-            b.accession = currentProperties.get('Hit_accession')
-            b.bitscore = currentProperties.get('Hsp_bit-score').toFloat()
-            b.start = currentProperties.get('Hsp_query-from').toInteger()
-            b.stop = currentProperties.get('Hsp_query-to').toInteger()
-            b.evalue = currentProperties.get('Hsp_evalue').toFloat()
-            b.type = AnnotationType.BLAST
+            //Annotation b = new Annotation()
+            //b.description = currentProperties.get('Hit_def')
+            //b.accession = currentProperties.get('Hit_accession')
+            //b.bitscore = currentProperties.get('Hsp_bit-score').toFloat()
+            //b.start = currentProperties.get('Hsp_query-from').toInteger()
+            //b.stop = currentProperties.get('Hsp_query-to').toInteger()
+            //b.evalue = currentProperties.get('Hsp_evalue').toFloat()
+            //b.type = AnnotationType.BLAST
 
-            currentContig.addToAnnotations(b)
-            b.save()
+            //currentContig.addToAnnotations(b)
+            //b.save()
 //            statelessSession.insert(b)
             //            b.description.tokenize().unique().findAll({it.size() > 5}).each {
             //                currentTags.add(it.toString())
@@ -59,7 +63,7 @@ class BlastXmlResultAnnotationHandler extends DefaultHandler {
         if (qName == 'Iteration') {
             count++
 
-            println "added hits for $currentContig.name"
+            println "added hits for ${currentProperties.get('Iteration_query-def')}"
             //            currentContig.addTags(currentTags)
             //            currentContig.save(flush: true)
             //            currentContig.index()

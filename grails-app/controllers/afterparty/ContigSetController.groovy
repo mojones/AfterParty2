@@ -413,7 +413,7 @@ class ContigSetController {
 
         def criteria = ContigSet.createCriteria()
         def a = criteria.get({
-            eq('id', params.idList.toLong())
+            eq('id', params.id.toLong())
             fetchMode 'contigs', org.hibernate.FetchMode.JOIN
         })
 

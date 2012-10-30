@@ -31,7 +31,16 @@ class BootStrap {
             development_rebuild {
 
                 def sql = new Sql(dataSource)
+
+                // create the index for annotation search
                 sql.execute("CREATE INDEX annotation_idx ON annotation USING gin(to_tsvector('english', description));")
+
+                // index for looking up contig set memberships
+                sql.execute("create index lookup_by_contig on contig_set_contig (contig_id)")
+                sql.execute("create index lookup_by_set on contig_set_contig (contig_set_contigs_id)")
+
+
+
 
                 // add roles and user
                 def userRole = afterparty.AfterPartyRole.findByAuthority('ROLE_USER') ?: new AfterPartyRole(authority: 'ROLE_USER').save(failOnError: true)

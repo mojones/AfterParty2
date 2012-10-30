@@ -36,7 +36,7 @@ class AssemblyController {
         def assemblyId = params.id
 
         BackgroundJob job = new BackgroundJob(
-                name: 'uploading BLAST annotation',
+                name: "uploading BLAST annotation from ${request.getFile('myFile').getOriginalFilename()}",
                 progress: 'running',
                 study: Assembly.get(assemblyId).compoundSample.study,
                 status: BackgroundJobStatus.QUEUED,
@@ -47,7 +47,7 @@ class AssemblyController {
 
         job.save(flush: true)
 
-        //runAsync {
+        runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -63,7 +63,45 @@ class AssemblyController {
                 job2.save()
             }
 
-        //}
+        }
+
+        redirect(controller: 'backgroundJob', action: 'list')
+    } 
+
+    @Secured(['ROLE_USER'])
+    def uploadInterproscanAnnotation = {
+        def f = request.getFile('myFile')
+
+        def assemblyId = params.id.toLong()
+
+        BackgroundJob job = new BackgroundJob(
+                name: "uploading InterProScan annotation from ${request.getFile('myFile').getOriginalFilename()}",
+                progress: 'running',
+                study: Assembly.get(assemblyId).compoundSample.study,
+                status: BackgroundJobStatus.QUEUED,
+                type: BackgroundJobType.UPLOAD_BLAST_ANNOTATION,
+                user: AfterpartyUser.get(springSecurityService.principal.id),
+                destinationUrl: g.createLink(controller: 'assembly', action: 'show', params: [id: assemblyId])
+                )
+
+        job.save(flush: true)
+
+        //runAsync {
+            BackgroundJob job2 = BackgroundJob.get(job.id)
+            job2.status = BackgroundJobStatus.RUNNING
+            job2.save(flush: true)
+            
+            pfamService.addPfamFromInput(f.inputStream, job.id, assemblyId)
+            println "back in controller, indexing"
+
+            BackgroundJob.withNewSession {
+                job2 = BackgroundJob.get(job.id)
+                job2.progress = 'finished'
+                job2.status = BackgroundJobStatus.FINISHED
+                job2.save()
+            }
+
+       // }
 
         redirect(controller: 'backgroundJob', action: 'list')
     }
@@ -91,7 +129,7 @@ class AssemblyController {
         job.save(flush: true)
 
 
-        runAsync {
+        //runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -132,7 +170,7 @@ class AssemblyController {
 
             job2.progress = 'finished'
             job2.status = BackgroundJobStatus.FINISHED
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
 
@@ -164,7 +202,7 @@ class AssemblyController {
 
         def contigs = miraService.parseFasta(f.inputStream)
 
-        runAsync {
+        //runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -231,7 +269,7 @@ class AssemblyController {
 
             job2.progress = 'finished'
             job2.status = BackgroundJobStatus.FINISHED
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
 
