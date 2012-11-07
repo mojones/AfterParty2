@@ -79,6 +79,15 @@ class miraService {
                 currentContig.averageCoverage = 0
                 currentContig.averageQuality = 0
 
+             Annotation ann = new Annotation(
+                        description:'whole contig', 
+                        bitscore : 0, 
+                        evalue : 0,
+                        start : 0,
+                        stop : 0, 
+                        accession: 'ABC',
+                        type : AnnotationType.CONTIG)
+            currentContig.addToAnnotations(ann)
                 a.addToContigs(currentContig)
                 currentContig.save()
             }

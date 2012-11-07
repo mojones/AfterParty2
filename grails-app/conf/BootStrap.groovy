@@ -161,7 +161,7 @@ class BootStrap {
                         )
                         job.save()
                         //sessionFactory.getCurrentSession().flush()
-                        trimReadsService.trimReads(run.id, job.id)
+                        //trimReadsService.trimReads(run.id, job.id)
                     }
                 }
 //

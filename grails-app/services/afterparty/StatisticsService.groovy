@@ -182,7 +182,7 @@ def getContigInfoForContigSet(Long id){
 
         """
 
-        //println sqlString
+        println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
           result.add(

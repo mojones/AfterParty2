@@ -371,7 +371,7 @@ class ContigSetController {
 
             Map cs = statisticsService.getStatsForContigSet(set.id.toLong())
 
-            println "built map in ${System.currentTimeMillis() - start}"
+            println "built map of ${cs.size()} in ${System.currentTimeMillis() - start}"
 
             cs.colour = StatisticsService.boldAssemblyColours[i % StatisticsService.boldAssemblyColours.size()]
 
