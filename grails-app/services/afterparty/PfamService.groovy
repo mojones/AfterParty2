@@ -123,9 +123,9 @@ class PfamService {
             File contigFastaFile = File.createTempFile('contig', '.fasta')
             println "temporary file is ${contigFastaFile.absolutePath}"
 
-            contigFastaFile.append(">${contig.name}\n${contig.sequence.toLowerCase()}\n")
-            println "${grailsApplication.config.interproscanPath} -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup"
-            def pfamProcess = new ProcessBuilder("${grailsApplication.config.interproscanPath} -cli -i ${contigFastaFile.absolutePath} -o ${contigFastaFile.absolutePath}.out -trlen 20 -verbose -format raw -iprlookup".split(" "))
+            contigFastaFile.append(">${contig.name}\n${contig.sequence.toLowerCase().replaceAll(/[^atgc]/, 'n')}\n")
+            println "${grailsApplication.config.interproscanPath} -f GFF3 -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
+            def pfamProcess = new ProcessBuilder("${grailsApplication.config.interproscanPath} -f GFF3  -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 ".split(" "))
             pfamProcess.redirectErrorStream(true)
             pfamProcess = pfamProcess.start()
             pfamProcess.in.eachLine({
@@ -133,9 +133,9 @@ class PfamService {
             })
 
 
-            def pfamOutput = new File(contigFastaFile.absolutePath + '.out')
+            def pfamOutput = new File(contigFastaFile.absolutePath + '.gff3')
             if (pfamOutput.exists()){
-                addPfamFromInput(new FileInputStream(pfamOutput))
+                addPfamFromInput(new FileInputStream(pfamOutput), backgroundJobId, assemblyId.toLong())
             }
 
 

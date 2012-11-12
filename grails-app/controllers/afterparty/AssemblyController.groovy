@@ -319,9 +319,9 @@ class AssemblyController {
         )
         job.save(flush: true)
 
-        runAsync {
+        //runAsync {
             pfamService.runPfam(assemblyId, job.id)
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
 
