@@ -357,9 +357,10 @@ def createContigSetForAssembly(Long id) {
 
 def getFilteredContigCount(Long contigSetId, String query){
     def sql = new Sql(dataSource)
+    //TODO this should probably be unique otherwise we get exaggerated counts
     def idStatement = """
         select 
-            count(annotation.contig_id) 
+            count(distinct annotation.contig_id) 
         from 
             contig_set_contig, annotation 
         where 

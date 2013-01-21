@@ -12,9 +12,9 @@ class RunFilters {
             before = {
 //                println "filter environment is ${Environment.current}"
                 if (Environment.current == Environment.DEVELOPMENT) {
-//                    println "auto-login power!"
-//                    println "current user is ${springSecurityService.principal}"
-                    springSecurityService.reauthenticate('martin')
+                    println "auto-login power!"
+                    println "current user is ${springSecurityService.principal}"
+                    springSecurityService.reauthenticate('admin')
 
                 }
             }

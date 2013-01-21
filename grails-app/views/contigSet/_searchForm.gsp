@@ -3,6 +3,7 @@
 <form id="contigSetForm" method="get"  class="form-search">
 
     <input type="hidden" name="idList" value="${contigSetId}">
+    <input type="hidden" name="id" value="${contigSetId}">
      <div class="btn-group">
         <button class="btn btn-info" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-eye-open"></i>&nbsp;View contig set</button>
         <button class="btn btn-info" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>

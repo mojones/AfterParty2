@@ -19,6 +19,14 @@ class AssemblyController {
 
     def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
 
+    def sessionFactory
+    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def cleanUpGorm() {
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+        propertyInstanceMap.get().clear()
+    }
 
 
     def makeHybridAssembly = {
@@ -47,7 +55,7 @@ class AssemblyController {
 
         job.save(flush: true)
 
-        runAsync {
+        //runAsync {
             BackgroundJob job2 = BackgroundJob.get(job.id)
             job2.status = BackgroundJobStatus.RUNNING
             job2.save(flush: true)
@@ -63,7 +71,7 @@ class AssemblyController {
                 job2.save()
             }
 
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
     } 
@@ -249,12 +257,12 @@ class AssemblyController {
                 contig.averageQuality = 1
                 assembly.addToContigs(contig)
                 created++
-                if (created % 10 == 0) {
+                if (created % 1000 == 0) {
 
                     println "uploaded $created of ${contigs.size()}"
                     job2.progress = "uploaded $created of ${contigs.size()}"
                     job2.save(flush: true)
-
+                    cleanUpGorm()
                 }
 
 
