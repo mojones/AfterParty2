@@ -5673,3 +5673,8 @@ td {
 .compound_samples_box:after {  content: "Compound samples";}
 .contigsets_box:after {  content: "Contig sets";}
 .compound_sample_box:after {  content: "Compound sample details";}
+.actions_box:after {  content: "Actions";}
+.contigs_box:after {  content: "Contigs";}
+.assembly_details_box:after {  content: "Assembly Details";}
+.summary_box:after {  content: "Summary";}
+.contig_annotation_box:after {  content: "Contig Annotation";}

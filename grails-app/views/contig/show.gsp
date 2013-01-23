@@ -18,6 +18,31 @@
 
 <div class="row-fluid">
     <div class="span10 offset1">
+        <ul class="breadcrumb">
+          <li>
+            <g:link controller="study" action="show" id="${contigInstance.assembly.compoundSample.study.id}">
+                 <g:truncate maxlength="20">${contigInstance.assembly.compoundSample.study.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="compoundSample" action="show" id="${contigInstance.assembly.compoundSample.id}">
+                 <g:truncate maxlength="20">${contigInstance.assembly.compoundSample.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="assembly" action="show" id="${contigInstance.assembly.id}">
+                 <g:truncate maxlength="20">${contigInstance.assembly.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li class="active">${contigInstance.name}</li>
+        </ul>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span10 offset1">
         <h2>${contigInstance.name}</h2>
 
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
@@ -126,7 +151,7 @@
 
 
         <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"> </h2>
-        <div id="coffeescript_annotation">
+        <div id="coffeescript_annotation" class="in_a_box contig_annotation_box">
         </div>
     </div>
 </div>

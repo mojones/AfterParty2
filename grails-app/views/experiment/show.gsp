@@ -25,16 +25,34 @@
 <body>
 <div class="row-fluid">
     <div class="span10 offset1">
-        <h2>Experiment details</h2>
-        <h3>Name</h3>
-        <p class="edit_in_place" name="name">
+        <ul class="breadcrumb">
+          <li>
+            <g:link controller="study" action="show" id="${experimentInstance.sample.compoundSample.study.id}">
+                 <g:truncate maxlength="20">${experimentInstance.sample.compoundSample.study.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="compoundSample" action="show" id="${experimentInstance.sample.compoundSample.id}">
+                 <g:truncate maxlength="20">${experimentInstance.sample.compoundSample.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="sample" action="show" id="${experimentInstance.sample.id}">
+                 <g:truncate maxlength="20">${experimentInstance.sample.name}"}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li class="active">${experimentInstance.name}</li>
+        </ul>
+        <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;
             </g:if>
             ${experimentInstance.name}
-        </p>
+        </h3>
 
-        <h3>Description</h3>
         <p class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;

@@ -25,16 +25,40 @@
 <body>
 <div class="row-fluid">
     <div class="span10 offset1">
-        <h2>Run details</h2>
-        <h3>Name</h3>
-        <p class="edit_in_place" name="name">
+        <ul class="breadcrumb">
+          <li>
+            <g:link controller="study" action="show" id="${runInstance.experiment.sample.compoundSample.study.id}">
+                 <g:truncate maxlength="20">${runInstance.experiment.sample.compoundSample.study.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="compoundSample" action="show" id="${runInstance.experiment.sample.compoundSample.id}">
+                 <g:truncate maxlength="20">${runInstance.experiment.sample.compoundSample.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="sample" action="show" id="${runInstance.experiment.sample.id}">
+                 <g:truncate maxlength="20">${runInstance.experiment.sample.name}"}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="experiment" action="show" id="${runInstance.experiment.id}">
+                 <g:truncate maxlength="20">${runInstance.experiment.name}"}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li class="active">${runInstance.name}</li>
+        </ul>
+        <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;
             </g:if>
             ${runInstance.name}
-        </p>
+        </h3>
 
-        <h3>Description</h3>
         <p class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;

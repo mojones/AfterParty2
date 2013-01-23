@@ -35,9 +35,19 @@ To make a bit of text editable we need to
 </head>
 
 <body>
+
 <div class="row-fluid">
     <div class="span10 offset1 ">
 
+        <ul class="breadcrumb">
+          <li>
+            <g:link controller="study" action="show" id="${compoundSample.study.id}">
+                 <g:truncate maxlength="20">${compoundSample.study.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li class="active">${compoundSample.name}</li>
+        </ul>
         <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;

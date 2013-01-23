@@ -22,49 +22,69 @@
 <body>
 
 <div class="row-fluid">
-
-    <div class="span4 offset1">
-        <h3 class="edit_in_place" name="name">
-            <g:if test="${isOwner}">
-                <i class="icon-pencil"></i>&nbsp;
-            </g:if>
-            ${assemblyInstance.name}
-        </h3>
-
-        <p class="edit_in_place" name="description">
-            <g:if test="${isOwner}">
-                <i class="icon-pencil"></i>&nbsp;
-            </g:if>
-            ${assemblyInstance.description.replaceAll("\n", '<br/>')}
-        </p>
-
-
+    <div class="span10 offset1">
+        <ul class="breadcrumb">
+          <li>
+            <g:link controller="study" action="show" id="${assemblyInstance.compoundSample.study.id}">
+                 <g:truncate maxlength="20">${assemblyInstance.compoundSample.study.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <g:link controller="compoundSample" action="show" id="${assemblyInstance.compoundSample.id}">
+                 <g:truncate maxlength="20">${assemblyInstance.compoundSample.name}</g:truncate>
+            </g:link>
+            <span class="divider">/</span>
+          </li>
+          <li class="active">${assemblyInstance.name}</li>
+        </ul>
     </div>
-    <div class="span2">
-        <g:if test="${assemblyInstance.defaultContigSet}">
+</div>
 
-        <table class="table table-bordered table-hover">
-                <tbody>
-                    <tr> <td> <b>Contig count</b> </td> <td> ${stats.count} </td> </tr>
-                    <tr> <td> <b>Base count</b> </td> <td> ${stats.span}</td> </tr>
-                    <tr> <td> <b>Min contig length</b> </td> <td> ${stats.min}</td> </tr>
-                    <tr> <td> <b>Mean contig length</b> </td> <td> ${stats.mean}</td> </tr>
-                    <tr> <td> <b>Max contig length</b> </td> <td> ${stats.max}</td> </tr>
-                </tbody>
-            </table>
-        </g:if>
-        
+<div class="row-fluid">
+    <div class="span6 offset1">
+        <div class="in_a_box assembly_details_box">
+            <h3 class="edit_in_place" name="name">
+                <g:if test="${isOwner}">
+                    <i class="icon-pencil"></i>&nbsp;
+                </g:if>
+                ${assemblyInstance.name}
+            </h3>
+
+            <p class="edit_in_place" name="description">
+                <g:if test="${isOwner}">
+                    <i class="icon-pencil"></i>&nbsp;
+                </g:if>
+                ${assemblyInstance.description.replaceAll("\n", '<br/>')}
+            </p>
+
+        </div>
     </div>
-<div>
+    <div class="span4 ">
+        <div class="in_a_box summary_box">
+            <g:if test="${assemblyInstance.defaultContigSet}">
+
+                <table class="table table-bordered table-hover">
+                    <tbody>
+                        <tr> <td> <b>Contig count</b> </td> <td> ${stats.count} </td> </tr>
+                        <tr> <td> <b>Base count</b> </td> <td> ${stats.span}</td> </tr>
+                        <tr> <td> <b>Min contig length</b> </td> <td> ${stats.min}</td> </tr>
+                        <tr> <td> <b>Mean contig length</b> </td> <td> ${stats.mean}</td> </tr>
+                        <tr> <td> <b>Max contig length</b> </td> <td> ${stats.max}</td> </tr>
+                    </tbody>
+                </table>
+            </g:if>
+        </div>
+    </div>
+</div>
 
 <div class="row-fluid">
     <div class="span10 offset1">
+        <div class="in_a_box actions_box">
         <g:if test="${assemblyInstance.defaultContigSet}">
             <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
         </g:if>
 
-
-        <div class="bs-docs-example">
             <ul id="myTab" class="nav nav-tabs">
               <li class="active"><a href="#generateAnnotation" data-toggle="tab">Generate annotation</a></li>
               
@@ -150,13 +170,15 @@
                 </div>
             </div>
         </div>
-
-        <g:if test="${assemblyInstance.defaultContigSet}">
-            <h2>Browse contigs for this assembly</h2>
-            <g:render template="/contigSet/contigTable" model="[contigSetId : assemblyInstance.defaultContigSet.id]"/>
-        </g:if>
-
-
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span10 offset1">
+        <div class="in_a_box contigs_box">
+            <g:if test="${assemblyInstance.defaultContigSet}">
+                <g:render template="/contigSet/contigTable" model="[contigSetId : assemblyInstance.defaultContigSet.id]"/>
+            </g:if>
+        </div>
     </div>
 </div>
 
