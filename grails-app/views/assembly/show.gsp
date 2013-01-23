@@ -20,25 +20,16 @@
 </head>
 
 <body>
-<div class="row-fluid">
-
-    <div class="span11 offset1">
-        <h2>Assembly details</h2>
-    </div>
-</div>
 
 <div class="row-fluid">
 
     <div class="span4 offset1">
-        <h3>Name</h3>
-        <p class="edit_in_place" name="name">
+        <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;
             </g:if>
             ${assemblyInstance.name}
-        </p>
-
-        <h3>Description</h3>
+        </h3>
 
         <p class="edit_in_place" name="description">
             <g:if test="${isOwner}">

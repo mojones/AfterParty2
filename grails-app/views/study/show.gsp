@@ -81,18 +81,14 @@ To make a bit of text editable we need to
 
 <body>
 <div class="row-fluid">
-    <div class="span10 offset1">
-        <h2>Study details</h2>
+    <div class="span10 offset1 in_a_box study_details_box">
         
-        <h3>Name</h3>
-        <p class="edit_in_place" name="name">
+        <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;
             </g:if>
             ${studyInstance.name}
-        </p>
-
-        <h3>Description</h3>
+        </h3>
 
         <p class="edit_in_place" name="description">
             <g:if test="${isOwner}">
@@ -108,13 +104,10 @@ To make a bit of text editable we need to
                     <button type="submit" class="btn btn-info"><i class="icon-eye-open"></i>&nbsp;publish study</button>
                 </g:form>
         </g:if>
-        <hr/>
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span10 offset1">
-
-        <h2>Compound samples</h2>
+    <div class="span10 offset1 in_a_box compound_samples_box">
             
         <g:if test="${isOwner}">
             <p>
@@ -159,9 +152,8 @@ To make a bit of text editable we need to
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span10 offset1">
+    <div class="span10 offset1 contigsets_box in_a_box">
 
-        <h2>Contig sets</h2>
 
         <form id="contigSetForm" method="get"  class="form-search">
 

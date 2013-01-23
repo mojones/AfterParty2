@@ -21,7 +21,6 @@
 
     
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.css')}"/>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'docs.css')}"/>
 
 
     %{--jquery edit in place plugin--}%

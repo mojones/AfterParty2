@@ -577,8 +577,7 @@ h2 + .row {
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
-}
-
+      }
 /* Echo out a label for the example */
 .bs-docs-example:after {
   content: "Example";
@@ -592,9 +591,10 @@ h2 + .row {
   border: 1px solid #ddd;
   color: #9da0a4;
   -webkit-border-radius: 4px 0 4px 0;
-     -moz-border-radius: 4px 0 4px 0;
-          border-radius: 4px 0 4px 0;
+  -moz-border-radius: 4px 0 4px 0;
+  border-radius: 4px 0 4px 0;
 }
+
 
 /* Remove spacing between an example and it's code */
 .bs-docs-example + .prettyprint {

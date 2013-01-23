@@ -36,16 +36,14 @@ To make a bit of text editable we need to
 
 <body>
 <div class="row-fluid">
-    <div class="span10 offset1">
-        <h2>Compound sample details</h2>
-        <h3>Name</h3>
+    <div class="span10 offset1 ">
 
-        <p class="edit_in_place" name="name">
+        <h3 class="edit_in_place" name="name">
             <g:if test="${isOwner}">
                 <i class="icon-pencil"></i>&nbsp;
             </g:if>
             ${compoundSample.name}
-        </p>
+        </h3>
 
         <g:if test="${compoundSample.defaultContigSet}">
             <g:render template="/contigSet/searchForm" model="['contigSetId' : compoundSample.defaultContigSet.id, 'readSources' : readSources]"/>
