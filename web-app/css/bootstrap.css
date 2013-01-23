@@ -5668,6 +5668,12 @@ td {
   -moz-border-radius: 4px 0 4px 0;
   border-radius: 4px 0 4px 0;
 }
+
+.contigs_box {
+    padding-bottom: 100px;
+}
+
+
 .study_box:after {  content: "Study";}
 .study_details_box:after {  content: "Study details";}
 .compound_samples_box:after {  content: "Compound samples";}
@@ -5678,3 +5684,5 @@ td {
 .assembly_details_box:after {  content: "Assembly Details";}
 .summary_box:after {  content: "Summary";}
 .contig_annotation_box:after {  content: "Contig Annotation";}
+.contig_set_details_box:after {  content: "Contig Set details";}
+.contig_set_charts_box:after {  content: "Contig Set charts";}

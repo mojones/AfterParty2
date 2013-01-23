@@ -84,36 +84,45 @@
     <div class="span10 offset1">
         <g:if test="${contigSets.size() == 1}">
             <g:set var="contigSetInstance" value="${contigSets[0]}"/>
+            <ul class="breadcrumb">
+              <li>
+                <g:link controller="study" action="show" id="${contigSetInstance.study.id}">
+                     <g:truncate maxlength="20">${contigSetInstance.study.name}</g:truncate>
+                </g:link>
+                <span class="divider">/</span>
+              </li>
+              <li class="active">${contigSetInstance.name}</li>
+            </ul>
 
-            <h2>Contig Set details</h2>
-            <h3>Name</h3>
-            <p class="edit_in_place" name="name">
-                <g:if test="${isOwner}">
-                    <i class="icon-pencil"></i>&nbsp;
-                </g:if>
-                ${contigSetInstance.name}
-            </p>
-            <h3>Description</h3>
-            <p class="edit_in_place" name="description">
-                <g:if test="${isOwner}">
-                    <i class="icon-pencil"></i>&nbsp;
-                </g:if>
-                ${contigSetInstance.description}
-            </p>
+            <div class="in_a_box contig_set_details_box">
+                <h3 class="edit_in_place" name="name">
+                    <g:if test="${isOwner}">
+                        <i class="icon-pencil"></i>&nbsp;
+                    </g:if>
+                    ${contigSetInstance.name}
+                </h3>
+                <p class="edit_in_place" name="description">
+                    <g:if test="${isOwner}">
+                        <i class="icon-pencil"></i>&nbsp;
+                    </g:if>
+                    ${contigSetInstance.description}
+                </p>
 
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
+                <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
-            <br/>
+                <br/>
+            </div>
             
 
-            <h2>Contigs in this set</h2>
-            <g:form controller="contigSet" action="download" method="get">
-                <g:hiddenField name="id" value="${contigSetInstance.id}"/>
-                <button type="submit" class="btn btn-info">
-                    <i class="icon-download-alt"></i>&nbsp;download contigs
-                </button>
-            </g:form>
-            <g:render template="contigTable" model="['contigSetId' : contigSetInstance.id]"/>
+            <div class="in_a_box contigs_box">
+                <g:form controller="contigSet" action="download" method="get">
+                    <g:hiddenField name="id" value="${contigSetInstance.id}"/>
+                    <button type="submit" class="btn btn-info">
+                        <i class="icon-download-alt"></i>&nbsp;download contigs
+                    </button>
+                </g:form>
+                <g:render template="contigTable" model="['contigSetId' : contigSetInstance.id]"/>
+            </div>
 
         </g:if>
         <g:else>
@@ -144,9 +153,8 @@
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span10 offset1">
+    <div class="span10 offset1 in_a_box contig_set_charts_box">
 
-        <h2>Contig Set charts</h2>
 
         <p class="chartOptions">
             <div class="btn-toolbar">
