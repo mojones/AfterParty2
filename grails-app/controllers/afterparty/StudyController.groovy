@@ -8,6 +8,7 @@ class StudyController {
     def springSecurityService
     def searchService
     def statisticsService
+    def grailsApplication
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -31,7 +32,11 @@ class StudyController {
 
 
     def listPublished = {
-        [studyInstanceList: Study.findAllByPublished(true)]
+        [
+            studyInstanceList: Study.findAllByPublished(true), 
+            config: grailsApplication.config,
+            studyCounts: statisticsService.getStudyCounts() 
+        ]
     }
 
     @Secured(['ROLE_USER'])

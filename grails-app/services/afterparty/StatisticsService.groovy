@@ -19,7 +19,42 @@ class StatisticsService {
 public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive', 'teal', 'yellow', 'aqua']
 
 
+@Cacheable("myCache")
+def getStudyCounts(){
+    def sql = new Sql(dataSource)
+    def studyStatement = """
+select 
+    compound_sample.study_id as study_id, 
+    count(distinct contig.id) as contig_count, 
+    count(distinct assembly.id) as assembly_count, 
+    annotation.type,
+    count(distinct annotation.id) 
+from 
+    annotation, contig, assembly, compound_sample 
+where 
+    annotation.contig_id = contig.id and 
+    contig.assembly_id = assembly.id and 
+    assembly.compound_sample_id = compound_sample.id 
+group by 
+    compound_sample.study_id,annotation.type;
+                    """    
+    def result = [:]
+    sql.rows(studyStatement).each{ row ->
+        def currentMap = result.get(row.study_id, [:])
+        currentMap.put('contigCount',row.contig_count)
+        currentMap.put('assembly_count', row.assembly_count)
+        def currentTypeMap = currentMap.get(row.type, [:])
+        currentTypeMap.put(row.type, row.count)
+        currentMap.put('types', currentTypeMap)
+        result.put(row.study_id, currentMap)
+    }
+    return result
+}
+
+
+@Cacheable("myCache")
 def getFastaForContigSet(Long id){
+
     def sql = new Sql(dataSource)
     def allContigsStatement = """
         select id, sequence from contig, contig_set_contig  where contig_set_contig.contig_set_contigs_id=${id} and contig_set_contig.contig_id = contig.id
@@ -32,6 +67,8 @@ def getFastaForContigSet(Long id){
 }
 
 
+
+@Cacheable("myCache")
 def getContigSetStats(Long id){
     def result = [:]
     def sql = new Sql(dataSource)
