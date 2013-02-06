@@ -200,36 +200,42 @@ class ContigSetController {
         println "blasting against single contig set"
         ContigSet cs = ContigSet.get(id)
 
-        //create temp directory
-        File temporaryBlastDirectory = File.createTempFile('blastDir', '')
-        temporaryBlastDirectory.delete()
-        temporaryBlastDirectory.mkdir()
-        println "temp blast directory is ${temporaryBlastDirectory.absolutePath}"
+        File blastDatabaseIndexFile = new File(grailsApplication.config.contigSetDatabasePath + '/' + id + '.nin')
+        println "looking for contig set blast database in " + blastDatabaseIndexFile.absolutePath
+        if (blastDatabaseIndexFile.exists()){
+            // we will assume that if the .nin file is there, then so are the others
+            println "file already exists"
+        }
+        else{
+            print "file does not exist, about to create it"
+            File contigSetFastaFile = new File(grailsApplication.config.contigSetDatabasePath + '/' + id)
 
-        File contigsFastaFile = new File(temporaryBlastDirectory, 'contigs.fasta')
+            //write out files
+            contigSetFastaFile.append(statisticsService.getFastaForContigSet(id))
+            println "wrote ${contigSetFastaFile.absolutePath}"
+            println "running formatblasdb"
 
-        //write out files
-        contigsFastaFile.append(statisticsService.getFastaForContigSet(id))
-        println "running formatblasdb"
+            def makeBlastDbCommand = "${grailsApplication.config.makeblastdbPath} -in ${contigSetFastaFile.absolutePath} -input_type fasta -dbtype nucl"
+            println makeBlastDbCommand
+            def makeBlastDbProcess = new ProcessBuilder(makeBlastDbCommand.split(" "))
+            makeBlastDbProcess.redirectErrorStream(true)
+            makeBlastDbProcess = makeBlastDbProcess.start()
+            makeBlastDbProcess.in.eachLine({
+                println "makeblastdb : $it"
+            })
+            makeBlastDbProcess.waitFor()
+        }
 
-        def makeBlastDbCommand = "${grailsApplication.config.makeblastdbPath} -in ${contigsFastaFile.absolutePath} -input_type fasta -dbtype nucl"
-        println makeBlastDbCommand
-        def makeBlastDbProcess = new ProcessBuilder(makeBlastDbCommand.split(" "))
-        makeBlastDbProcess.redirectErrorStream(true)
-        makeBlastDbProcess = makeBlastDbProcess.start()
-        makeBlastDbProcess.in.eachLine({
-            println "makeblastdb : $it"
-        })
-        makeBlastDbProcess.waitFor()
         def blastCommand
+        def databasePath = grailsApplication.config.contigSetDatabasePath + '/' + id
         if (program == 'blastn'){
-            blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+            blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${databasePath}"
         }
         if (program == 'tblastn'){
-             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${databasePath}"
         }
         if (program == 'tblastx'){
-             blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${contigsFastaFile.absolutePath}"
+             blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${databasePath}"
         }
 
         println blastCommand
