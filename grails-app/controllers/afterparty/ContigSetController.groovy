@@ -195,9 +195,9 @@ class ContigSetController {
 
 
 
-    def blastAgainstSingleContigSet(Long id, String query, String program) {
+    def blastAgainstSingleContigSet(Long id, String query, String program, String expect) {
 
-        println "blasting against single contig set"
+        println "blasting against single contig set with expect ${expect}"
         ContigSet cs = ContigSet.get(id)
 
         File blastDatabaseIndexFile = new File(grailsApplication.config.contigSetDatabasePath + '/' + id + '.nin')
@@ -229,13 +229,14 @@ class ContigSetController {
         def blastCommand
         def databasePath = grailsApplication.config.contigSetDatabasePath + '/' + id
         if (program == 'blastn'){
-            blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${databasePath}"
+            blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${databasePath} -evalue ${expect}"
         }
         if (program == 'tblastn'){
-             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${databasePath}"
+             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${databasePath} -evalue${expect}"
         }
         if (program == 'tblastx'){
-             blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${databasePath}"
+             blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${databasePath} -evalue ${expect}"
+
         }
 
         println blastCommand
@@ -248,9 +249,9 @@ class ContigSetController {
         writer.println(query)
         writer.close()
 
-        //blastProcess.in.eachLine{
-        //    println it
-        //}
+       //blastProcess.in.eachLine{
+       //     println it
+       // }
 
         def blastResults = []
 
@@ -289,13 +290,17 @@ class ContigSetController {
         else {
             idList = params.idList.split(',')
         }
+        String expect = '1e-20'
+        if (params.expect){
+            expect = params.expect
+        }
         println "idlist is $idList"
         def allResults = []
         def studyId = 0
         idList.each {
             studyId = ContigSet.get(it).study.id
             println "\tblasting against contig set ${ContigSet.get(it).name}"
-            def blastResults = blastAgainstSingleContigSet(it.toLong(), params.blastQuery, params.program)
+            def blastResults = blastAgainstSingleContigSet(it.toLong(), params.blastQuery, params.program, expect)
             println "\tgot ${blastResults.size()} results"
             allResults.addAll(blastResults)
         }

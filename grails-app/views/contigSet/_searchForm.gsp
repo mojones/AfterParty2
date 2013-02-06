@@ -51,6 +51,9 @@
             <option value="tblastx">tblastx</option>
         </select>
         <br/><br/>
+        <label>Expect</label>
+        <input name="expect" placeholder="1e-20"></input>
+        <br/><br/>
         <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
             <i class="icon-zoom-in"></i>&nbsp;submit sequence
         </button>
