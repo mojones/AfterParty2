@@ -175,7 +175,7 @@
                 <th>Accession</th>
                 <th>Bitscore</th>
                 <th>Evalue</th>
-                <th>Decription</th>
+                <th>Description</th>
                 <th>Start</th>
                 <th>Stop</th>
 
