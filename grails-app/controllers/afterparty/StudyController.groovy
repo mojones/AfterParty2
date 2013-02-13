@@ -32,6 +32,8 @@ class StudyController {
 
 
     def listPublished = {
+        println(statisticsService.getStudyCounts())
+        println( Study.findAllByPublished(true))
         [
             studyInstanceList: Study.findAllByPublished(true), 
             config: grailsApplication.config,

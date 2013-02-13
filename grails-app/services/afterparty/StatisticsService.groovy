@@ -98,7 +98,7 @@ def getContigSetStats(Long id){
         result.span = row.sum
         result.min = row.min
         result.max = row.max
-        result.mean = row.avg.toInteger()
+        result.mean = row.avg?.toInteger()
     }
 
     println result

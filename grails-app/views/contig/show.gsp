@@ -209,7 +209,7 @@
 
 
 
-        <h2>Interproscan annotation</h2>
+        <h2>Proten domain annotation</h2>
  
         <table class="table table-bordered table-hover">
 
@@ -226,7 +226,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.CONTIG}).sort({it.evalue}).reverse()}" var="b">
+            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.CONTIG && it.type != AnnotationType.PHOBIUS}).sort({it.evalue}).reverse()}" var="b">
                 <tr style="cursor: pointer" id="${b.id}_row" onclick="
                     var bar = $('#${b.id}_bar');
 
@@ -241,6 +241,34 @@
                     <td><a href="${b.generateUrl()}">${b.accession}</a></td>
                     <td>${b.type}</td>
                     <td>${b.evalue}</td>
+                    <td>${b.description}</td>
+                    <td>${b.start}</td>
+                    <td>${b.stop}</td>
+                </tr>
+            </g:each>
+            </tbody>
+
+        </table>
+
+
+        <h2>PHOBIUS annotation</h2>
+ 
+        <table class="table table-bordered table-hover">
+
+            <thead>
+            <tr>
+                <th>Feature type</th>
+                <th>Decription</th>
+                <th>Start</th>
+                <th>Stop</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.PHOBIUS}).sort({it.evalue}).reverse()}" var="b">
+                <tr>
+                    <td>${b.accession}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>
                     <td>${b.stop}</td>

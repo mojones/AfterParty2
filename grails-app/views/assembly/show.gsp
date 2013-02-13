@@ -58,6 +58,13 @@
                 ${assemblyInstance.description.replaceAll("\n", '<br/>')}
             </p>
 
+            <g:if test="${isOwner}">
+                <p>
+                    <g:link class="btn btn-danger" controller="assembly" action="deleteAssembly" params="${[assemblyId : assemblyInstance.id]}">
+                        <i class="icon-plus-sign"></i>&nbsp; delete assembly
+                    </g:link>
+                </p>
+            </g:if>
         </div>
     </div>
     <div class="span4 ">

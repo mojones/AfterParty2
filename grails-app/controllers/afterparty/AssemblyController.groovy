@@ -16,6 +16,7 @@ class AssemblyController {
     def springSecurityService
     javax.sql.DataSource dataSource
     def pfamService
+    def deletionService
 
     def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
 
@@ -35,6 +36,12 @@ class AssemblyController {
             ids.add(it.toLong())
         }
         render "merging assemblies " + ids
+    }
+
+    
+    @Secured(['ROLE_USER'])
+    def deleteAssembly = {
+        deletionService.deleteAssembly(params.assemblyId.toLong())
     }
 
     @Secured(['ROLE_USER'])
@@ -390,7 +397,8 @@ class AssemblyController {
 
         println "fetched : ${System.currentTimeMillis() - start}"
         println "sorted : ${System.currentTimeMillis() - start}"
-        [assemblyInstance: a, readSources:readSources, stats: stats]
+        def userId = springSecurityService.isLoggedIn() ? springSecurityService?.principal?.id : 'none'
+        [assemblyInstance: a, readSources:readSources, stats: stats, isOwner: a.compoundSample.study.user.id == userId]
     }
 
 
