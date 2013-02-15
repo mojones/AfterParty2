@@ -1,2 +1,17 @@
-This file was created by IntelliJ IDEA 10.5.1 for binding GitHub repository
-This file was modified by IntelliJ IDEA 10.5.2 for binding GitHub repository
+This is the README file for the afterParty project. 
+
+The main afterParty documentation is maintained here:
+
+https://github.com/mojones/AfterParty2/wiki
+
+This repository contains the whole directory structure for a Grails project. A brief description of the structure of the repository is as follow:
+
+grails-app : contains classes for the Grails web framework
+lib        : contains Java libraries required by afterParty
+sample_data: contains example datasets for testing
+src        : contains Java and Groovy scripts used in the development of afterParty
+test       : contains unit testing for Grails code - not currently used
+web-app    : contains static resources (images, stylesheets, javascript) for the web application
+
+Please submit bug reports, features requests, etc. to martin.jones@ed.ac.uk
+
