@@ -87,7 +87,7 @@ To make a bit of text editable we need to
         </g:if>
 
         <g:else>
-            <h3>Click "ADD NEW" to add a sample for this compound sample.</h3>
+            <h3>No Samples for this Compound Sample yet</h3>
         </g:else>
     
 

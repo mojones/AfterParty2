@@ -92,6 +92,7 @@
             <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
         </g:if>
 
+        <g:if test="${isOwner}">
             <ul id="myTab" class="nav nav-tabs">
               <li class="active"><a href="#generateAnnotation" data-toggle="tab">Generate annotation</a></li>
               
@@ -176,6 +177,7 @@
                     </g:form>              
                 </div>
             </div>
+        </g:if>
         </div>
     </div>
 </div>

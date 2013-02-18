@@ -232,7 +232,7 @@ class ContigSetController {
             blastCommand = "${grailsApplication.config.blastnPath} -outfmt 5 -db ${databasePath} -evalue ${expect}"
         }
         if (program == 'tblastn'){
-             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${databasePath} -evalue${expect}"
+             blastCommand = "${grailsApplication.config.tblastnPath} -outfmt 5 -db ${databasePath} -evalue ${expect}"
         }
         if (program == 'tblastx'){
              blastCommand = "${grailsApplication.config.tblastxPath} -outfmt 5 -db ${databasePath} -evalue ${expect}"
@@ -431,7 +431,8 @@ class ContigSetController {
         println "got ${a.contigs.size()} contigs for download";
 
         a.contigs.each {
-            response.outputStream << ">${it.name}\n${it.sequence}\n"
+            // send windows-style line endings otherwise windows users get everything on one line
+            response.outputStream << ">${it.name}\r\n${it.sequence}\r\n"
         }
     }
 

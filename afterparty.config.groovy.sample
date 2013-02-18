@@ -1,0 +1,39 @@
+// blast executables
+blastxPath = "/home/afterparty/ncbi-blast-2.2.25+/bin/blastx"
+blastnPath = "/home/afterparty/ncbi-blast-2.2.25+/bin/blastn"
+tblastnPath = "/home/afterparty/ncbi-blast-2.2.25+/bin/tblastn"
+tblastxPath = "/home/afterparty/ncbi-blast-2.2.25+/bin/tblastx"
+makeblastdbPath = "/home/afterparty/ncbi-blast-2.2.25+/bin/makeblastdb"
+
+// blast database
+sprotPath = "/home/afterparty/uniprot/uniprot_sprot.fasta"
+
+// path to store blast databases for contig sets
+contigSetDatabasePath = "/home/afterparty/afterparty_blast_databases"
+
+//interproscan
+interproscanPath = "/home/afterparty/interproscan/interproscan-5-RC3/interproscan.sh"
+
+//mira
+miraPath = "/home/afterparty/mira_3.2.1_prod_linux-gnu_x86_64_static/bin/mira"
+
+//database
+dataSource.pooled = true
+dataSource.driverClassName = "net.sf.log4jdbc.DriverSpy"
+
+dataSource.username = "afterparty"
+dataSource.password = "afterparty"
+dataSource.url = "jdbc:log4jdbc:postgresql://localhost:5432/afterparty"
+
+
+
+//GA
+google.analytics.webPropertyID = "XXXXXXX"
+google.analytics.enabled = true
+
+//image paths
+imagePath = [
+    5 : "http://www.nematodes.org/nematodegenomes/images/thumb/a/aa/LSC.jpg/200px-LSC.jpg", 
+    1440745 : "http://www.eeliad.com/images/Anguillicoloides.jpg",
+    2194070 : "http://i.imgur.com/VRNZf2y.jpg"
+]
