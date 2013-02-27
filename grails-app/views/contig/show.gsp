@@ -226,7 +226,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.CONTIG && it.type != AnnotationType.PHOBIUS}).sort({it.evalue}).reverse()}" var="b">
+            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.CONTIG && it.type != AnnotationType.PHOBIUS && it.type != AnnotationType.COIL}).sort({it.evalue}).reverse()}" var="b">
                 <tr style="cursor: pointer" id="${b.id}_row" onclick="
                     var bar = $('#${b.id}_bar');
 
@@ -251,7 +251,7 @@
         </table>
 
 
-        <h2>PHOBIUS annotation</h2>
+        <h2>PHOBIUS/COILS annotation</h2>
  
         <table class="table table-bordered table-hover">
 
@@ -266,7 +266,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.PHOBIUS}).sort({it.evalue}).reverse()}" var="b">
+            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.PHOBIUS || it.type == AnnotationType.COIL}).sort({it.evalue}).reverse()}" var="b">
                 <tr>
                     <td>${b.accession}</td>
                     <td>${b.description}</td>
