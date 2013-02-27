@@ -171,7 +171,7 @@
                     <g:form action="uploadInterproscanAnnotation" method="post" enctype="multipart/form-data">
                         <label>Select InterProScan results file to upload:</label>
                         <input type="file" name="myFile"/>
-                        <span class="help-block">InterProScan raw format only <code>-format raw</code></span>
+                        <span class="help-block">InterProScan GFF3 format only <code>-format gff3</code></span>
                         <g:hiddenField name="id" value="${assemblyInstance?.id}"/>
                         <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and add annotation</button>
                     </g:form>              
