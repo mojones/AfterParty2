@@ -128,7 +128,6 @@
                         <h3>${runInstance.trimmedReadsFile.name}</h3>
 
                         <p><g:truncate maxlength="100">${runInstance.trimmedReadsFile.description}</g:truncate></p>
-                        <p>${runInstance.rawReadsFile.description}</p>
 
                             <g:form controller="readsFile" action="download">
                                 <g:hiddenField name="id" value="${runInstance.trimmedReadsFile.id}"/>

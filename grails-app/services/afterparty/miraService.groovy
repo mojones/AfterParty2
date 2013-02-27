@@ -233,12 +233,13 @@ class miraService {
         // construct the mira command line, set the working directory to /tmp, and start the process
         println "starting process - path is ${grailsApplication.config.miraPath}"
         println "${grailsApplication.config.miraPath} --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo"
-        def p = new ProcessBuilder("${grailsApplication.config.miraPath} --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
+        def p = new ProcessBuilder("time ${grailsApplication.config.miraPath} --job=denovo,est,draft,454 --project=${projectName} -DI:lrt=/tmp -GE:not=4 454_SETTINGS -LR:lsd=yes:ft=fastq -notraceinfo".split(" "))
         job.commandLine = p.command().join('')
         p.directory(new File("/tmp"))
         p.redirectErrorStream(true)
         p = p.start()
 
+        println "started mira at ${System.currentTimeMillis()}"
         // monitor stdout of the mira process and update the job to show which pass we are on
         p.in.eachLine({
             if (it.contains('Pass')) {
@@ -248,6 +249,7 @@ class miraService {
             }
         })
 
+        println "finished mira at ${System.currentTimeMillis()}"
         println "done!!"
         File aceFile = new File("/tmp/${projectName}_assembly/${projectName}_d_results/${projectName}_out.ace")
 

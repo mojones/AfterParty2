@@ -115,6 +115,7 @@ class PfamService {
 
         def n = 0
 
+        println "started interproscan : ${System.currentTimeMillis()}"
 
         assembly.contigs.each { contig ->
 
@@ -124,8 +125,12 @@ class PfamService {
             println "temporary file is ${contigFastaFile.absolutePath}"
 
             contigFastaFile.append(">${contig.name}\n${contig.sequence.toLowerCase().replaceAll(/[^atgc]/, 'n')}\n")
-            println "${grailsApplication.config.interproscanPath} -f GFF3 -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
-            def pfamProcess = new ProcessBuilder("${grailsApplication.config.interproscanPath} -f GFF3  -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 ".split(" "))
+            def pfamString =  "${grailsApplication.config.interproscanPath} -f GFF3 -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
+            pfamString =  "${grailsApplication.config.interproscanPath} -f GFF3 -appl Coils-2.2 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
+            println pfamString
+            
+
+            def pfamProcess = new ProcessBuilder(pfamString.split(" "))
             pfamProcess.redirectErrorStream(true)
             pfamProcess = pfamProcess.start()
             pfamProcess.in.eachLine({
@@ -142,9 +147,11 @@ class PfamService {
             n++
             job.progress = "Annotated $n / $contigCount"
             job.unitsDone = n
+            job.status = BackgroundJobStatus.RUNNING
             job.save(flush: true)
         }
 
+        println "finished interproscan : ${System.currentTimeMillis()}"
         job.progress = "finished"
         job.status = BackgroundJobStatus.FINISHED
         job.save(flush: true)

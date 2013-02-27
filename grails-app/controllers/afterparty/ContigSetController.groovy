@@ -32,18 +32,19 @@ class ContigSetController {
     }
 
     def makeAnnotationForContig(contig){
+        def linkUrl = createLink(controller: 'contig', action:'show', params:[id: contig.id])
         def annotationLines = []
         if (contig.BLAST_desc){
-            annotationLines.add("<span class=\"label label-important\">blast</span>&nbsp;${contig.BLAST_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.BLAST_score)}</span>")
+            annotationLines.add("<a href=\"${linkUrl}\"><span class=\"label label-important\">blast</span></a>&nbsp;${contig.BLAST_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.BLAST_score)}</span>")
         }
         if (contig.PFAM_desc){
-            annotationLines.add("<span class=\"label label-success\">pfam</span>&nbsp;${contig.PFAM_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.PFAM_score)}</span>")
+            annotationLines.add("<a href=\"${linkUrl}\"><span class=\"label label-success\">pfam</span></a>&nbsp;${contig.PFAM_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.PFAM_score)}</span>")
         }
         if (contig.HMMPANTHER_desc){
-            annotationLines.add("<span class=\"label label-info\">hmmpanther</span>&nbsp;${contig.HMMPANTHER_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.HMMPANTHER_score)}</span>")
+            annotationLines.add("<a href=\"${linkUrl}\"><span class=\"label label-info\">hmmpanther</span></a>&nbsp;${contig.HMMPANTHER_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.HMMPANTHER_score)}</span>")
         }
         if (contig.GENE3D_desc){
-            annotationLines.add("<span class=\"label\">gene3d</span>&nbsp;${contig.GENE3D_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.GENE3D_score)}</span>")
+            annotationLines.add("<a href=\"${linkUrl}\"><span class=\"label\">gene3d</span></a>&nbsp;${contig.GENE3D_desc} <span class=\"badge badge-warning\">Evalue : ${String.format('%10.3G', contig.GENE3D_score)}</span>")
         }
 
         return annotationLines.join('<br/>')

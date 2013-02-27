@@ -41,7 +41,11 @@ class AssemblyController {
     
     @Secured(['ROLE_USER'])
     def deleteAssembly = {
+        def studyId = Assembly.get(params.assemblyId.toLong()).compoundSample.study.id
+        println "going to redirect to study id ${studyId}"
         deletionService.deleteAssembly(params.assemblyId.toLong())
+        flash.success = "successfully delete assembly"
+        redirect(controller: 'study', action: 'show', id : studyId)
     }
 
     @Secured(['ROLE_USER'])
@@ -310,9 +314,9 @@ class AssemblyController {
         )
         job.save(flush: true)
 
-        runAsync {
+        //runAsync {
             blastService.runBlast(assemblyId, job.id)
-        }
+        //}
 
         redirect(controller: 'backgroundJob', action: 'list')
 
@@ -334,9 +338,9 @@ class AssemblyController {
         )
         job.save(flush: true)
 
-        //runAsync {
+        runAsync {
             pfamService.runPfam(assemblyId, job.id)
-        //}
+        }
 
         redirect(controller: 'backgroundJob', action: 'list')
 

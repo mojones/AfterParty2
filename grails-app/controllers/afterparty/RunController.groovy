@@ -11,6 +11,7 @@ class RunController {
     def grailsLinkGenerator
     def statisticsService
 
+    def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
 

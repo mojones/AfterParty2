@@ -129,51 +129,51 @@ class BlastService {
         job.save(flush: true)
 
 
+        println "started BLAST at ${System.currentTimeMillis()}"
 
         def n = 0
+        def batchSize = 100
 
-
+        File contigFastaFile = File.createTempFile('contig', '.fasta')
         assembly.contigs.each { contig ->
 
-            if (n < 10 * 1000) {
+                if (n > 0 && n % batchSize == 0){
 
-                println "blast path is ${grailsApplication.config.blastxPath}"
+                    def blastString = "${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10 -query ${contigFastaFile.getAbsolutePath()}"
+                    println blastString
+                    def blastProcess = new ProcessBuilder(blastString.split(" "))
+                    blastProcess.redirectErrorStream(true)
+                    blastProcess = blastProcess.start()
 
-                println "running blast on contig $n"
+                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
+                    
+                    contigFastaFile = File.createTempFile('contig', '.fasta')
+                    println "temporary file is ${contigFastaFile.absolutePath}"
+                } else {
+                    contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
+                }                                
 
-
-
-
-                File contigFastaFile = File.createTempFile('contig', '.fasta')
-                println "temporary file is ${contigFastaFile.absolutePath}"
-
-                contigFastaFile.append(">${contig.name}\n${contig.sequence}\n")
-
-                def blastProcess = new ProcessBuilder("${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10".split(" "))
-                blastProcess.redirectErrorStream(true)
-                blastProcess = blastProcess.start()
-
-
-                def writer = new PrintWriter(new BufferedOutputStream(blastProcess.out))
-                writer.println(">${contig.name}\n${contig.sequence}")
-                writer.close()
-
-                addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
-        //                blastProcess.in.eachLine({
-                        //                    println "blast : $it"
-                        //                })
-
-        }
+        
         n++
         job.progress = "BLASTED $n / $contigCount"
         job.unitsDone = n
         job.save(flush: true)
         }
+        // final batch....
+
+        def blastString = "${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10 -query ${contigFastaFile.getAbsolutePath()}"
+        println blastString
+        def blastProcess = new ProcessBuilder(blastString.split(" "))
+        blastProcess.redirectErrorStream(true)
+        blastProcess = blastProcess.start()
+
+                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
 
         job.progress = "finished"
         job.status = BackgroundJobStatus.FINISHED
         job.save(flush: true)
 
 
+        println "finished BLAST at ${System.currentTimeMillis()}"
     }
 }
