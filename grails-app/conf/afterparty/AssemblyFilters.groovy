@@ -20,7 +20,7 @@ class AssemblyFilters {
 
         }
 
-        assemblyExists(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|download|runBlast|scatterplotAjax|histogramAjax|show)') {
+        assemblyExists(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|download|runBlast|scatterplotAjax|histogramAjax|show|deleteAssembly)') {
             before = {
                 println "checking if assembly with id ${params.id} exists"
                 Assembly a = Assembly.get(params.id)
@@ -47,7 +47,7 @@ class AssemblyFilters {
         }
 
 
-        assemblyIsOwnedByUser(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|runBlast)') {
+        assemblyIsOwnedByUser(controller: 'assembly', action: '(uploadBlastAnnotation|uploadContigs|runBlast|deleteAssembly)') {
             before = {
                 println "checking if assembly is owned by user"
                 Assembly a = Assembly.get(params.id)
