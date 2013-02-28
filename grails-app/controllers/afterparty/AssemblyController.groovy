@@ -266,6 +266,15 @@ class AssemblyController {
                 contig.quality = '0 ' * seq.length()
                 contig.averageCoverage = 1
                 contig.averageQuality = 1
+                 Annotation ann = new Annotation(
+                            description:'whole contig', 
+                            bitscore : 0, 
+                            evalue : 0,
+                            start : 0,
+                            stop : 0, 
+                            accession: 'ABC',
+                            type : AnnotationType.CONTIG)
+                contig.addToAnnotations(ann)
                 assembly.addToContigs(contig)
                 created++
                 if (created % 1000 == 0) {

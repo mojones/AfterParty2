@@ -49,6 +49,8 @@ class Annotation {
                 return "http://www.uniprot.org/uniprot/$cleanAccession"
             case AnnotationType.HMMPANTHER:
                 return "http://www.pantherdb.org/panther/family.do?clsAccession=${accession}"
+            case AnnotationType.GENE3D:
+                return "http://gene3d.biochem.ucl.ac.uk/superfamily/?accession=${accession}"
             default:
                 return "#"
         }
