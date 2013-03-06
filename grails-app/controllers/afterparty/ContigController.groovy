@@ -63,7 +63,7 @@ class ContigController {
         Map annotationsMap = [:]
         AnnotationType.each { type ->
             if (type != AnnotationType.BLAST) {
-                annotationsMap.put(type, contigInstance.annotations.findAll({it.type == type}).sort({it.evalue}).reverse())
+                annotationsMap.put(type, contigInstance.annotations.findAll({it.type == type}).sort({-it.start}).sort({it.evalue}).reverse())
             }
         }
 

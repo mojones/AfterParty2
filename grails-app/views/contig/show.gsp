@@ -71,6 +71,7 @@
                     drawing.drawChart(window.contigData.coverage, 100);
                 }
                 if (window.contigData.blastHits.length > 0) {
+                    drawing.drawSpacer(50);
                     drawing.drawTitle('BLAST hits vs uniprot');
                     for (var i = 0; i < window.contigData.blastHits.length; i++) {
                         var hit = window.contigData.blastHits[i];
