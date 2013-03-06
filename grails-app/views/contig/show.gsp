@@ -12,7 +12,11 @@
 
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollTo-1.4.2-min.js')}"></script>
 
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'bootstrapSwitch.js')}"></script>
+    <script type="text/javascript" src="${resource(dir: 'js', file: 'portamento.js')}"></script>
+
 </head>
+
 
 <body>
 
@@ -41,8 +45,9 @@
         </ul>
     </div>
 </div>
+
 <div class="row-fluid">
-    <div class="span10 offset1">
+    <div class="span8 offset1">
         <h2>${contigInstance.name}</h2>
 
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
@@ -94,10 +99,11 @@
                     }
                     drawing.drawSpacer(50);
                 }
-
+                
+                // first draw all annotations that are not phobius
                 for (type in window.contigData.annotations) {
                     var hits = window.contigData.annotations[type];
-                    if (hits.length > 0) {
+                    if (hits.length > 0 && type != 'CONTIG' && type != 'PHOBIUS') {
                         drawing.drawTitle(type + ' annotations');
 
 
@@ -124,6 +130,26 @@
                         drawing.drawSpacer(50);
                     }
                 }
+                
+                // now draw phobius hits
+                var phobius_hits = window.contigData.annotations['PHOBIUS'];
+                if (phobius_hits.length > 0 ) {
+                    drawing.drawTitle("PHOBIUS annotations");
+
+
+                    for (var i = 0; i < phobius_hits.length; i++) {
+
+                        var hit = hits[i];
+                        if (hit.accession == 'SIGNAL_PEPTIDE' || hit.accession == 'TRANSMEMBRANE' || $('#show_phobius_details_checkbox')[0].checked){
+                            var hitColour = drawing.getBLASTColour(hit.bitscore);
+                            var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue', hit.accession, hit.description + ' (' + type + ')', hit.id);
+                        }   
+                    }
+
+                    drawing.drawSpacer(50);
+                }
+
+    
                 if (window.showReads){
                     drawing.drawTitle('Reads');
 
@@ -148,13 +174,29 @@
             window.showReads = false;
             $.get('/contig/showJSON/' + ${contigInstance.id}, drawContig);
 
-        </script>
+            
 
+        </script>
 
         <h2 id="spinner">Drawing annotation...<img src="${resource(dir: 'images', file: 'spinner.gif')}" style="vertical-align: middle;"> </h2>
         <div id="coffeescript_annotation" class="in_a_box contig_annotation_box">
         </div>
     </div>
+    <div class="span2" id="navi" >
+        <h4>Reads</h4>
+       <div class="switch" id="show_reads_switch">
+            <input id="show_reads_checkbox" type="checkbox">
+    </div> 
+        <h4>Full PHOBIUS annotations</h4>
+       <div class="switch" id="show_phobius_details_switch" >
+            <input id="show_phobius_details_checkbox" type="checkbox">
+    </div> 
+    </div>
+    <script type="text/javascript">
+$('#show_phobius_details_switch').on('switch-change', function (e, data) {
+drawContig(window.contigData);
+});
+</script>
 </div>
 <div class="row-fluid">
     <div class="span10 offset1">
@@ -281,6 +323,5 @@
 
     </div>       
 </div>
-
 </body>
 </html>

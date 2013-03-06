@@ -12,7 +12,7 @@
 
 
 
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'bootstrap.js')}"></script>
 
     <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.dataTables.js')}"></script>
@@ -21,6 +21,7 @@
 
     
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrap.css')}"/>
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'bootstrapSwitch.css')}"/>
 
 
     %{--jquery edit in place plugin--}%
