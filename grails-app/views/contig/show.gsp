@@ -142,7 +142,7 @@
                         var hit = hits[i];
                         if (hit.accession == 'SIGNAL_PEPTIDE' || hit.accession == 'TRANSMEMBRANE' || $('#show_phobius_details_checkbox')[0].checked){
                             var hitColour = drawing.getBLASTColour(hit.bitscore);
-                            var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue', hit.accession, hit.description + ' (' + type + ')', hit.id);
+                            var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue',  hit.description, '  ' + hit.accession, hit.id);
                         }   
                     }
 
@@ -150,7 +150,7 @@
                 }
 
     
-                if (window.showReads){
+                if ($('#show_reads_checkbox')[0].checked){
                     drawing.drawTitle('Reads');
 
                     for (var i = 0; i < window.contigData.readColours.length; i++) {
@@ -182,7 +182,7 @@
         <div id="coffeescript_annotation" class="in_a_box contig_annotation_box">
         </div>
     </div>
-    <div class="span2" id="navi" >
+    <div class="span2" id="navi" style="position:fixed; right:10px;">
         <h4>Reads</h4>
        <div class="switch" id="show_reads_switch">
             <input id="show_reads_checkbox" type="checkbox">
@@ -193,25 +193,23 @@
     </div> 
     </div>
     <script type="text/javascript">
-$('#show_phobius_details_switch').on('switch-change', function (e, data) {
+$('#show_phobius_details_switch, #show_reads_switch').on('switch-change', function (e, data) {
 drawContig(window.contigData);
 });
 </script>
 </div>
 <div class="row-fluid">
-    <div class="span10 offset1">
+    <div class="span8 offset1">
 
    
         <h3>Read count : ${contigInstance.reads.size()}</h3> 
-        <button class="btn btn-info" onclick="window.showReads=!window.showReads;drawContig(window.contigData)"><i class="icon-eye-open"></i>&nbsp;toggle reads</button>
-
 
         <h3>Sequence</h3>
         <textarea rows="5" class="span12">${contigInstance.sequence}</textarea>
 
         <h2>BLAST hits</h2>
 
-        <table  class="table table-bordered table-hover">
+        <table class="table table-bordered table-hover">
 
             <thead>
             <tr>
@@ -221,6 +219,7 @@ drawContig(window.contigData);
                 <th>Description</th>
                 <th>Start</th>
                 <th>Stop</th>
+                <th>Source</th>
 
             </tr>
             </thead>
@@ -240,10 +239,11 @@ drawContig(window.contigData);
                 ">
                     <td><a href="${b.generateUrl()}">${b.accession}</a></td>
                     <td>${b.bitscore}</td>
-                    <td>${String.format('%10.3G', b.evalue)}</td>
+                    <td style="white-space:nowrap;">${String.format('%10.3G', b.evalue)}</td>
                     <td>${b.description}</td>
                     <td>${b.start}</td>
                     <td>${b.stop}</td>
+                    <td>${b.source}</td>
                 </tr>
             </g:each>
             </tbody>

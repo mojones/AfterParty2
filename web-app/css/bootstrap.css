@@ -5686,3 +5686,4 @@ td {
 .contig_annotation_box:after {  content: "Contig Annotation";}
 .contig_set_details_box:after {  content: "Contig Set details";}
 .contig_set_charts_box:after {  content: "Contig Set charts";}
+td { white-space : normal;}
