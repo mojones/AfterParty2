@@ -8,6 +8,8 @@ class Annotation {
     int start
     int stop
     String accession
+    String source
+
     AnnotationType type
 
     // mark this class as NOT a searchable root, so that it doesn't get returned in searches - instead, we want to always return the contig
