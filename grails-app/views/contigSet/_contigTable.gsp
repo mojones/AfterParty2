@@ -7,7 +7,7 @@
             <th>Mean quality</th>
             <th>Mean coverage</th>
             <th>GC</th>
-            <th>Annotation</th>
+            <th style="width:50%;">Annotation</th>
         
         </tr>
     </thead>
