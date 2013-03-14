@@ -10,7 +10,6 @@
     <script type="text/javascript" src="${resource(dir: 'js', file: 'g.line-min.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'coffee-script.js')}"></script>
 
-    <script type="text/javascript" src="${resource(dir: 'js', file: 'jquery.scrollTo-1.4.2-min.js')}"></script>
 
     <script type="text/javascript" src="${resource(dir: 'js', file: 'bootstrapSwitch.js')}"></script>
     <script type="text/javascript" src="${resource(dir: 'js', file: 'portamento.js')}"></script>
@@ -53,6 +52,26 @@
         <script type="text/javascript" src="${resource(dir: 'js', file: 'biodrawing.js')}"></script>
         <script type="text/javascript">
 
+            $.fn.scrollTo = function( target, options, callback ){
+              if(typeof options == 'function' && arguments.length == 2){ callback = options; options = target; }
+              var settings = $.extend({
+                scrollTarget  : target,
+                offsetTop     : 50,
+                duration      : 500,
+                easing        : 'swing'
+              }, options);
+              return this.each(function(){
+                var scrollPane = $(this);
+                var scrollTarget = (typeof settings.scrollTarget == "number") ? settings.scrollTarget : $(settings.scrollTarget);
+                var scrollY = (typeof scrollTarget == "number") ? scrollTarget : scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop);
+                scrollPane.animate({scrollTop : scrollY }, parseInt(settings.duration), settings.easing, function(){
+                  if (typeof callback == 'function') { callback.call(this); }
+                });
+              });
+            }
+
+
+
             var drawContig = function(data) {
 
                 window.contigData = data;
@@ -92,7 +111,7 @@
                                         $('tr').css('background-color', 'white');
                                         var row = $('#' + a + '_row');
                                         row.css("background-color", "bisque");
-                                        $.scrollTo(row, 800, {offset : -300});
+                                        $('body').scrollTo(row);
                                     }
                                 }(hit.id)
                         );
@@ -103,7 +122,7 @@
                 // first draw all annotations that are not phobius
                 for (type in window.contigData.annotations) {
                     var hits = window.contigData.annotations[type];
-                    if (hits.length > 0 && type != 'CONTIG' && type != 'PHOBIUS') {
+                    if (hits.length > 0 && type != 'OTHERCONTIG' && type != 'CONTIG' && type != 'PHOBIUS') {
                         drawing.drawTitle(type + ' annotations');
 
 
@@ -207,6 +226,38 @@ drawContig(window.contigData);
         <h3>Sequence</h3>
         <textarea rows="5" class="span12">${contigInstance.sequence}</textarea>
 
+
+
+
+        <h2>Links to other contigs</h2>
+
+        <table class="table table-bordered table-hover">
+
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Evalue</th>
+                <th>Source</th>
+
+            </tr>
+            </thead>
+
+            <tbody>
+            <g:each in="${contigInstance.annotations.findAll({it.type == AnnotationType.OTHERCONTIG}).sort({it.evalue}).unique({it.accession})}" var="b">
+                <tr >
+                    <td><g:link controller="contig" action="show" id="${b.accession}">${b.description}</g:link></td>
+                    <td style="white-space:nowrap;">${String.format('%10.3G', b.evalue)}</td>
+                    <td>${b.source}</td>
+                </tr>
+            </g:each>
+            </tbody>
+
+        </table>
+
+
+
+
+
         <h2>BLAST hits</h2>
 
         <table class="table table-bordered table-hover">
@@ -252,7 +303,7 @@ drawContig(window.contigData);
 
 
 
-        <h2>Proten domain annotation</h2>
+        <h2>Protein domain annotation</h2>
  
         <table class="table table-bordered table-hover">
 
@@ -269,7 +320,7 @@ drawContig(window.contigData);
             </thead>
 
             <tbody>
-            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.CONTIG && it.type != AnnotationType.PHOBIUS && it.type != AnnotationType.COIL}).sort({it.evalue}).reverse()}" var="b">
+            <g:each in="${contigInstance.annotations.findAll({it.type != AnnotationType.BLAST && it.type != AnnotationType.OTHERCONTIG && it.type != AnnotationType.CONTIG && it.type != AnnotationType.PHOBIUS && it.type != AnnotationType.COIL}).sort({it.evalue}).reverse()}" var="b">
                 <tr style="cursor: pointer" id="${b.id}_row" onclick="
                     var bar = $('#${b.id}_bar');
 

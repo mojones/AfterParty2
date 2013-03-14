@@ -578,7 +578,7 @@ def getFilteredInfoForSingleContig(Long id, String query){
         }
     
     sql.rows(annotationStatement).each{ row ->
-        result.put(row.type + '_desc', row.description)
+        result.put(row.type + '_desc', row.description + ' (' + row.source + ')')
         result.put(row.type + '_score', row.evalue)
     }
 
@@ -604,7 +604,7 @@ def getInfoForSingleContig(Long id){
     // now the annotation
     def annotationStatement = "select * from annotation where contig_id=${id} order by evalue desc"
     sql.rows(annotationStatement).each{ row ->
-        result.put(row.type + '_desc', row.description)
+        result.put(row.type + '_desc', row.description + ' (' + row.source + ')')
         result.put(row.type + '_score', row.evalue)
     }
 

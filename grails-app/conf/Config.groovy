@@ -138,3 +138,7 @@ grails.plugins.springsecurity.controllerAnnotations.staticRules = [
    '/role/**': ['ROLE_ADMIN'], 
    '/aclclass/**': ['ROLE_ADMIN']
 ] 
+
+logSql = Boolean.parseBoolean(System.properties.logSql ?: 'false')
+
+

@@ -54,6 +54,8 @@ class AssemblyController {
 
         def assemblyId = params.id
 
+        def sourceName = request.getFile('myFile').getOriginalFilename().replaceAll('_', ' ').replaceAll('.xml', '').replaceAll('.gz', '')
+        println "source name for file is ${sourceName}"
         BackgroundJob job = new BackgroundJob(
                 name: "uploading BLAST annotation from ${request.getFile('myFile').getOriginalFilename()}",
                 progress: 'running',
@@ -72,7 +74,7 @@ class AssemblyController {
             job2.save(flush: true)
             def gzipInputStream = new java.util.zip.GZIPInputStream(f.inputStream) 
             
-            blastService.addBlastHitsFromInput(gzipInputStream, job.id, assemblyId)
+            blastService.addBlastHitsFromInput(gzipInputStream, job.id, assemblyId, sourceName)
             println "back in controller, indexing"
 
             BackgroundJob.withNewSession {

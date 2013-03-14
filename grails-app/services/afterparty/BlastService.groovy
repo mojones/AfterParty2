@@ -21,7 +21,7 @@ class BlastService {
         propertyInstanceMap.get().clear()
     }
 
-    def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId) {
+    def addBlastHitsFromInput(InputStream input, def backgroundJobId, def assemblyId, def sourceName) {
 
         def sqlAfterparty = new Sql(dataSource)
         BackgroundJob job = BackgroundJob.get(backgroundJobId)
@@ -81,6 +81,7 @@ class BlastService {
                     def evalue = currentProperties.'Hsp_evalue'.toFloat()
                     def start = currentProperties.'Hsp_query-from'.toInteger()
                     def stop = currentProperties.'Hsp_query-to'.toInteger()
+                    
 
                     Annotation b = new Annotation()
                     b.description = description
@@ -90,7 +91,7 @@ class BlastService {
                     b.stop = stop
                     b.evalue = evalue
                     b.type = AnnotationType.BLAST
-
+                    b.source = sourceName
                     currentContig.addToAnnotations(b)
 
                 } 
@@ -145,7 +146,7 @@ class BlastService {
                     blastProcess.redirectErrorStream(true)
                     blastProcess = blastProcess.start()
 
-                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
+                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id, 'UniProt')
                     
                     contigFastaFile = File.createTempFile('contig', '.fasta')
                     println "temporary file is ${contigFastaFile.absolutePath}"
