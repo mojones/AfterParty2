@@ -154,6 +154,18 @@ To make a bit of text editable we need to
 <div class="row-fluid">
     <div class="span10 offset1 contigsets_box in_a_box">
 
+        <g:if test="${isOwner}">
+                    <g:form action="uploadContigSet" method="post" enctype="multipart/form-data">
+
+                        <label>Create a contig set from a file of contig names</label>
+                        <input type="file" name="myFile"/>
+                        <span class="help-block">one contig name per line</span>
+                    
+                        <g:hiddenField name="id" value="${studyInstance?.id}"/>
+
+                        <button type="submit" class="btn btn-info"/><i class="icon-time"></i>&nbsp;Upload and create contig set</button>
+                    </g:form>
+        </g:if>
 
         <form id="contigSetForm" method="get"  class="form-search">
 

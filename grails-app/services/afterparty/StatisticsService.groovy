@@ -356,14 +356,15 @@ def createContigSetForAssembly(Long id) {
     Integer count = 0
 
     a.contigs.each {
-    cs.addToContigs(it)
+        cs.addToContigs(it)
+        //println it.id
     }
 
     if (a.defaultContigSet) {
         def currentDefaultContigSet = a.defaultContigSet
         println "deleting old contig set for assembly with id ${currentDefaultContigSet.id}"
         a.compoundSample.study.removeFromContigSets(currentDefaultContigSet)
-        a.defaultContigSet = null
+        //a.defaultContigSet = null
         currentDefaultContigSet.delete(flush:true)
     }
     cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')

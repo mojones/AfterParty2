@@ -18,6 +18,35 @@ class StudyController {
         redirect(action: "listPublished", params: params)
     }
 
+    def uploadContigSet(){
+        def f = request.getFile('myFile')
+        def fileName = request.getFile('myFile').getOriginalFilename()
+        println "creating a contig set from an uploaded file : ${fileName}"
+        ContigSet cs = new ContigSet()
+        cs.name = "contig set create from an uploaded file : ${fileName}"
+        cs.description =  "contig set create from an uploaded file : ${fileName}"
+        cs.type = ContigSetType.USER
+        cs.study = Study.get(params.id)
+        cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
+        f.inputStream.eachLine { line -> 
+            def criteria = Contig.createCriteria()
+            def c = criteria{
+                eq('name', line)
+                assembly {
+                    compoundSample{
+                        study{
+                            eq('id', params.id.toLong())
+                        }
+                    }
+                }
+            }                
+
+          cs.addToContigs(c[0])
+            println line
+        }
+        cs.save(flush:true)
+        redirect(action:'show', id : params.id)
+    }
 
     @Secured(['ROLE_USER'])
     def createCompoundSample = {
