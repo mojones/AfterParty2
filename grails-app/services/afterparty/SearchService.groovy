@@ -64,7 +64,7 @@ class SearchService {
         def sqlStatement = """
         select distinct annotation.contig_id 
             from annotation, contig_set_contig, read 
-            where to_tsvector('english', annotation.description) @@ to_tsquery('english', '${query}') 
+            where to_tsvector('english', replace(description, '.', ' ') || ' ' || description) @@ to_tsquery('english', '${query}') 
             and annotation.contig_id = contig_set_contig.contig_id 
             and contig_set_contig.contig_set_contigs_id=${set.id} 
             and read.contig_id = annotation.contig_id and read.source in (${listString})

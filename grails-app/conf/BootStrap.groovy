@@ -33,7 +33,8 @@ class BootStrap {
                 def sql = new Sql(dataSource)
 
                 // create the index for annotation search
-                sql.execute("CREATE INDEX annotation_idx ON annotation USING gin(to_tsvector('english', description));")
+                // index is the concatenation of the description, and the description with dot replaced by space, so that we can match sub-bits of accession numbers
+                sql.execute("create index annotation_idx on annotation using gin(to_tsvector('english', replace(description, '.', ' ') || ' ' || description))")
 
                 // index for looking up contig set memberships
                 sql.execute("create index lookup_by_contig on contig_set_contig (contig_id)")

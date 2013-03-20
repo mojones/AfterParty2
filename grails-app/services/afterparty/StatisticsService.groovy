@@ -443,7 +443,7 @@ def getFilteredContigIdsByLibrary(Long contigSetId, Integer limit, String query,
     where
         annotation.contig_id=contig_set_contig.contig_id and 
         contig_set_contig.contig_set_contigs_id=${contigSetId} and 
-        to_tsvector('english', annotation.description) @@ to_tsquery('english', '${query}') and 
+        to_tsvector('english', replace(description, '.', ' ') || ' ' || description) @@ to_tsquery('english', '${query}') and 
         read.contig_id=annotation.contig_id and 
         read.source in (${listString})
     limit
@@ -471,7 +471,7 @@ def getFilteredContigIds(Long contigSetId, Long offset, Long limit, String order
             contig.id = contig_set_contig.contig_id and 
             contig_set_contig.contig_set_contigs_id=${contigSetId} and 
             annotation.contig_id = contig.id and 
-            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+            to_tsvector('english', replace(description, '.', ' ') || ' ' || description) @@ to_tsquery('english', ${query}) 
         order by 
             ${Sql.expand(orderBy)} ${Sql.expand(sortDirection)} 
         offset 
@@ -573,7 +573,7 @@ def getFilteredInfoForSingleContig(Long id, String query){
             annotation 
         where 
             contig_id=${id} and 
-            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query}) 
+            to_tsvector('english', replace(description, '.', ' ') || ' ' || description) @@ to_tsquery('english', ${query}) 
         order by 
             evalue desc"""
         }
