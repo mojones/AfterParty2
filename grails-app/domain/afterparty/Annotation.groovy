@@ -4,7 +4,7 @@ class Annotation {
 
     String description
     Float bitscore
-    Float evalue
+    BigDecimal evalue
     int start
     int stop
     String accession
@@ -27,7 +27,7 @@ class Annotation {
         // sort bitscore:'desc'
         contig(index: 'blasthit_contig')
         accession(index: 'annotation_acc_idx')
-
+        evalue(type:'big_decimal')
     }
 
     static belongsTo = [contig: Contig]
