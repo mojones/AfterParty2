@@ -59,7 +59,7 @@ class PfamService {
                     def theContig = Contig.get(contigId)
                     //println "evalue : $evalue - type $type $acc from $start to $stop with $description to $contigId ($theContig) (${System.currentTimeMillis() - startTime})"
 
-                    Annotation a = new Annotation(accession: acc, evalue: null, bitscore: null, description: description, start: start.toInteger()*3, stop: stop.toInteger()*3)
+                    Annotation a = new Annotation(accession: acc, evalue: null, bitscore: null, description: description, start: start.toInteger()*3, stop: stop.toInteger()*3, source: 'InterProScan')
 
                     if (evalue.isNumber()) {
                         a.evalue = new Float(evalue)
