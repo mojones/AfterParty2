@@ -41,9 +41,9 @@ class AssemblyController {
     
     @Secured(['ROLE_USER'])
     def deleteAssembly = {
-        def studyId = Assembly.get(params.assemblyId.toLong()).compoundSample.study.id
+        def studyId = Assembly.get(params.id.toLong()).compoundSample.study.id
         println "going to redirect to study id ${studyId}"
-        deletionService.deleteAssembly(params.assemblyId.toLong())
+        deletionService.deleteAssembly(params.id.toLong())
         flash.success = "successfully delete assembly"
         redirect(controller: 'study', action: 'show', id : studyId)
     }
@@ -275,6 +275,7 @@ class AssemblyController {
                             start : 0,
                             stop : 0, 
                             accession: 'ABC',
+                            source: 'whole contig',
                             type : AnnotationType.CONTIG)
                 contig.addToAnnotations(ann)
                 assembly.addToContigs(contig)

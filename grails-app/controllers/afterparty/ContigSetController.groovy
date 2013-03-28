@@ -23,10 +23,10 @@ class ContigSetController {
 
     def makeNameForContig(contig){
         // start with eye icon
-        def result = '<i class="icon-eye-open"></i>&nbsp;'
+        def result = '<span style="white-space:nowrap"><i class="icon-eye-open"></i>&nbsp;'
         def linkUrl = createLink(controller: 'contig', action:'show', params:[id: contig.id])
         // the contig name links to the contig page
-        result += "<a href=\"${linkUrl}\">${contig.name}</a>"
+        result += "<a href=\"${linkUrl}\">${contig.name}</a></span>"
        
         return result
     }
