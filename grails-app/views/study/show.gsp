@@ -181,7 +181,7 @@ To make a bit of text editable we need to
                     <tr class='compoundSampleRow ${contigSet.type}'>
                         <td>
                             <g:checkBox name="check_${contigSet.id}" value="${false}" class="checkbox"/> 
-                            <i class="icon-tags"></i>&nbsp;${contigSet.name}
+                            <g:link controller="contigSet" action="compareContigSets" params="${[('check_' + contigSet.id)  : 'on']}"> <i class="icon-tags"></i>&nbsp;${contigSet.name}</g:link>
                             <g:if test="${contigSet.type.toString() == 'STUDY'}">
                                 <span class="label">study</span>
                             </g:if>
