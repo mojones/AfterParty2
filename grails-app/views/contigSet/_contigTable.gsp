@@ -19,7 +19,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-   $('#contigTable').dataTable({
+   window.contig_table = $('#contigTable').dataTable({
         "aaSorting": [[ 3, "desc" ]],
         "asStripeClasses": [],
         "sPaginationType": "bootstrap",
@@ -36,5 +36,12 @@ $(document).ready(function() {
         ]
    });
    $('.dataTables_filter input').attr("placeholder", "enter seach terms here");
+   $('.dataTables_filter input').after('<button type="submit" class="btn" style="-webkit-border-radius: 0 14px 14px 0; vertical-align:top"><i class="icon-search"></i>&nbsp;search</button>')
+   $('.dataTables_filter input')
+        .unbind('keypress keyup')
+        .bind('keypress keyup', function(e){
+          if (e.keyCode != 13) return;
+          window.contig_table.fnFilter($(this).val());
+    });
 });
 </script>
