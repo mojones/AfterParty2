@@ -36,12 +36,16 @@ $(document).ready(function() {
         ]
    });
    $('.dataTables_filter input').attr("placeholder", "enter seach terms here");
-   $('.dataTables_filter input').after('<button type="submit" class="btn" style="-webkit-border-radius: 0 14px 14px 0; vertical-align:top"><i class="icon-search"></i>&nbsp;search</button>')
+   $('.dataTables_filter input').after('<button id="contig_table_search_button" type="submit" class="btn" style="-webkit-border-radius: 0 14px 14px 0; vertical-align:top"><i class="icon-search"></i>&nbsp;search</button>')
    $('.dataTables_filter input')
         .unbind('keypress keyup')
         .bind('keypress keyup', function(e){
           if (e.keyCode != 13) return;
           window.contig_table.fnFilter($(this).val());
     });
+   
+   // do the filter when the button is pressed
+    $('#contig_table_search_button').click(function(){window.contig_table.fnFilter($('.dataTables_filter input').val())})
+
 });
 </script>
