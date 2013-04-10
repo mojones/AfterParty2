@@ -35,5 +35,6 @@ $(document).ready(function() {
           { "bSortable": false }
         ]
    });
+   $('.dataTables_filter input').attr("placeholder", "enter seach terms here");
 });
 </script>

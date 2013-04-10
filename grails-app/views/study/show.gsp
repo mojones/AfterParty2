@@ -139,7 +139,8 @@ To make a bit of text editable we need to
                    $('#compound-sample-table').dataTable({
                         "aaSorting": [[ 3, "desc" ]],
                         "asStripeClasses": [],
-                        "sPaginationType": "bootstrap"    
+                        "sPaginationType": "bootstrap",
+                        "fnInitComplete": function () { alert('init'); $('.dataTables_filter input').attr("placeholder", "enter seach terms here");  }   
                    });
                 });
             </script>
