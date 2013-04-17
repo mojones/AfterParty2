@@ -78,7 +78,7 @@ class ContigSetController {
         def sortDirection = params.sSortDir_0
         def sortColumnNames = ['contig.name', 'length(contig.sequence)', 'contig.average_quality', 'contig.average_coverage']
 
-        def searchString = params.sSearch
+        def searchString = params.sSearch.toLowerCase().replaceAll(' or ', ' | ').replaceAll(' and ', ' & ')
         println "search is ${searchString}"
 
         def totalContigCount = statisticsService.getContigCount(contigSetId)
