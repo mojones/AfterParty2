@@ -279,6 +279,7 @@ class AssemblyController {
                             type : AnnotationType.CONTIG)
                 contig.addToAnnotations(ann)
                 assembly.addToContigs(contig)
+                contig.save(flush:true)
                 created++
                 if (created % 1000 == 0) {
 
@@ -290,7 +291,7 @@ class AssemblyController {
 
 
             }
-            assembly.save(flush: true)
+            //assembly.save(flush: true)
             job2.progress = "creating contig set"
             job2.save(flush: true)
 
