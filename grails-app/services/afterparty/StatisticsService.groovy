@@ -404,8 +404,9 @@ def getFilteredContigCount(Long contigSetId, String query){
         where 
             contig_set_contigs_id=${contigSetId} and 
             contig_set_contig.contig_id=annotation.contig_id and 
-            to_tsvector('english', annotation.description) @@ to_tsquery('english', ${query})
+            to_tsvector('english', replace(description, '.', ' ') || ' ' || description) @@ to_tsquery('english', ${query})
     """
+    print('getFilteredContigCount : ' + idStatement.toString())
     def result    
     sql.rows(idStatement).each{ row ->
         result = row.count
@@ -480,7 +481,7 @@ def getFilteredContigIds(Long contigSetId, Long offset, Long limit, String order
             ${limit}
 
             """    
-    println idStatement
+    println idStatement.toString()
     def result = []
     sql.rows(idStatement).each{ row ->
         result.add(row.id)
