@@ -56,7 +56,7 @@ To make a bit of text editable we need to
         </h3>
 
         <g:if test="${compoundSample.defaultContigSet}">
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : compoundSample.defaultContigSet.id, 'readSources' : readSources]"/>
+            <g:render template="/contigSet/searchForm" model="['downloadable' : compoundSample.study.downloadable, 'contigSetId' : compoundSample.defaultContigSet.id, 'readSources' : readSources]"/>
         </g:if>
 
         <h2>Samples</h2>

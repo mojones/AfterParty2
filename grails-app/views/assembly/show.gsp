@@ -89,7 +89,7 @@
     <div class="span10 offset1">
         <div class="in_a_box actions_box">
         <g:if test="${assemblyInstance.defaultContigSet}">
-            <g:render template="/contigSet/searchForm" model="['contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
+            <g:render template="/contigSet/searchForm" model="['downloadable': assemblyInstance.compoundSample.study.downloadable, 'contigSetId' : assemblyInstance.defaultContigSet.id, 'readSources' : readSources]"/>
         </g:if>
 
         <g:if test="${isOwner}">

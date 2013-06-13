@@ -5,6 +5,7 @@ class Study {
     String name
     String description
     Boolean published
+    Boolean downloadable
 
     ContigSet defaultContigSet
 
@@ -12,6 +13,7 @@ class Study {
         name(maxSize: 1000)
         description(maxSize: 10000, nullable: true)
         defaultContigSet(nullable: true)
+        downloadable(default:false)
     }
 
     static hasMany = [compoundSamples: CompoundSample, contigSets : ContigSet]

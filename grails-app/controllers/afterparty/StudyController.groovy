@@ -85,12 +85,33 @@ class StudyController {
     def makePublished = {
         def study = Study.get(params.id)
         if (study.user.id == springSecurityService.principal.id) {
-            study.published = true
-            flash.success = "published study ${study.name}"
+            if (params.setting == 'true'){
+                study.published = true
+                flash.success = "published study ${study.name}"
+            }
+            if (params.setting == 'false'){
+                study.published = false
+                flash.success = "unpublished study ${study.name}"
+            }
         }
         redirect(action: 'listPublished')
     }
 
+    @Secured(['ROLE_USER'])
+    def makeDownloadable = {
+        def study = Study.get(params.id)
+        if (study.user.id == springSecurityService.principal.id) {
+            if (params.setting == 'true'){
+                study.downloadable = true
+                flash.success = "allowed downloads for study ${study.name}"
+            }
+            if (params.setting == 'false'){
+                study.downloadable = false
+                flash.success = "disallowed downloads for study ${study.name}"
+            }
+        }
+        redirect(action: 'listPublished')
+    }
 
     def show = {
         def criteria = Study.createCriteria()

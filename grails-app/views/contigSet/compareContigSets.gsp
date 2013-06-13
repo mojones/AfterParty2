@@ -108,19 +108,21 @@
                     ${contigSetInstance.description}
                 </p>
 
-                <g:render template="/contigSet/searchForm" model="['contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
+                <g:render template="/contigSet/searchForm" model="['downloadable' : contigSetInstance.study.downloadable, 'contigSetId' : contigSetInstance.id, 'readSources' : readSources]"/>
 
                 <br/>
             </div>
             
 
             <div class="in_a_box contigs_box">
+<g:if test="${contigSetInstance.study.downloadable}">
                 <g:form controller="contigSet" action="download" method="get">
                     <g:hiddenField name="id" value="${contigSetInstance.id}"/>
                     <button type="submit" class="btn btn-info">
                         <i class="icon-download-alt"></i>&nbsp;download contigs
                     </button>
                 </g:form>
+</g:if>
                 <g:render template="contigTable" model="['contigSetId' : contigSetInstance.id]"/>
             </div>
 

@@ -8,7 +8,9 @@
         <button class="btn btn-info" id="showContigSetsButton" type="submit"onclick="submitCompare();"><i class="icon-eye-open"></i>&nbsp;View contig set</button>
         <button class="btn btn-info" id="searchContigSetAnnotationButton" type="submit"><i class="icon-search"></i>&nbsp;Search contigs</button>
         <button class="btn btn-info" id="blastContigSetAnnotationButton" type="submit"><i class="icon-zoom-in"></i>&nbsp;BLAST contigs</button>
+<g:if test="${downloadable}">
         <button class="btn btn-success" id="downloadContigsButton" onClick="submitDownload()"><i class="icon-download-alt"></i>&nbsp;download contigs</button>
+</g:if>
     </div>
     <br/><br/>
 

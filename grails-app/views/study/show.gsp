@@ -101,7 +101,32 @@ To make a bit of text editable we need to
            
                 <g:form action="makePublished" method="get">
                     <g:hiddenField name="id" value="${studyInstance.id}"/>
+                    <g:hiddenField name="setting" value="true"/>
                     <button type="submit" class="btn btn-info"><i class="icon-eye-open"></i>&nbsp;publish study</button>
+                </g:form>
+        </g:if>
+        <g:if test="${isOwner && studyInstance.published}">
+           
+                <g:form action="makePublished" method="get">
+                    <g:hiddenField name="id" value="${studyInstance.id}"/>
+                    <g:hiddenField name="setting" value="false"/>
+                    <button type="submit" class="btn btn-info"><i class="icon-eye-close"></i>&nbsp;unpublish study</button>
+                </g:form>
+        </g:if>
+        <g:if test="${isOwner && !studyInstance.downloadable}">
+           
+                <g:form action="makeDownloadable" method="get">
+                    <g:hiddenField name="id" value="${studyInstance.id}"/>
+                    <g:hiddenField name="setting" value="true"/>
+                    <button type="submit" class="btn btn-info"><i class="icon-hdd"></i>&nbsp;allow downloads</button>
+                </g:form>
+        </g:if>
+        <g:if test="${isOwner && studyInstance.downloadable}">
+           
+                <g:form action="makeDownloadable" method="get">
+                    <g:hiddenField name="id" value="${studyInstance.id}"/>
+                    <g:hiddenField name="setting" value="false"/>
+                    <button type="submit" class="btn btn-info"><i class="icon-lock"></i>&nbsp;disallow downloads</button>
                 </g:form>
         </g:if>
     </div>
