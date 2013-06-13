@@ -153,12 +153,13 @@
                 // now draw phobius hits
                 var phobius_hits = window.contigData.annotations['PHOBIUS'];
                 if (phobius_hits.length > 0 ) {
+                    drawing.drawSpacer(50);
                     drawing.drawTitle("PHOBIUS annotations");
 
 
                     for (var i = 0; i < phobius_hits.length; i++) {
 
-                        var hit = hits[i];
+                        var hit = phobius_hits[i];
                         if (hit.accession == 'SIGNAL_PEPTIDE' || hit.accession == 'TRANSMEMBRANE' || $('#show_phobius_details_checkbox')[0].checked){
                             var hitColour = drawing.getBLASTColour(hit.bitscore);
                             var hitRect = drawing.drawBar(hit.start, hit.stop, 15, 'blue',  hit.description, '  ' + hit.accession, hit.id);
