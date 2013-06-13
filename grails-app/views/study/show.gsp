@@ -140,7 +140,7 @@ To make a bit of text editable we need to
                         "aaSorting": [[ 3, "desc" ]],
                         "asStripeClasses": [],
                         "sPaginationType": "bootstrap",
-                        "fnInitComplete": function () { alert('init'); $('.dataTables_filter input').attr("placeholder", "enter seach terms here");  }   
+                        "fnInitComplete": function () {  $('.dataTables_filter input').attr("placeholder", "enter seach terms here");  }   
                    });
                 });
             </script>
@@ -252,10 +252,20 @@ To make a bit of text editable we need to
                 </div>
 
                 <div id="blastForm" style="display:none">
-                    <label>BLAST query sequence:</label> <br/>
-                    <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
-                    <br/><br/>
-                    <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
+                <label>BLAST query sequence:</label> <br/>
+                <textarea name="blastQuery" id="blastQuery" rows="10" class="span8" placeholder="Paste DNA sequence here..."></textarea>
+                <br/><br/>
+                <label>Program to use:</label>
+                <select name="program">
+                <option value="blastn">blastn</option>
+                <option value="tblastn">tblastn</option>
+                <option value="tblastx">tblastx</option>
+                </select>
+                <br/><br/>
+                <label>Expect</label>
+                <input name="expect" placeholder="1e-20"></input>
+                <br/><br/>
+                <button id="submitBLASTButton" type="submit" class="btn btn-info" onclick="submitBLASTForm();">
                         <i class="icon-zoom-in"></i>&nbsp;BLAST
                     </button>
                 </div>

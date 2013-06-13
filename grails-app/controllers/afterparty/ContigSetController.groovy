@@ -201,7 +201,7 @@ class ContigSetController {
         println "blasting against single contig set with expect ${expect}"
         ContigSet cs = ContigSet.get(id)
 
-        File blastDatabaseIndexFile = new File(grailsApplication.config.contigSetDatabasePath + '/' + id + '.nin')
+        File blastDatabaseIndexFile = new File(grailsApplication.config.contigSetDatabasePath.toString() + '/' + id + '.nin')
         println "looking for contig set blast database in " + blastDatabaseIndexFile.absolutePath
         if (blastDatabaseIndexFile.exists()){
             // we will assume that if the .nin file is there, then so are the others
@@ -209,7 +209,7 @@ class ContigSetController {
         }
         else{
             print "file does not exist, about to create it"
-            File contigSetFastaFile = new File(grailsApplication.config.contigSetDatabasePath + '/' + id)
+            File contigSetFastaFile = new File(grailsApplication.config.contigSetDatabasePath.toString() + '/' + id)
 
             //write out files
             contigSetFastaFile.append(statisticsService.getFastaForContigSet(id))
