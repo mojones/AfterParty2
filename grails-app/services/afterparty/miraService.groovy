@@ -81,6 +81,7 @@ class miraService {
 
              Annotation ann = new Annotation(
                         description:'whole contig', 
+                        source: 'upload',
                         bitscore : 0, 
                         evalue : 0,
                         start : 0,
@@ -183,6 +184,7 @@ class miraService {
             Annotation ann = new Annotation(
                         description:'whole contig', 
                         bitscore : 0, 
+                        source : 'upload',
                         evalue : 0,
                         start : 0,
                         stop : 0, 
