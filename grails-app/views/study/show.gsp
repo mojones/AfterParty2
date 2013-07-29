@@ -165,6 +165,7 @@ To make a bit of text editable we need to
                         "aaSorting": [[ 3, "desc" ]],
                         "asStripeClasses": [],
                         "sPaginationType": "bootstrap",
+                        "apple" : "banana",
                         "fnInitComplete": function () {  $('.dataTables_filter input').attr("placeholder", "enter seach terms here");  }   
                    });
                 });

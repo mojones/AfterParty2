@@ -59,6 +59,7 @@ class ContigSetController {
             oneContig = statisticsService.getFilteredInfoForSingleContig(contigId.toLong(), searchString)
         }
         return [
+                    oneContig.species.replaceAll(" ", "&nbsp;"),
                     makeNameForContig(oneContig),
                     oneContig.length,
                     oneContig.quality,

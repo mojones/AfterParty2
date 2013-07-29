@@ -539,6 +539,7 @@ def getContigIds(Long contigSetId, Long offset, Long limit, String orderBy, Stri
 def getFilteredInfoForSingleContig(Long id, String query){
     def result = [:]
     def sql = new Sql(dataSource)
+    def assembly_id
 
     // first get the contig stats
     def contigStatement = "select * from contig where id=${id}"
@@ -549,8 +550,14 @@ def getFilteredInfoForSingleContig(Long id, String query){
         result.length = row.sequence.size()
         result.id = id
         result.gc = (row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() * 100 / result.length).toInteger()
+        assembly_id = row.assembly_id
     }    
 
+    // now get the name of the compoundSample
+    def speciesNameStatement = "select compound_sample.name from compound_sample, assembly where assembly.id=${assembly_id} and assembly.compound_sample_id = compound_sample.id"
+    sql.rows(speciesNameStatement).each{ row ->
+        result.species = row.name
+    }    
     // now the annotation
     // if the contig name is an exact match for the query, then just grab all annotation, otherwise grab the items that match the query
 
@@ -592,6 +599,7 @@ def getInfoForSingleContig(Long id){
     def result = [:]
     def sql = new Sql(dataSource)
 
+    def assembly_id
     // first get the contig stats
     def contigStatement = "select * from contig where id=${id}"
     sql.rows(contigStatement).each{ row ->
@@ -601,8 +609,14 @@ def getInfoForSingleContig(Long id){
         result.length = row.sequence.size()
         result.id = id
         result.gc = (row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() * 100 / result.length).toInteger()
+        assembly_id = row.assembly_id
     }    
 
+    // now get the name of the compoundSample
+    def speciesNameStatement = "select compound_sample.name from compound_sample, assembly where assembly.id=${assembly_id} and assembly.compound_sample_id = compound_sample.id"
+    sql.rows(speciesNameStatement).each{ row ->
+        result.species = row.name
+    }    
     // now the annotation
     def annotationStatement = "select * from annotation where contig_id=${id} order by evalue desc"
     sql.rows(annotationStatement).each{ row ->

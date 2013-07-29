@@ -2,6 +2,7 @@
 <table class="table table-bordered table-hover" id="contigTable">
     <thead>
         <tr>
+            <th>Species</th>
             <th>Contig name</th>
             <th>Length</th>
             <th>Mean quality</th>
@@ -27,6 +28,7 @@ $(document).ready(function() {
         "bProcessing": true,
         "sAjaxSource" : "${createLink(controller:'contigSet', action:'getContigsJSON', params :[contigSetId : contigSetId])}",
         "aoColumns": [
+          null,
           null,
           null,
           null,
