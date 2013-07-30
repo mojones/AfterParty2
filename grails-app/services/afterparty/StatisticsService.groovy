@@ -153,95 +153,49 @@ def getReadFileDataStats(Long id) {
 
 
 
+
 @Cacheable("contigSetCache")
 Map getStatsForContigSet(Long contigSetId) {
+    println "getting stats with sql for contig set with id $contigSetId"
     Map cs = [
     id: [],
     length: [],
     lengthwithoutn: [],
     quality: [],
     coverage: [],
-    topBlast: [],
     gc: []
     ]
 
-    getContigInfoForContigSet(contigSetId).each{
-        cs.id.push(it.id)
-        cs.length.push(it.length)
-        cs.lengthwithoutn.push(it.lengthWithoutN)
-        cs.quality.push(it.quality)
-        cs.coverage.push(it.coverage)
-        cs.topBlast.push('replaceme')
-        cs.gc.push(it.gc)
-
-    }
-
-
-    return cs
-
-}
-
-@Cacheable('contigInfoCache')
-def getContigInfoForContigSet(Long id){
-    println "id is $id"
-    def result = []
-
     def sql = new Sql(dataSource)
 
-        // scary sql ahead
-        // we need to pull out the annotation for a given contig, then transpose some rows to columns
-
-        // TODO we can probably simplify this a lot as we don't strictly need all the complicated annotation when drawing scatter plots
         def sqlString = """
-            select 
-            id, 
-            name,
-            MAX(CASE WHEN type = 'BLAST' THEN description ELSE NULL END) AS top_blast, 
-            MAX(CASE WHEN type = 'BLAST' THEN bitscore ELSE NULL END) AS blast_bitscore,
-            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
-            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
-            MAX(CASE WHEN type = 'PFAM' THEN description ELSE NULL END) AS top_pfam,
-            MAX(CASE WHEN type = 'PFAM' THEN bitscore ELSE NULL END) AS pfam_bitscore,
-            average_coverage,
-            average_quality,
-            sequence 
-        from (
-            select 
-                distinct on (annotation.type, contig.id) 
-                contig.id, contig.name, contig.average_coverage, contig.average_quality, contig.sequence, annotation.type, annotation.description, annotation.bitscore
-            from 
-                contig, annotation, contig_set_contig 
-            where annotation.contig_id=contig.id and contig_set_contig.contig_id=contig.id and contig_set_contig.contig_set_contigs_id = ${id}
-            order by annotation.type, contig.id, bitscore desc
-        ) as bar 
-        group by id, name, average_coverage, average_quality, sequence;
-   
-
+select 
+    id, 
+    name, 
+    average_coverage,
+    average_quality,
+    length(sequence) as length,
+    length(replace(sequence, 'N', '')) as lengthwithoutn,
+    (array_upper(string_to_array(sequence,'G'),1) +array_upper(string_to_array(sequence,'C'),1)) as GC
+from 
+    contig
+where
+    id in (
+        select contig_id from contig_set_contig where contig_set_contigs_id = ${contigSetId} 
+    )
         """
 
         println sqlString
         sql.rows(sqlString).each({ row ->
           //  println row
-          result.add(
-            [
-            'id' : row.id, 
-            'name': row.name,
-            'coverage' : row.average_coverage,
-            'quality':row.average_quality,
-            'length' : row.sequence.length(),
-            'lengthWithoutN' : row.sequence.toUpperCase().replaceAll('n', '').length(),
-            'gc' : row.sequence.toUpperCase().findAll({it == 'G' || it == 'C'}).size() / row.sequence.length(),
-            'topBlast' : row.top_blast,
-            'blastBitscore' : row.blast_bitscore,
-            'topPfam' : row.top_pfam,
-            'pfamBitscore' : row.pfam_bitscore
-            ]
-                   )
+            cs.id.push(row.id)
+            cs.length.push(row.length)
+            cs.lengthwithoutn.push(row.lengthwithoutn)
+            cs.quality.push(row.average_quality)
+            cs.coverage.push(row.average_coverage)
+            cs.gc.push(row.gc / row.length)
           })
-        
-    
-
-    return result
+    return cs
 }
 
 
