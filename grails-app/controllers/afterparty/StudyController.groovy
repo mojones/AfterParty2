@@ -72,7 +72,7 @@ class StudyController {
 
     @Secured(['ROLE_USER'])
     def create = {
-        def studyInstance = new Study(name: 'Study name', description: 'Study description', published: false)
+        def studyInstance = new Study(name: 'Study name', description: 'Study description', published: false, downloadable: false)
         def user = AfterpartyUser.get(springSecurityService.principal.id)
         user.addToStudies(studyInstance)
         studyInstance.save()
