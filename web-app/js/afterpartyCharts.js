@@ -232,7 +232,7 @@ drawScatterChart = function() {
             for (var n = 0; n < length; n++) {
                 // only add contigs if they pass the length and coverage filters
                 if (a.length[n] >= window.minSeqLength && a.coverage[n] >= window.minSeqCoverage) {
-                    result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n], a.topBlast[n]]);
+                    result.push([a[window.scatterXField][n], a[window.scatterYField][n], a.id[n], a.length[n], a.lengthwithoutn[n], a.quality[n], a.coverage[n], a.gc[n]]);
                     allDatapointsCount++;
                 }
             }
