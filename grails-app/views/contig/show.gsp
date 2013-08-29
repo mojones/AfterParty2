@@ -221,8 +221,9 @@ drawContig(window.contigData);
 <div class="row-fluid">
     <div class="span8 offset1">
 
-   
+        <g:if test="${contigInstance.reads.size() > 0}">
         <h3>Read count : ${contigInstance.reads.size()}</h3> 
+        </g:if>
 
         <h3>Sequence</h3>
         <textarea rows="5" class="span12">${contigInstance.sequence}</textarea>
