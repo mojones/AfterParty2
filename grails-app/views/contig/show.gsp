@@ -353,7 +353,7 @@ drawContig(window.contigData);
             <thead>
             <tr>
                 <th>Feature type</th>
-                <th>Decription</th>
+                <th>Description</th>
                 <th>Start</th>
                 <th>Stop</th>
 
