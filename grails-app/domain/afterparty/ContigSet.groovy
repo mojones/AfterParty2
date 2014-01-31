@@ -14,7 +14,6 @@ class ContigSet {
 
     static belongsTo = [study: Study]
 
-    ContigSetData data
 
     static constraints = {
     }
