@@ -237,7 +237,6 @@ def createContigSetForCompoundSample(Long id) {
         currentDefaultContigSet.delete(flush:true)
     }
     c.defaultContigSet = cs
-    cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
     cs.save(flush: true)
 
     createContigSetForStudy(c.study.id)
@@ -267,7 +266,6 @@ def createContigSetForStudy(Long id) {
     def oldDefaultContigSet = s.defaultContigSet
     
     s.defaultContigSet = cs
-    cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
 
     cs.save(flush: true)
 
@@ -321,7 +319,6 @@ def createContigSetForAssembly(Long id) {
         //a.defaultContigSet = null
         currentDefaultContigSet.delete(flush:true)
     }
-    cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
     a.defaultContigSet = cs
     cs.save(flush:true)
     a.save(flush:true)
