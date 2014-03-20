@@ -27,7 +27,6 @@ class StudyController {
         cs.description =  "contig set create from an uploaded file : ${fileName}"
         cs.type = ContigSetType.USER
         cs.study = Study.get(params.id)
-        cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
         f.inputStream.eachLine { line -> 
             def criteria = Contig.createCriteria()
             def c = criteria{

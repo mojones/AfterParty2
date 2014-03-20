@@ -367,7 +367,6 @@ class ContigSetController {
             println "adding contig $it"
             cs.addToContigs(Contig.get(it))
         }
-        cs.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
         
         cs.save()
         redirect(action: 'compareContigSets', 'params': ['idList': [cs.id]])
@@ -412,7 +411,6 @@ class ContigSetController {
         ids.each {
             c.addToContigs(Contig.get(it.toLong()))
         }
-        c.data = new ContigSetData(blastHeaderFile: 'a', blastIndexFile : 'b', blastSequenceFile : 'c')
         c.save(flush: true)
         statisticsService.getStatsForContigSet(c)
         println "rendering $c.id"
