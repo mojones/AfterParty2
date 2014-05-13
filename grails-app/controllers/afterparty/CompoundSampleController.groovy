@@ -21,7 +21,7 @@ class CompoundSampleController {
         [compoundSample: c, isOwner: c.study.user.id == userId, readSources:readSources, stats:stats]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def createSample = {
         def compoundSampleInstance = CompoundSample.get(params.id)
         def newSample = new Sample(name: 'sample name', description: 'sample description')
@@ -32,7 +32,7 @@ class CompoundSampleController {
         redirect(controller: 'sample', action: 'show', id: newSample.id)
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def createAssembly = {
         def compoundSampleInstance = CompoundSample.get(params.id)
         def newAssembly = new Assembly(name: 'assembly name', description: 'assembly description')

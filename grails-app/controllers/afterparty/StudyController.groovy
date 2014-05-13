@@ -47,7 +47,7 @@ class StudyController {
         redirect(action:'show', id : params.id)
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER','ROLE_ADMIN'])
     def createCompoundSample = {
         def studyInstance = Study.get(params.id)
         def newCompoundSample = new CompoundSample(name: 'compound sample name')
@@ -69,7 +69,7 @@ class StudyController {
         ]
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def create = {
         def studyInstance = new Study(name: 'Study name', description: 'Study description', published: false, downloadable: false)
         def user = AfterpartyUser.get(springSecurityService.principal.id)
@@ -80,7 +80,7 @@ class StudyController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER','ROLE_ADMIN'])
     def makePublished = {
         def study = Study.get(params.id)
         if (study.user.id == springSecurityService.principal.id) {
@@ -96,7 +96,7 @@ class StudyController {
         redirect(action: 'listPublished')
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER','ROLE_ADMIN'])
     def makeDownloadable = {
         def study = Study.get(params.id)
         if (study.user.id == springSecurityService.principal.id) {

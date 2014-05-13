@@ -28,11 +28,13 @@ class LoginController {
      * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
      */
     def index = {
+        println("\trunning index")
         if (springSecurityService.isLoggedIn()) {
             redirect uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
         }
         else {
-            redirect action: auth, params: params
+            println("\tredirecting to auth")
+            redirect(action: "auth", params: params)
         }
     }
 
@@ -40,6 +42,7 @@ class LoginController {
      * Show the login page.
      */
     def auth = {
+        println("\trunning auth")
 
         def config = SpringSecurityUtils.securityConfig
 
@@ -113,7 +116,7 @@ class LoginController {
             render([error: msg] as JSON)
         }
         else {
-            flash.message = msg
+            flash.error = 'Login problem, try again'
             redirect action: auth, params: params
         }
     }

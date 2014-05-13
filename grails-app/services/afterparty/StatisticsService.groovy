@@ -19,33 +19,35 @@ class StatisticsService {
 public static boldAssemblyColours = ['blue', 'red', 'green', 'purple', 'fuchsia', 'grey', 'lime', 'maroon', 'navy', 'olive', 'teal', 'yellow', 'aqua']
 
 
-@Cacheable("myCache")
-def getStudyCounts(){
+def updateStudyCounts(){
+    println("updating study counts")
     def sql = new Sql(dataSource)
-    def studyStatement = """
-select 
-    compound_sample.study_id as study_id, 
-    count(distinct contig.id) as contig_count, 
-    count(distinct assembly.id) as assembly_count, 
-    annotation.type,
-    count(distinct annotation.id) 
+    def updateStatement = """
+begin;drop table study_summary;create table study_summary as select     compound_sample.study_id as study_id, 
+    count(contig.id) as contig_count, 
+    count(distinct assembly.id) as assembly_count 
 from 
-    annotation, contig, assembly, compound_sample 
+    contig, assembly, compound_sample 
 where 
-    annotation.contig_id = contig.id and 
     contig.assembly_id = assembly.id and 
     assembly.compound_sample_id = compound_sample.id 
 group by 
-    compound_sample.study_id,annotation.type;
+    compound_sample.study_id;commit;"""
+    sql.execute(updateStatement)
+    println("done")
+
+}
+
+def getStudyCounts(){
+    def sql = new Sql(dataSource)
+    def studyStatement = """
+    select * from study_summary;
                     """    
     def result = [:]
     sql.rows(studyStatement).each{ row ->
         def currentMap = result.get(row.study_id, [:])
         currentMap.put('contigCount',row.contig_count)
         currentMap.put('assembly_count', row.assembly_count)
-        def currentTypeMap = currentMap.get(row.type, [:])
-        currentTypeMap.put(row.type, row.count)
-        currentMap.put('types', currentTypeMap)
         result.put(row.study_id, currentMap)
     }
     return result

@@ -39,7 +39,7 @@ class AssemblyController {
     }
 
     
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def deleteAssembly = {
         def studyId = Assembly.get(params.id.toLong()).compoundSample.study.id
         println "going to redirect to study id ${studyId}"
@@ -48,7 +48,7 @@ class AssemblyController {
         redirect(controller: 'study', action: 'show', id : studyId)
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def uploadBlastAnnotation = {
         def f = request.getFile('myFile')
 
@@ -89,7 +89,7 @@ class AssemblyController {
         redirect(controller: 'backgroundJob', action: 'list')
     } 
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def uploadInterproscanAnnotation = {
         def f = request.getFile('myFile')
 
@@ -128,7 +128,7 @@ class AssemblyController {
     }
 
     @CacheFlush("myCache")
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def uploadAce = {
         def f = request.getFile('aceFile')
 
@@ -198,7 +198,7 @@ class AssemblyController {
     }
 
     @CacheFlush("myCache")
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def uploadContigs = {
         def f = request.getFile('myFile')
 
@@ -310,7 +310,7 @@ class AssemblyController {
 
 
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def runBlast = {
         def assemblyId = params.id
         println "id is $assemblyId"
@@ -335,7 +335,7 @@ class AssemblyController {
 
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def runPfam = {
         def assemblyId = params.id
         println "id is $assemblyId"
@@ -384,7 +384,7 @@ class AssemblyController {
         response.outputStream.flush()
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def create = {
         println("creating new assembly")
         def assemblyInstance = new Assembly(name: 'Assembly name', description: 'Assembly description')

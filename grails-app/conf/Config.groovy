@@ -142,3 +142,13 @@ grails.plugins.springsecurity.controllerAnnotations.staticRules = [
 logSql = Boolean.parseBoolean(System.properties.logSql ?: 'false')
 
 
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+   '/':               ['permitAll'],
+   '/index':          ['permitAll'],
+   '/index.gsp':      ['permitAll'],
+   '/**/js/**':       ['permitAll'],
+   '/**/css/**':      ['permitAll'],
+   '/**/images/**':   ['permitAll'],
+   '/**/favicon.ico': ['permitAll'],
+   '/login/**' :      ['permitAll']
+]
