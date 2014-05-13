@@ -26,6 +26,7 @@ class BootStrap {
         BackgroundJob.findAllByStatus(BackgroundJobStatus.QUEUED).each {it.delete(flush: true)}
 
 
+        statisticsService.updateStudyCounts()
 
         environments {
             development_rebuild {
