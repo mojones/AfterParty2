@@ -125,8 +125,7 @@ class PfamService {
             println "temporary file is ${contigFastaFile.absolutePath}"
 
             contigFastaFile.append(">${contig.name}\n${contig.sequence.toLowerCase().replaceAll(/[^atgc]/, 'n')}\n")
-            def pfamString =  "${grailsApplication.config.interproscanPath} -f GFF3 -appl ProDom-2006.1,PfamA-26.0,TIGRFAM-12.0,SMART-6.2,Gene3d-3.3.0,Coils-2.2,Phobius-1.01 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
-            pfamString =  "${grailsApplication.config.interproscanPath} -f GFF3 -appl Coils-2.2 -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
+            def pfamString =  "${grailsApplication.config.interproscanPath} -f GFF3 -appl PfamA -i ${contigFastaFile.absolutePath} -t n -dp -o ${contigFastaFile.absolutePath}.gff3 "
             println pfamString
             
 

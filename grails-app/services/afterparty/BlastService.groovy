@@ -140,7 +140,7 @@ class BlastService {
 
                 if (n > 0 && n % batchSize == 0){
 
-                    def blastString = "${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10 -query ${contigFastaFile.getAbsolutePath()}"
+                    def blastString = "${grailsApplication.config.blastxPath} -db ${grailsApplication.config.sprotPath} -outfmt 5 -window_size 0 -num_threads 4 -max_target_seqs 10 -query ${contigFastaFile.getAbsolutePath()} -e 1e-10"
                     println blastString
                     def blastProcess = new ProcessBuilder(blastString.split(" "))
                     blastProcess.redirectErrorStream(true)
@@ -168,7 +168,7 @@ class BlastService {
         blastProcess.redirectErrorStream(true)
         blastProcess = blastProcess.start()
 
-                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id)
+                    addBlastHitsFromInput(blastProcess.in, job.id, assembly.id, 'UniProt')
 
         job.progress = "finished"
         job.status = BackgroundJobStatus.FINISHED
