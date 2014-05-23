@@ -13,8 +13,6 @@ import java.util.logging.*
 
 
 
-
-
 def logger = Logger.getLogger('groovy.sql') 
 logger.level = Level.FINEST 
 logger.addHandler(new ConsoleHandler(level: Level.FINEST)) 
@@ -34,7 +32,7 @@ if (contigsFile != 'none'){
     new File(contigsFile).eachLine { line ->
         if (line.startsWith('>')){
                 if (current_header != ''){
-                    all_seqs.add([current_header, current_sequence])
+                    all_seqs.add([current_header.take(400), current_sequence])
                     count++
                 }
             current_header = line[1..-1]
@@ -61,26 +59,28 @@ if (contigsFile != 'none'){
 
 }
 
-def timeStart = new Date()
-def added_annotation_count = 0
-println("adding BLAST records from " + blastFile )
-try{
+if (blastFile != 'none'){
+    def timeStart = new Date()
+    def added_annotation_count = 0
+    println("adding BLAST records from " + blastFile )
+    try{
 
-    sqlAfterparty.withBatch(200, "insert into annotation values (nextval('hibernate_sequence'), 1, ?, ?, (select id from contig where name=? limit 1), ?, ?, ?, ?, ?, ? )") { prepared_statement ->
+        sqlAfterparty.withBatch(200, "insert into annotation values (nextval('hibernate_sequence'), 1, ?, ?, (select id from contig where name=? limit 1), ?, ?, ?, ?, ?, ? )") { prepared_statement ->
 
-        new File(blastFile).eachLine { line ->
-            added_annotation_count++;
-            cols = line.split("\t")
-            (contig_name, accession, description, evalue, bitscore, start, stop) = cols
-            prepared_statement.addBatch(accession, bitscore.toFloat(), contig_name, description, evalue.toFloat(), start.toInteger(), stop.toInteger(), 'BLAST', blastFile) 
+            new File(blastFile).eachLine { line ->
+                added_annotation_count++;
+                cols = line.split("\t")
+                (contig_name, accession, description, evalue, bitscore, start, stop) = cols
+                prepared_statement.addBatch(accession, bitscore.toFloat(), contig_name, description, evalue.toFloat(), start.toInteger(), stop.toInteger(), 'BLAST', blastFile) 
+            }
+
         }
 
+        def timeStop = new Date()
+        TimeDuration duration = TimeCategory.minus(timeStop, timeStart)
+        println("added $added_annotation_count annotations in " + duration)
+    } catch (Exception e) {
+        println('letting you know: ' + e)
+        println('next : ' + e.getNextException())
     }
-
-    def timeStop = new Date()
-    TimeDuration duration = TimeCategory.minus(timeStop, timeStart)
-    println("added $added_annotation_count annotations in " + duration)
-} catch (Exception e) {
-    println('letting you know: ' + e)
-    println('next : ' + e.getNextException())
 }
