@@ -197,6 +197,15 @@ class AssemblyController {
 
     }
 
+
+    @Secured(['ROLE_USER', 'ROLE_ADMIN'])
+    def updateContigSet = {
+        statisticsService.createContigSetForAssembly(params.id.toLong())
+        redirect(action: show, id: params.id.toLong())
+    }
+
+
+
     @CacheFlush("myCache")
     @Secured(['ROLE_USER', 'ROLE_ADMIN'])
     def uploadContigs = {
