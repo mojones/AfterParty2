@@ -42,6 +42,7 @@ class StudyController {
 
           cs.addToContigs(c[0])
             println line
+            println c[0]
         }
         cs.save(flush:true)
         redirect(action:'show', id : params.id)
