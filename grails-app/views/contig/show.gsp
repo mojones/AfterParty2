@@ -231,6 +231,7 @@ drawContig(window.contigData);
 
 
 
+        <g:if test="${contigInstance.annotations.findAll({it.type == AnnotationType.OTHERCONTIG}).size() > 0}">
         <h2>Links to other contigs</h2>
 
         <table class="table table-bordered table-hover">
@@ -257,9 +258,11 @@ drawContig(window.contigData);
         </table>
 
 
+        </g:if>
 
 
 
+        <g:if test="${contigInstance.annotations.findAll({it.type == AnnotationType.BLAST}).size() > 0}">
         <h2>BLAST hits</h2>
 
         <table class="table table-bordered table-hover">
@@ -303,6 +306,7 @@ drawContig(window.contigData);
 
         </table>
 
+        </g:if>
 
 
         <h2>Protein domain annotation</h2>
