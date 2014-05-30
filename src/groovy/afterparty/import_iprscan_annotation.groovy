@@ -33,9 +33,14 @@ try{
             added_annotation_count++;
             cols = line.split("\t")
             (contig_name, md5, length, analysis, accession, description, start, stop, evalue, status, date) = cols
+            print(cols)
             def annotation_type
             if (analysis == 'Pfam'){
                 annotation_type = 'PFAM'
+            }
+            if (analysis == 'Phobius'){
+                annotation_type = 'PHOBIUS'
+                evalue = 0
             }
             prepared_statement.addBatch(accession, 0, contig_name, assembly_id,  description, evalue.toFloat(), start.toInteger(), stop.toInteger(), annotation_type, source_name) 
         }

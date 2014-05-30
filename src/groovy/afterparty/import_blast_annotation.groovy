@@ -15,7 +15,7 @@ import java.sql.SQLException
 
 
 def logger = Logger.getLogger('groovy.sql') 
-//logger.level = Level.FINEST 
+logger.level = Level.FINEST 
 logger.addHandler(new ConsoleHandler(level: Level.FINEST)) 
 
 sqlAfterparty = Sql.newInstance("jdbc:postgresql://localhost:5432/afterparty", 'afterparty', 'afterparty', 'org.postgresql.Driver')
@@ -40,6 +40,7 @@ try{
             cols = line.split("\t")
             (contig_name, accession, description, evalue, bitscore, start, stop) = cols
             if (evalue.toFloat() < evalue_cutoff){
+                print('.')
                 added_annotation_count++;
                 prepared_statement.addBatch(accession, bitscore.toFloat(), contig_name, assembly_id,  description, evalue.toFloat(), start.toInteger(), stop.toInteger(), 'BLAST', sourceName) 
             }
